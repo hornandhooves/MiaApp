@@ -10,6 +10,9 @@ import type { LText } from "../domain/types";
 
 const content = () => getPorts().content;
 
+export const useMenu = () =>
+  useQuery({ queryKey: ["menu"], queryFn: () => content().menu() });
+
 export const useKitchen = () =>
   useQuery({ queryKey: ["kitchen"], queryFn: () => content().kitchen() });
 

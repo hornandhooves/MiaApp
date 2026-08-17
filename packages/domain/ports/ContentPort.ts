@@ -4,7 +4,7 @@
  * adaptador mock desde el seed; en producción, Firestore content/*
  * editado desde la consola de staff.
  */
-import type { LText } from "../types";
+import type { LText, MenuItem } from "../types";
 import type {
   Admission,
   BlogPost,
@@ -54,6 +54,7 @@ export interface ContactData {
 }
 
 export interface ContentPort {
+  menu(): Promise<MenuItem[]>;
   kitchen(): Promise<KitchenService[]>;
   admissions(): Promise<Admission[]>;
   lineup(): Promise<LineupData>;

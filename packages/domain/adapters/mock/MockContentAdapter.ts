@@ -2,6 +2,7 @@
  * Contenido del demo directo del seed. La versión de producción lee
  * content/* de Firestore con el mismo contrato.
  */
+import { menuItems } from "../../../../seed/data/menu";
 import {
   admissions,
   blogPosts,
@@ -21,6 +22,9 @@ import type {
 } from "../../ports/ContentPort";
 
 export class MockContentAdapter implements ContentPort {
+  async menu() {
+    return menuItems;
+  }
   async kitchen() {
     return kitchen;
   }

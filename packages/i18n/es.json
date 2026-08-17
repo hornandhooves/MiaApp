@@ -668,5 +668,17 @@
   "passQrHint": "Muéstralo en la entrada",
   "staffFree": "Libre",
   "staffTaken": "Ocupado",
-  "staffHint": "Un toque por lugar: libre ↔ ocupado"
+  "staffHint": "Un toque por lugar: libre ↔ ocupado",
+  "deliverToTpl": "Entregar en {{spot}}",
+  "tabNoteTpl": "Cargado al {{spot}} · liquidas al salir",
+  "orderStates": [
+    "Recibido",
+    "En preparación",
+    "En camino",
+    "Entregado"
+  ],
+  "etaTpl": "{{a}}–{{b}} min a tu lugar",
+  "staffAdvance": "Avanzar",
+  "minTpl": "{{m}} min",
+  "orderNeedsSpot": "Escanea el código de tu lugar o busca tu estancia primero — el pedido necesita destino."
 }

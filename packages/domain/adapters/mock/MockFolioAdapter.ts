@@ -10,9 +10,31 @@
 import type { FolioPort } from "../../ports/FolioPort";
 import type { Folio, LineaCargo, ReferenciaPago } from "../../types";
 
+type FolioListener = { uid: string; cb: (folio: Folio | null) => void };
+
 export class MockFolioAdapter implements FolioPort {
   private folios = new Map<string, Folio>();
   private seq = 0;
+  private listeners = new Set<FolioListener>();
+
+  private abierto(uid: string): Folio | null {
+    return (
+      [...this.folios.values()].find(
+        (f) => f.uid === uid && f.estado === "open",
+      ) ?? null
+    );
+  }
+
+  private copy(f: Folio | null): Folio | null {
+    return f ? { ...f, lineas: f.lineas.map((l) => ({ ...l })) } : null;
+  }
+
+  private notify(uid: string) {
+    const folio = this.copy(this.abierto(uid));
+    this.listeners.forEach((l) => {
+      if (l.uid === uid) l.cb(folio);
+    });
+  }
 
   async abrir(ref: {
     uid: string;
@@ -49,8 +71,20 @@ export class MockFolioAdapter implements FolioPort {
     if (!dup) {
       folio.lineas.push(linea);
       folio.saldoCents += linea.precioCents * linea.cantidad;
+      this.notify(folio.uid);
     }
     return folio;
+  }
+
+  async obtenerAbierto(uid: string): Promise<Folio | null> {
+    return this.copy(this.abierto(uid));
+  }
+
+  suscribir(uid: string, cb: (folio: Folio | null) => void): () => void {
+    const entry = { uid, cb };
+    this.listeners.add(entry);
+    cb(this.copy(this.abierto(uid)));
+    return () => this.listeners.delete(entry);
   }
 
   async cerrar(folioId: string, pago: ReferenciaPago): Promise<Folio> {
@@ -58,6 +92,7 @@ export class MockFolioAdapter implements FolioPort {
     if (!folio) throw new Error(`Folio inexistente: ${folioId}`);
     if (!pago.idempotencyKey) throw new Error("Falta clave de idempotencia");
     folio.estado = "settled";
+    this.notify(folio.uid);
     return folio;
   }
 }

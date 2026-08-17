@@ -668,5 +668,17 @@
   "passQrHint": "Show this at the entrance",
   "staffFree": "Free",
   "staffTaken": "Taken",
-  "staffHint": "One tap per spot: free ↔ taken"
+  "staffHint": "One tap per spot: free ↔ taken",
+  "deliverToTpl": "Deliver to {{spot}}",
+  "tabNoteTpl": "Charged to {{spot}} · settle when you leave",
+  "orderStates": [
+    "Received",
+    "Preparing",
+    "On its way",
+    "Delivered"
+  ],
+  "etaTpl": "{{a}}–{{b}} min to your spot",
+  "staffAdvance": "Advance",
+  "minTpl": "{{m}} min",
+  "orderNeedsSpot": "Scan your spot's code or find your stay first — orders need a destination."
 }
