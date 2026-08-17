@@ -25,6 +25,7 @@ import {
   inkAlpha,
   radius,
   space,
+  whiteAlpha,
 } from "../../packages/ui/tokens";
 
 const BACK = "‹";
@@ -203,7 +204,7 @@ export default function Room() {
                     borderColor: active ? color.ink : inkAlpha(0.1),
                     backgroundColor: active
                       ? color.white
-                      : "rgba(255,255,255,.5)",
+                      : whiteAlpha(0.5),
                     borderRadius: 15,
                     padding: 14,
                     flexDirection: "row",
