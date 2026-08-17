@@ -12,7 +12,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { initI18n } from "../packages/i18n";
+import i18n, { initI18n } from "../packages/i18n";
+import { setChatTexts } from "../packages/domain/di";
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -28,7 +29,15 @@ export default function RootLayout() {
   const [i18nReady, setI18nReady] = useState(false);
 
   useEffect(() => {
-    void initI18n().then(() => setI18nReady(true));
+    void initI18n().then(() => {
+      // El dominio no conoce i18n: se inyectan los textos del
+      // concierge del demo antes del primer getPorts()
+      setChatTexts(
+        i18n.t("chatGreeting"),
+        i18n.t("chatAutoReplies", { returnObjects: true }) as string[],
+      );
+      setI18nReady(true);
+    });
   }, []);
 
   const ready = fontsLoaded && i18nReady;

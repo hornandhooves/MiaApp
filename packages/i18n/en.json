@@ -691,5 +691,23 @@
   "confirmLbl": "Confirm",
   "cancelLbl": "Cancel",
   "guestsN_one": "{{count}} adult",
-  "guestsN_other": "{{count}} adults"
+  "guestsN_other": "{{count}} adults",
+  "conceptBadge": "Concept — Olas have no monetary value in this demo",
+  "wellLeftTpl": "{{n}} left",
+  "soldOut": "Full",
+  "seatsTpl": "{{n}} seats",
+  "chatGreeting": "Good day — this is the Mía concierge. Your spot and your tab are visible to us. What can we get you?",
+  "chatAutoReplies": [
+    "Done — I've noted it and the team is on it. Anything else?",
+    "Of course. Give us a few minutes and it's yours.",
+    "Consider it handled — I'll confirm here the moment it's ready."
+  ],
+  "olasFromFolioTpl": "Today's tab · {{price}}",
+  "needAccountForOlas": "Olas need an account — sign in with Apple and today's spend comes with you (same UID, nothing to migrate).",
+  "missingTpl": "{{n}} Olas short",
+  "redeemableTag": "Redeemable now",
+  "wedSend": "Request a date",
+  "wedDate": "Estimated date",
+  "wedGuests": "Guests",
+  "wedType": "Type of ceremony"
 }

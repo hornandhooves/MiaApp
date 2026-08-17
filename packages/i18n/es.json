@@ -691,5 +691,23 @@
   "confirmLbl": "Confirmar",
   "cancelLbl": "Cancelar",
   "guestsN_one": "{{count}} adulto",
-  "guestsN_other": "{{count}} adultos"
+  "guestsN_other": "{{count}} adultos",
+  "conceptBadge": "Concepto — las Olas no tienen valor contable en este demo",
+  "wellLeftTpl": "Quedan {{n}}",
+  "soldOut": "Lleno",
+  "seatsTpl": "{{n}} asientos",
+  "chatGreeting": "Buen día — soy el concierge de Mía. Vemos tu lugar y tu cuenta. ¿Qué te llevamos?",
+  "chatAutoReplies": [
+    "Listo — lo anoto y el equipo va en camino. ¿Algo más?",
+    "Claro que sí. Danos unos minutos y está.",
+    "Hecho — te confirmo por aquí en cuanto esté listo."
+  ],
+  "olasFromFolioTpl": "Cuenta de hoy · {{price}}",
+  "needAccountForOlas": "Las Olas necesitan cuenta — entra con Apple y el consumo de hoy se va contigo (mismo UID, nada que migrar).",
+  "missingTpl": "Faltan {{n}} Olas",
+  "redeemableTag": "Canjeable ya",
+  "wedSend": "Solicitar una fecha",
+  "wedDate": "Fecha estimada",
+  "wedGuests": "Invitados",
+  "wedType": "Tipo de ceremonia"
 }

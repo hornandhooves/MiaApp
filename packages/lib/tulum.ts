@@ -85,3 +85,12 @@ export function stayDay(
   const total = Math.round((hastaMs - desdeMs) / 86400000);
   return day >= 1 && day <= total ? { day, total } : null;
 }
+
+/** Día de la semana en Tulum: 0=Dom … 6=Sáb */
+export function weekdayInTulum(now: Date = new Date()): number {
+  const name = new Intl.DateTimeFormat("en-US", {
+    timeZone: TULUM_TZ,
+    weekday: "short",
+  }).format(now);
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(name);
+}

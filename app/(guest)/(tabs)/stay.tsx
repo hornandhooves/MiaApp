@@ -155,6 +155,14 @@ export default function Stay() {
         const olas = Math.round(
           (folio.saldoCents / 100) * OLAS.ratePerUsd.marea,
         );
+        // El consumo liquidado se acredita al ledger (append-only)
+        await getPorts().ledger.acreditar({
+          uid,
+          delta: olas,
+          motivo: "folio-liquidado",
+          refId: folio.id,
+          idempotencyKey: `settle-${folio.id}`,
+        });
         Alert.alert(
           t("settleDoneTpl", {
             price: moneyUsd(folio.saldoCents),
