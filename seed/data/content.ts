@@ -363,12 +363,30 @@ export const contact = {
 };
 
 /** Eventos fijos del día que alimentan la línea de tiempo de Home */
-export const dayEvents = [
+export interface DayEvent {
+  id: string;
+  hora: string;
+  titulo: LText;
+  lugar: LText;
+  tag: LText;
+  cuerpo: LText;
+  cta: LText;
+  image: string;
+  destino: "dine" | "wellness" | "tonight" | "sunbeds";
+}
+
+export const dayEvents: DayEvent[] = [
   {
     id: "breakfast",
     hora: "08:00",
     titulo: { en: "Breakfast", es: "Desayuno" },
     lugar: { en: "Restaurant, beach side", es: "Restaurante, lado del mar" },
+    tag: { en: "Included", es: "Incluido" },
+    cuerpo: {
+      en: "Fresh fruit, local ingredients, real coffee. Served steps from the sea, included in every stay, no exceptions.",
+      es: "Fruta fresca, ingredientes locales, café de verdad. A pasos del mar, incluido en toda estancia, sin excepciones.",
+    },
+    cta: { en: "See the menu", es: "Ver el menú" },
     image: "rest",
     destino: "dine",
   },
@@ -380,6 +398,12 @@ export const dayEvents = [
       en: "Palapa, ocean side · all levels",
       es: "Palapa, lado del mar · todos los niveles",
     },
+    tag: { en: "6 left", es: "Quedan 6" },
+    cuerpo: {
+      en: "Led by experienced instructors and open to every level. Included in your stay. The only requirement is showing up.",
+      es: "Con instructores con experiencia y abierto a todos los niveles. Incluido en tu estancia. El único requisito es llegar.",
+    },
+    cta: { en: "Reserve a mat", es: "Apartar un mat" },
     image: "yogaPal",
     destino: "wellness",
   },
@@ -388,6 +412,12 @@ export const dayEvents = [
     hora: "18:41",
     titulo: { en: "Sunset", es: "Atardecer" },
     lugar: { en: "Best from the north deck", es: "Mejor desde el deck norte" },
+    tag: { en: "Free", es: "Libre" },
+    cuerpo: {
+      en: "Kalimba plays the sunset set on the sand from 17:30. No cover for guests staying with us.",
+      es: "Kalimba toca el set de atardecer en la arena desde las 17:30. Sin cover para huéspedes.",
+    },
+    cta: { en: "See today's line-up", es: "Ver el line-up de hoy" },
     image: "aerial2",
     destino: "tonight",
   },
@@ -399,7 +429,104 @@ export const dayEvents = [
       en: "Six seats · Mexican tasting",
       es: "Seis lugares · degustación mexicana",
     },
+    tag: { en: "Book", es: "Reservar" },
+    cuerpo: {
+      en: "One menu, six seats, cooked in front of you. Mezcal pairing optional.",
+      es: "Un menú, seis lugares, cocinado frente a ti. Maridaje de mezcal opcional.",
+    },
+    cta: { en: "Book a seat", es: "Reservar un lugar" },
     image: "rest",
     destino: "dine",
   },
+];
+
+/** Tarjetas "discover" de Home, tres por modo (Hospedaje/Beach Club/Explorar) */
+export interface DiscoverCard {
+  id: string;
+  chip: LText;
+  titulo: LText;
+  meta: LText;
+  image: string;
+  destino: "wellness" | "cenote" | "sunbeds" | "tonight" | "beach" | "weddings" | "experiences";
+}
+
+export const discover: DiscoverCard[][] = [
+  [
+    {
+      id: "massage",
+      chip: { en: "15:00", es: "15:00" },
+      titulo: { en: "Massage by the sea", es: "Masaje junto al mar" },
+      meta: { en: "50 or 80 min", es: "50 u 80 min" },
+      image: "massage",
+      destino: "wellness",
+    },
+    {
+      id: "cenote",
+      chip: { en: "25 min", es: "25 min" },
+      titulo: { en: "Cenote Casa Tortuga", es: "Cenote Casa Tortuga" },
+      meta: { en: "Included with your stay", es: "Incluido en tu estancia" },
+      image: "cenote",
+      destino: "cenote",
+    },
+    {
+      id: "temazcal",
+      chip: { en: "Thu · Sun", es: "Jue · Dom" },
+      titulo: { en: "Temazcal ritual", es: "Ritual de temazcal" },
+      meta: { en: "Mayan sweat lodge at dusk", es: "Temazcal maya al atardecer" },
+      image: "temazcal1",
+      destino: "wellness",
+    },
+  ],
+  [
+    {
+      id: "sunbeds",
+      chip: { en: "12:00", es: "12:00" },
+      titulo: { en: "Sun beds", es: "Camastros" },
+      meta: { en: "Front row from $60", es: "Primera fila desde $60" },
+      image: "loungers",
+      destino: "sunbeds",
+    },
+    {
+      id: "sunset-set",
+      chip: { en: "17:30", es: "17:30" },
+      titulo: { en: "Sunset set", es: "Set de atardecer" },
+      meta: { en: "Live DJ on the sand", es: "DJ en vivo en la arena" },
+      image: "aerial2",
+      destino: "tonight",
+    },
+    {
+      id: "day-pass",
+      chip: { en: "Day pass", es: "Day pass" },
+      titulo: { en: "VIP Backstage", es: "VIP Backstage" },
+      meta: { en: "From $600 MXN", es: "Desde $600 MXN" },
+      image: "bcGirls",
+      destino: "beach",
+    },
+  ],
+  [
+    {
+      id: "cenote-x",
+      chip: { en: "25 min", es: "25 min" },
+      titulo: { en: "Cenote Casa Tortuga", es: "Cenote Casa Tortuga" },
+      meta: { en: "Included with your stay", es: "Incluido en tu estancia" },
+      image: "cenote",
+      destino: "cenote",
+    },
+    {
+      id: "weddings",
+      chip: { en: "Any date", es: "Cualquier fecha" },
+      titulo: { en: "Beachfront weddings", es: "Bodas frente al mar" },
+      meta: { en: "No venue rental fee", es: "Sin renta de venue" },
+      image: "wedAisle",
+      destino: "weddings",
+    },
+    {
+      id: "private-dinners",
+      chip: { en: "Groups", es: "Grupos" },
+      titulo: { en: "Private dinners", es: "Cenas privadas" },
+      meta: { en: "A table set on the sand", es: "Una mesa puesta en la arena" },
+      image: "wedTable",
+      destino: "experiences",
+    },
+  ],
 ];

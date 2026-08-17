@@ -645,5 +645,19 @@
   "scanPermCta": "Allow camera",
   "scanCancel": "Cancel",
   "demoOnlyApple": "In this demo, Apple sign-in and guest access are wired. Google and email arrive with production.",
-  "loading": "One moment"
+  "loading": "One moment",
+  "listEmpty": "Nothing here yet",
+  "listError": "That didn't load.",
+  "retry": "Try again",
+  "startsInTpl": "Starts in {{h}}h {{m}}m",
+  "startsInMinTpl": "Starts in {{m}} min",
+  "guestBannerTitleTpl": "You're on {{spot}}, no account",
+  "contactLabels": [
+    "Call",
+    "WhatsApp",
+    "Concierge",
+    "General",
+    "Address"
+  ],
+  "dayOfTpl": "Day {{d}} of {{n}}"
 }

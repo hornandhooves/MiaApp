@@ -645,5 +645,19 @@
   "scanPermCta": "Permitir cámara",
   "scanCancel": "Cancelar",
   "demoOnlyApple": "En este demo funcionan Apple y el acceso sin cuenta. Google y correo llegan con producción.",
-  "loading": "Un momento"
+  "loading": "Un momento",
+  "listEmpty": "Aquí no hay nada todavía",
+  "listError": "Esto no cargó.",
+  "retry": "Reintentar",
+  "startsInTpl": "Empieza en {{h}}h {{m}}m",
+  "startsInMinTpl": "Empieza en {{m}} min",
+  "guestBannerTitleTpl": "Estás en el {{spot}}, sin cuenta",
+  "contactLabels": [
+    "Llamar",
+    "WhatsApp",
+    "Concierge",
+    "General",
+    "Dirección"
+  ],
+  "dayOfTpl": "Día {{d}} de {{n}}"
 }
