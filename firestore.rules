@@ -1,0 +1,85 @@
+rules_version = '2';
+
+// ============================================================
+// ARCHIVO PROTEGIDO — no se edita sin avisar a Carlos.
+// Carlos: este archivo se lee completo, a mano, línea por línea.
+// Un test por cada prohibición vive en functions/test (semana 2).
+// ============================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ¿El token trae el scope pedido y no ha vencido?
+    function tieneScope(s) {
+      return request.auth != null
+        && ('scope' in request.auth.token)
+        && (s in request.auth.token.scope)
+        && ('exp' in request.auth.token)
+        && (request.auth.token.exp > request.time.toMillis());
+    }
+
+    function esDueno() {
+      return request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
+    // ---------- Catálogos de solo lectura (espejo del futuro PMS) ----------
+    match /roomTypes/{id}    { allow read: if true; allow write: if false; }
+    match /ratePlans/{id}    { allow read: if true; allow write: if false; }
+    match /menuItems/{id}    { allow read: if true; allow write: if false; }
+    match /wellnessSlots/{id}{ allow read: if true; allow write: if false; }
+    match /shuttles/{id}     { allow read: if true; allow write: if false; }
+    match /content/{id}      { allow read: if true; allow write: if false; }
+    match /config/{id}       { allow read: if true; allow write: if false; }
+
+    // El mapa de camastros se lee en vivo; solo functions lo escriben
+    match /spots/{id}        { allow read: if true; allow write: if false; }
+
+    // ---------- Escrituras del cliente, acotadas por claims ----------
+    match /orders/{id} {
+      allow create: if tieneScope('order')
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.spotId == request.auth.token.spotId;
+      allow read: if esDueno();
+      allow update, delete: if false;   // solo functions
+    }
+
+    match /spotHolds/{id} {
+      allow create: if tieneScope('hold')
+        && request.resource.data.uid == request.auth.uid;
+      allow read: if esDueno();
+      allow update, delete: if false;   // liberar es de liberarHold
+    }
+
+    // ---------- Solo functions escriben; el dueño lee lo suyo ----------
+    match /folios/{id}       { allow read: if esDueno(); allow write: if false; }
+    match /reservations/{id} { allow read: if esDueno(); allow write: if false; }
+    match /dayPasses/{id}    { allow read: if esDueno(); allow write: if false; }
+    match /sessions/{id}     { allow read: if esDueno(); allow write: if false; }
+    match /members/{uid}     { allow read: if request.auth != null && request.auth.uid == uid; allow write: if false; }
+
+    match /ledger/{id} {
+      allow read: if esDueno();
+      allow write: if false;            // solo acreditarOlas
+    }
+
+    // Perfil propio: crear y actualizar lo mínimo, nunca leer ajeno
+    match /guests/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Concierge: cada quien su conversación
+    match /conversations/{convId} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow read: if esDueno();
+      allow update, delete: if false;
+      match /messages/{msgId} {
+        allow read, create: if request.auth != null
+          && get(/databases/$(database)/documents/conversations/$(convId)).data.uid == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // Todo lo no listado: prohibido.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

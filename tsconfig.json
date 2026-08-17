@@ -1,6 +1,35 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@ui/*": [
+        "./packages/ui/*"
+      ],
+      "@domain/*": [
+        "./packages/domain/*"
+      ],
+      "@i18n/*": [
+        "./packages/i18n/*"
+      ],
+      "@lib/*": [
+        "./packages/lib/*"
+      ]
+    },
+    "types": [
+      "jest"
+    ]
+  },
+  "include": [
+    "app",
+    "packages",
+    "seed",
+    "app.config.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "functions"
+  ]
 }

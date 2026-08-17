@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0;font-family:Jost,system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#0B0B0C}
+a{color:#0B0B0C;text-decoration:underline;text-underline-offset:2px}
+a:hover{color:#E2593F}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font:500 13px/1.3 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(11,11,12,.5);padding:0 14px 9px 0;border-bottom:1px solid rgba(11,11,12,.28);vertical-align:bottom}
+td{font:300 16px/1.5 Jost,sans-serif;color:rgba(11,11,12,.82);padding:11px 14px 11px 0;border-bottom:1px solid rgba(11,11,12,.1);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+tr{break-inside:avoid}
+h1,h2,h3{font-family:'Bodoni Moda',serif;font-weight:400;margin:0}
+p{margin:0;font:300 16px/1.62 Jost,sans-serif;color:rgba(11,11,12,.82)}
+ul{margin:0;padding-left:19px}
+li{font:300 16px/1.6 Jost,sans-serif;color:rgba(11,11,12,.82);margin-bottom:6px}
+code{font:400 14.5px/1.5 ui-monospace,Menlo,monospace;background:rgba(11,11,12,.06);padding:1px 5px;border-radius:4px}
+.sec{break-before:page}
+.box{background:#F6F2EA;border:1px solid rgba(11,11,12,.13);border-radius:14px;padding:18px 20px;break-inside:avoid}
+.dark{background:#0B0B0C;border-radius:14px;padding:18px 20px;break-inside:avoid}
+.eyebrow{font:500 13px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F}
+pre{margin:0;font:400 14px/1.65 ui-monospace,Menlo,monospace;color:rgba(11,11,12,.84);white-space:pre;overflow-wrap:normal;break-inside:avoid}
+</style>
+<script src="./doc-page.js"></script>
+</helmet>
+<doc-page margin="0.7in">
+
+<div slot="header" style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:9px;border-bottom:1px solid rgba(11,11,12,.16)">
+<span style="font:400 15px/1 'Bodoni Moda',serif;letter-spacing:.03em">Mía Tulum</span>
+<span style="font:400 12px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.45)">Plan de entrega · v2 · demo</span>
+</div>
+<div slot="footer" style="padding-top:9px;border-top:1px solid rgba(11,11,12,.16);font:300 12px/1 Jost,sans-serif;color:rgba(11,11,12,.45)">Reemplaza el plan v1 · la v1 sigue siendo la referencia para la versión de producción</div>
+
+<div style="margin:34px 0 36px">
+<div class="eyebrow">Revisión después de sus respuestas</div>
+<h1 style="margin-top:20px;font-size:47px;line-height:1.03;letter-spacing:-.01em">Un demo real, no un plan de producción</h1>
+<p style="margin-top:20px;font-size:18px;line-height:1.55;max-width:31em">Sin PMS, sin punto de venta, con cuenta personal de Apple y con Claude Code como todo el equipo de desarrollo. Eso hace el proyecto mucho más chico y mucho más rápido — a cambio de decisiones que hay que tomar a los ojos abiertos.</p>
+<div style="display:flex;gap:44px;margin-top:28px;flex-wrap:wrap">
+<div><div style="font:500 12.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.45)">Antes</div><div style="margin-top:8px;font:400 25px/1 'Bodoni Moda',serif">16 semanas · 5 personas</div></div>
+<div><div style="font:500 12.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.45)">Ahora</div><div style="margin-top:8px;font:400 25px/1 'Bodoni Moda',serif">7 semanas · ustedes y Claude</div></div>
+<div><div style="font:500 12.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.45)">Salida</div><div style="margin-top:8px;font:400 25px/1 'Bodoni Moda',serif">TestFlight + APK</div></div>
+</div>
+</div>
+
+<h2 style="font-size:29px;margin-bottom:16px">1. Qué cambió y por qué</h2>
+<p>Cada respuesta que dieron elimina trabajo. Vale la pena ver el intercambio explícito, porque en cada fila hay algo que se gana y algo que se posterga.</p>
+<table style="margin-top:22px">
+<thead><tr><th style="width:34%">Su respuesta</th><th>Consecuencia en el plan</th></tr></thead>
+<tbody>
+<tr><td>No hay PMS identificado ni documentación de API</td><td>Desaparece toda la capa de integración: nada de Cloud Run, sincronización de tarifas ni folios en vivo. Los datos viven sembrados en Firestore, detrás de una interfaz de adaptador que después se sustituye por el PMS real sin tocar pantallas</td></tr>
+<tr><td>No se sabe qué punto de venta opera el beach club</td><td>El pedido termina en Firestore y en una pantalla de cocina mínima, no en el POS. El flujo se demuestra completo; la integración queda descrita, no construida</td></tr>
+<tr><td>Cuenta personal de Apple para el demo</td><td>Sin D-U-N-S y sin espera de organización: inscripción individual en veinticuatro a cuarenta y ocho horas. TestFlight funciona igual. El costo está en la sección 8</td></tr>
+<tr><td>El equipo son ustedes con Claude Code en VSCode</td><td>Se cae el modelo de sprints con roles. El plan pasa a rebanadas verticales de una pantalla, y el control de calidad tiene que ser mecánico porque no hay un segundo par de ojos que revise un PR</td></tr>
+<tr><td>Stripe de momento</td><td>Modo test para todo el demo. Apple Pay real requiere cuenta activada en México con verificación fiscal; para demostrar el flujo no hace falta</td></tr>
+<tr><td>Los precios placeholder se quedan</td><td>Se centralizan en un solo archivo rotulado, para que cambiarlos el día que lleguen los reales sea una línea y no una búsqueda en veinte pantallas</td></tr>
+<tr><td>Mía Círculo es una hipótesis</td><td>Se construye detrás de una bandera y se rotula como concepto en la app. Cero pasivo contable, y se puede apagar antes de mostrarlo a dirección si conviene</td></tr>
+<tr><td>Android sale como APK, no a Play Store</td><td>Sin Play Console ni sus veinticinco dólares. Un perfil de build produce el APK y se instala por enlace en cualquier dispositivo</td></tr>
+<tr><td>Dueño de contenido pendiente</td><td>Se cae la consola de staff del alcance. El line-up, los horarios y el journal se editan en el archivo de datos sembrado, que es un archivo de texto que ustedes controlan</td></tr>
+</tbody>
+</table>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">2. Alcance del demo</h2>
+<p>Un demo tiene un único trabajo: que alguien lo use en su teléfono y entienda el producto sin que nadie le explique nada. Todo lo que no sirva a eso se corta.</p>
+<div style="display:flex;gap:12px;margin-top:22px;flex-wrap:wrap">
+<div style="flex:1;min-width:250px" class="box">
+<div class="eyebrow">Entra</div>
+<ul style="margin-top:12px">
+<li>Las veinte pantallas del prototipo, en español e inglés</li>
+<li>Sesión de invitado por QR, por habitación y apellido, y login con Apple</li>
+<li>Mapa de camastros con disponibilidad y apartado real</li>
+<li>Pedido a camastro o habitación, con cuenta acumulada</li>
+<li>Reserva de habitación de punta a punta contra datos sembrados</li>
+<li>Cobros con Stripe en modo test</li>
+<li>Bienestar, cenote, experiencias y line-up</li>
+<li>Concierge como chat dentro de la app</li>
+<li>Círculo detrás de bandera, rotulado como concepto</li>
+</ul>
+</div>
+<div style="flex:1;min-width:250px" class="dark">
+<div style="font:500 13px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">No entra</div>
+<ul style="margin-top:12px;padding-left:19px">
+<li style="color:rgba(255,255,255,.78)">Integración con PMS o punto de venta</li>
+<li style="color:rgba(255,255,255,.78)">WhatsApp Business — requiere verificación de negocio con Meta, imposible con cuenta personal</li>
+<li style="color:rgba(255,255,255,.78)">Llave digital — necesita SDK del fabricante y puertas reales</li>
+<li style="color:rgba(255,255,255,.78)">Consola de staff completa; solo una pantalla de cocina mínima</li>
+<li style="color:rgba(255,255,255,.78)">Cobros reales, facturación, CFDI</li>
+<li style="color:rgba(255,255,255,.78)">Play Store</li>
+<li style="color:rgba(255,255,255,.78)">Acumulación contable de Olas con valor monetario</li>
+</ul>
+</div>
+</div>
+<p style="margin-top:22px">De las trece épicas del plan v1, entran completas E1 a E7 y E9 a E13. <b style="font-weight:500">E8 Bodas</b> se reduce a la solicitud que abre una conversación, sin CRM. En <b style="font-weight:500">E5</b> quedan fuera MIA-143 en su versión completa — la pantalla de cocina existe, pero simplificada. En <b style="font-weight:500">E11</b>, MIA-200 y MIA-201 corren contra el folio sembrado, no contra el PMS. Los identificadores se conservan, así que el paso a producción es continuar la misma numeración, no rehacerla.</p>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">3. Stack revisado</h2>
+<p>Se mantiene lo esencial y se cae todo lo que existía solo para hablar con terceros.</p>
+<table style="margin-top:22px">
+<thead><tr><th style="width:23%">Capa</th><th style="width:29%">Elección</th><th>Nota</th></tr></thead>
+<tbody>
+<tr><td>App</td><td>React Native + Expo, TypeScript, Expo Router</td><td>Sin cambio. Un solo código para iOS y el APK de Android</td></tr>
+<tr><td>Backend</td><td>Solo Cloud Functions gen2</td><td>Se cae Cloud Run, Pub/Sub y los workers. Quedan cinco o seis functions: validar el QR, emitir claims, crear intent de Stripe, cerrar folio, acreditar Olas</td></tr>
+<tr><td>Datos</td><td>Firestore sembrado desde el repo</td><td>Un script de seed es la fuente de verdad del contenido. Versionado, revisable, y editable por ustedes sin tocar la app</td></tr>
+<tr><td>Identidad</td><td>Firebase Auth anónimo con enlace a Apple</td><td>Sin cambio: es el corazón del producto, no un detalle de implementación</td></tr>
+<tr><td>Pagos</td><td>Stripe en modo test, con Payment Sheet</td><td>Tarjetas de prueba de Stripe. Apple Pay se queda como pantalla, no como cobro</td></tr>
+<tr><td>Concierge</td><td>Chat en Firestore, sin Twilio</td><td>Twilio vuelve cuando exista cuenta de negocio. La interfaz no cambia el día que se conecte</td></tr>
+<tr><td>Push</td><td>expo-notifications con FCM</td><td>Se queda. Es lo que hace que el demo se sienta vivo cuando llega un pedido</td></tr>
+<tr><td>Idiomas</td><td>i18next</td><td>Sin cambio. Bilingüe desde el primer commit</td></tr>
+<tr><td>Observabilidad</td><td>Sentry</td><td>Más importante que antes: sin QA dedicado, los crashes de los testers son el único reporte que van a tener</td></tr>
+</tbody>
+</table>
+<p style="margin-top:20px">La arquitectura se aplana a tres capas: la app, un puñado de Cloud Functions como única puerta de escritura confiable, y Firestore. No hay servicios de dominio separados porque con una persona no hay nadie a quien aislar de nadie.</p>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">4. Los datos sin PMS: el adaptador</h2>
+<p>Aquí está la única pieza de arquitectura que vale la pena construir bien aunque sea un demo, porque es la que decide si el trabajo se tira a la basura después.</p>
+<p style="margin-top:14px">La tentación es leer los cuartos directo de una colección de Firestore y seguir. El problema aparece el día que llegue el PMS real: la disponibilidad ya no es un documento, es una llamada con fechas, tarifas dinámicas y errores. Si las pantallas leen Firestore directamente, hay que reescribirlas todas.</p>
+<p style="margin-top:14px">La alternativa cuesta medio día y salva semanas: definir la interfaz ahora e implementar la versión falsa.</p>
+<div style="margin-top:20px;background:#F6F2EA;border:1px solid rgba(11,11,12,.13);border-radius:14px;padding:20px 22px">
+<pre>packages/domain/
+├── ports/
+│   ├── InventoryPort.ts    buscarDisponibilidad(fechas, huéspedes)
+│   │                       obtenerTarifa(roomTypeId, fechas, plan)
+│   ├── FolioPort.ts        abrirFolio, agregarCargo, cerrarFolio
+│   └── GuestPort.ts        buscarPorHabitacionYApellido
+└── adapters/
+    ├── mock/               lo que corre en el demo
+    └── cloudbeds/          carpeta vacía con el README de qué va aquí</pre>
+</div>
+<p style="margin-top:20px">Las pantallas y las functions solo conocen los <i>ports</i>. El adaptador mock lee de Firestore sembrado y aplica reglas deterministas para que el demo se sienta real: la Suite Premium no está disponible el fin de semana, quedan dos camastros en primera fila, el temazcal solo abre jueves y domingo. Un demo donde todo siempre está disponible no convence a nadie.</p>
+<div class="box" style="margin-top:20px">
+<div class="eyebrow">Los precios, en un solo lugar</div>
+<p style="margin-top:12px">Todo número inventado vive en <code>packages/domain/PLACEHOLDER_PRICES.ts</code>, con un encabezado que dice qué es falso y quién debe confirmarlo. Ninguna otra parte del código escribe una cifra. Cuando lleguen las tarifas reales de Mía es un archivo, no una cacería — y mientras no lleguen, cualquiera que abra el repo ve de inmediato que son placeholders.</p>
+</div>
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">5. Trabajar con Claude Code como equipo</h2>
+<p>Esta es la parte del plan que no existía en la v1, y la que más determina si el demo sale bien. Claude Code escribe rápido y no se cansa, pero tiene dos debilidades que hay que compensar con estructura: no recuerda decisiones entre sesiones, y nadie revisa lo que produce.</p>
+
+<h3 style="font-size:21px;margin:26px 0 10px">El archivo que sustituye al equipo</h3>
+<p><code>CLAUDE.md</code> en la raíz del repo es el contrato. Se lee en cada sesión, así que es donde viven las decisiones que no se deben volver a discutir. Debe ser corto y prohibitivo, no descriptivo.</p>
+<div style="margin-top:18px;background:#F6F2EA;border:1px solid rgba(11,11,12,.13);border-radius:14px;padding:20px 22px">
+<pre># Mía Tulum · app
+
+El diseño está definido en docs/prototipo.dc.html. Es la
+especificación, no una referencia. No inventes pantallas.
+
+## Prohibido
+- Un color, tipo o radio que no esté en packages/ui/tokens.ts
+- Un número de precio fuera de PLACEHOLDER_PRICES.ts
+- Texto literal en JSX: todo pasa por t('clave') en es y en
+- Leer Firestore desde una pantalla: solo a través de los ports
+- Editar firestore.rules o PLACEHOLDER_PRICES.ts sin avisarme
+
+## Siempre
+- TypeScript estricto, sin any
+- Una rebanada = una pantalla que corre y se puede probar
+- Objetivos táctiles de 44 pt como mínimo
+- Estados de vacío, carga y error en toda lista</pre>
+</div>
+<p style="margin-top:18px">Las dos últimas líneas de la sección de prohibiciones son las importantes. Las reglas de seguridad y los precios son los dos lugares donde un cambio silencioso cuesta confianza real, y son exactamente los que un asistente modifica sin darle peso.</p>
+
+<h3 style="font-size:21px;margin:26px 0 10px">Rebanadas verticales, no capas</h3>
+<p>La tentación con un asistente es pedir capas: primero todos los modelos, luego todas las pantallas. Es la peor forma de trabajar solo, porque durante dos semanas no hay nada que se pueda abrir en un teléfono y la primera vez que se integra todo está mal.</p>
+<p style="margin-top:14px">Cada unidad de trabajo es una pantalla completa: datos, lógica, interfaz e idioma, hasta que corre en el simulador. Se termina con un commit. Si algo salió mal, se revierte una pantalla, no una semana.</p>
+
+<h3 style="font-size:21px;margin:26px 0 10px">Los controles tienen que ser mecánicos</h3>
+<p>Sin revisor humano, la única defensa es que la máquina rechace el error antes de que llegue al teléfono.</p>
+<ul style="margin-top:14px">
+<li><b style="font-weight:500">ESLint con reglas propias</b> que fallan ante un hex literal en un archivo de pantalla y ante una cadena de texto en JSX. Son veinte líneas de configuración y atrapan la clase de deriva más común.</li>
+<li><b style="font-weight:500">TypeScript estricto</b> y <code>pnpm typecheck</code> en un hook de pre-commit. No negociable con una sola persona.</li>
+<li><b style="font-weight:500">Tests de reglas de Firestore</b> con el emulador: uno por cada cosa que un invitado no debe poder hacer. Es el archivo que evita el incidente serio, y es el que hay que escribir a mano y leer completo.</li>
+<li><b style="font-weight:500">Tests unitarios de <code>packages/domain</code></b>: precios, prorrateo, niveles. Lógica pura, fácil de testear, y el único lugar donde un error no se ve mirando la pantalla.</li>
+<li><b style="font-weight:500">Un build de preview por rebanada.</b> Ver la pantalla en el teléfono real es el control de calidad que ningún test reemplaza.</li>
+</ul>
+
+<h3 style="font-size:21px;margin:26px 0 10px">Reparto del trabajo</h3>
+<table style="margin-top:16px">
+<thead><tr><th style="width:32%">A Claude Code</th><th>A ustedes, con mi apoyo</th></tr></thead>
+<tbody>
+<tr><td>Capa de datos, ports y adaptadores</td><td>Juicio visual: espaciado, jerarquía, ritmo entre pantallas</td></tr>
+<tr><td>Formularios, validación, navegación</td><td>Redacción de copy en ambos idiomas</td></tr>
+<tr><td>Extracción de textos a i18n</td><td>Qué se corta cuando el calendario apriete</td></tr>
+<tr><td>Cloud Functions y tests</td><td>Leer las reglas de Firestore línea por línea</td></tr>
+<tr><td>Configuración de EAS y CI</td><td>Decidir si una pantalla ya está lista</td></tr>
+</tbody>
+</table>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">6. Repositorio y entorno</h2>
+<p>Un solo proyecto Expo, sin monorepo de aplicaciones. La pantalla de cocina vive dentro de la misma app detrás de una bandera, así que no hay una segunda aplicación que mantener.</p>
+<div style="margin-top:20px;background:#F6F2EA;border:1px solid rgba(11,11,12,.13);border-radius:14px;padding:20px 22px">
+<pre>mia-tulum-app/
+├── CLAUDE.md            el contrato
+├── app/                 Expo Router
+│   ├── (guest)/         las veinte pantallas
+│   └── (staff)/         cocina y mapa, detrás de bandera
+├── packages/
+│   ├── domain/          ports, adaptadores, PLACEHOLDER_PRICES
+│   ├── ui/              tokens del prototipo y primitivas
+│   └── i18n/            es.json · en.json
+├── functions/           Cloud Functions gen2
+├── seed/                contenido: line-up, horarios, menú, cuartos
+├── docs/
+│   ├── prototipo.dc.html    la especificación visual
+│   ├── plan-v1.pdf          producción, para después
+│   └── plan-v2.pdf          este
+└── .vscode/             extensiones, tareas, depuración</pre>
+</div>
+<p style="margin-top:20px"><b style="font-weight:500">Dos proyectos de Firebase, no tres.</b> <code>mia-demo</code> y <code>mia-dev</code>. Con una persona, un entorno de staging es ceremonia sin beneficio.</p>
+<p style="margin-top:14px"><b style="font-weight:500">Arranque:</b> <code>pnpm i</code>, <code>pnpm seed</code> para llenar el emulador, <code>pnpm dev</code> para el dev client. Tres comandos en <code>.vscode/tasks.json</code> para no memorizarlos.</p>
+<p style="margin-top:14px"><b style="font-weight:500">Pasar al development build en la semana 1</b>, no en la 4. Expo Go no soporta la cámara para el QR, ni push, ni el módulo de Stripe. Descubrirlo tarde cuesta un día de reconfiguración en el peor momento.</p>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">7. Ruta de siete semanas</h2>
+<p>Una rebanada por semana, cada una terminando en una build instalable. La semana 1 sube una app casi vacía a TestFlight a propósito: los problemas de certificados y perfiles cuestan poco cuando no hay nada que perder.</p>
+<table style="margin-top:22px">
+<thead><tr><th style="width:9%">Sem.</th><th style="width:26%">Rebanada</th><th>Termina cuando</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Cimientos</td><td>La inscripción de Apple está iniciada, el proyecto Expo corre, los tokens del prototipo están en código, la navegación existe vacía, el seed llena Firestore, los ports están definidos, y hay una build en TestFlight interno</td></tr>
+<tr><td>2</td><td>Identidad</td><td>Se puede entrar escaneando un QR impreso, con habitación y apellido, o con Apple; el enlace de invitado a cuenta conserva el UID; las reglas de Firestore tienen tests y se leyeron completas</td></tr>
+<tr><td>3</td><td>Home y contenido</td><td>La línea de tiempo del día funciona con datos reales del seed, los tres modos reflowan Home, y Beach Club, Hoy en Mía, Diario y Contacto están completos en ambos idiomas</td></tr>
+<tr><td>4</td><td>Playa</td><td>El mapa muestra ocupación real, un apartado gana la carrera contra otro apartado, el hold se libera solo, y un day pass se cobra en modo test y emite su QR</td></tr>
+<tr><td>5</td><td>Pedidos</td><td>Un pedido llega desde el camastro a la pantalla de cocina, sobrevive perder señal a media orden, y aparece en la cuenta del día con el precio congelado</td></tr>
+<tr><td>6</td><td>Resort</td><td>Buscar fechas devuelve disponibilidad no trivial, el plan de comidas recalcula el total, el checkout cobra en test y la reserva aparece en Tu estancia con su folio</td></tr>
+<tr><td>7</td><td>Cierre</td><td>Bienestar, cenote, experiencias y bodas completas; Círculo detrás de bandera y rotulado; accesibilidad y texto grande revisados en ambos idiomas; APK de Android generado; beta externa abierta</td></tr>
+</tbody>
+</table>
+<p style="margin-top:18px">Siete semanas es agresivo para una persona, incluso con asistencia. Si se atrasa, el orden de corte es <b style="font-weight:500">Diario, luego Bodas, luego Círculo</b>. Lo que nunca se corta es la cadena que cuenta la historia: escanear, pedir, apartar, reservar. Sin esos cuatro, el demo no demuestra nada.</p>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">8. Entrega: TestFlight y APK</h2>
+<p>Con cuenta personal el camino es más corto, y trae una consecuencia que conviene saber antes de empezar, no después.</p>
+<ul style="margin-top:16px">
+<li><b style="font-weight:500">Inscripción individual en el Apple Developer Program:</b> noventa y nueve dólares al año, sin D-U-N-S, aprobación en veinticuatro a cuarenta y ocho horas. Se hace desde el teléfono con Face ID.</li>
+<li><b style="font-weight:500">TestFlight interno:</b> hasta cien personas agregadas como usuarios de App Store Connect, sin revisión de Apple, disponible a los minutos de procesar la build. Aquí vive el ciclo diario.</li>
+<li><b style="font-weight:500">TestFlight externo:</b> hasta diez mil testers por enlace público, requiere Beta App Review, uno o dos días. Para el revisor hay que dejar notas de prueba, tarjetas de test de Stripe y una sesión de invitado que funcione sin credenciales.</li>
+<li><b style="font-weight:500">APK de Android:</b> un perfil de EAS con <code>buildType: apk</code> y distribución interna. Se instala por enlace o QR, sin Play Console. Hay que advertir a los testers que Android pedirá permitir orígenes desconocidos.</li>
+<li><b style="font-weight:500">Antes de la beta externa:</b> declaración de export compliance, privacy manifest, etiquetas de privacidad, y una política de privacidad publicada en algún URL — puede ser una página simple mientras el demo sea demo.</li>
+</ul>
+<div class="dark" style="margin-top:22px">
+<div style="font:500 13px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">La consecuencia de usar cuenta personal</div>
+<p style="margin-top:12px;color:rgba(255,255,255,.8)">El demo va a aparecer publicado bajo su nombre personal, no bajo Mía Tulum. Y el día que Mía quiera esto en producción con su propia cuenta de organización, el registro de la app <b style="font-weight:500;color:#fff">no se transfiere</b>: la transferencia entre cuentas de Apple exige que la app haya tenido al menos una versión publicada en la App Store, y un demo que solo vivió en TestFlight no califica. Habrá que crear un registro nuevo, con bundle ID nuevo, y los testers se reinvitan.</p>
+<p style="margin-top:14px;color:rgba(255,255,255,.8)">No es una razón para no hacerlo así — es la decisión correcta para un demo. Solo hay que usar un bundle ID que deje claro que es provisional, como <code style="background:rgba(255,255,255,.14);color:#fff">com.suapellido.miademo</code>, y no acostumbrar a nadie a ese enlace de TestFlight.</p>
+</div>
+
+<h2 class="sec" style="font-size:29px;margin-bottom:16px">9. La deuda que queda para producción</h2>
+<p>Un demo honesto sabe qué está fingiendo. Esta lista es el puente entre este plan y el v1, y conviene mantenerla viva en <code>docs/</code> conforme se construye.</p>
+<table style="margin-top:22px">
+<thead><tr><th style="width:30%">Lo que el demo finge</th><th>Lo que costará después</th></tr></thead>
+<tbody>
+<tr><td>Disponibilidad y tarifas</td><td>Contratar el PMS, escribir el adaptador real, y aceptar que la disponibilidad deja de ser instantánea. Dos a cuatro semanas una vez que existan credenciales</td></tr>
+<tr><td>El pedido llega a una pantalla, no a la cocina</td><td>Integrar el POS del beach club, o comprar una tablet dedicada y aceptar la pantalla como sistema real. Depende del proveedor</td></tr>
+<tr><td>Concierge es chat interno</td><td>Verificación de negocio con Meta y cuenta de Twilio: una a tres semanas de trámite, días de código</td></tr>
+<tr><td>Cobros en modo test</td><td>Cuenta de Stripe México con verificación fiscal, y decidir si hace falta CFDI. El código casi no cambia</td></tr>
+<tr><td>Precios placeholder</td><td>Un archivo. Pero requiere que alguien en Mía se haga responsable de mantenerlo</td></tr>
+<tr><td>Olas sin valor contable</td><td>Definir el pasivo, la caducidad y quién autoriza canjes, antes de emitir la primera Ola con valor real</td></tr>
+<tr><td>Cuenta personal de Apple</td><td>Inscripción de Mía como organización con D-U-N-S, y un registro de app nuevo</td></tr>
+<tr><td>Sin llave digital</td><td>Proyecto aparte: SDK del fabricante, módulo nativo, piloto en puertas. Es lo más caro de la lista</td></tr>
+</tbody>
+</table>
+
+<div class="box" style="margin-top:28px">
+<div class="eyebrow">Primer movimiento, hoy</div>
+<p style="margin-top:12px">Inscribirse en el Apple Developer Program — son quince minutos y luego hay que esperar. Mientras se aprueba: crear el repo, escribir el <code>CLAUDE.md</code> de la sección 5, y meter el prototipo en <code>docs/</code>. Con eso, la primera sesión de Claude Code arranca con el contrato puesto en lugar de improvisando convenciones, que es la diferencia entre siete semanas y catorce.</p>
+</div>
+</doc-page>
+</x-dc>
+</body>
+</html>

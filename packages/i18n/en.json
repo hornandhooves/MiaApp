@@ -1,0 +1,635 @@
+{
+  "screenNames": {
+    "login": "Sign in",
+    "guest": "Guest access",
+    "home": "Home",
+    "beach": "Beach Club",
+    "sunbeds": "Sun bed map",
+    "dine": "Menu & order",
+    "resort": "Resort",
+    "room": "Room detail",
+    "checkout": "Checkout",
+    "weddings": "Weddings",
+    "wellness": "Wellness",
+    "experiences": "Experiences",
+    "cenote": "Cenote",
+    "tonight": "Today at Mía",
+    "chat": "Concierge",
+    "stay": "Your stay",
+    "circulo": "Mía Círculo",
+    "contact": "Contact",
+    "blog": "Journal",
+    "confirm": "Confirmation"
+  },
+  "sessionLabels": {
+    "none": "Signed out",
+    "guest": "Guest session",
+    "member": "Ana L. · Marea"
+  },
+  "sessionSubs": {
+    "none": "Login screen is the entry point",
+    "guest": "Expires at end of day · no key, no points",
+    "member": "12,480 Olas · Suite 204"
+  },
+  "authShort": {
+    "none": "Out",
+    "guest": "Guest",
+    "member": "Member"
+  },
+  "spotBound": "Bound to",
+  "tabs": [
+    [
+      "Home",
+      "◈"
+    ],
+    [
+      "Beach",
+      "≋"
+    ],
+    [
+      "Resort",
+      "◫"
+    ],
+    [
+      "Círculo",
+      "✦"
+    ],
+    [
+      "You",
+      "○"
+    ]
+  ],
+  "sheetTitle": "Mía Tulum",
+  "sheetSite": "Explore",
+  "sheetApp": "Your visit",
+  "sheetClose": "Close",
+  "sheetSiteKeys": [
+    "home",
+    "beach",
+    "resort",
+    "weddings",
+    "wellness",
+    "experiences",
+    "blog",
+    "contact"
+  ],
+  "sheetAppKeys": [
+    "tonight",
+    "dine",
+    "sunbeds",
+    "chat",
+    "stay",
+    "circulo"
+  ],
+  "loginTitle": "Where the music meets the sea.",
+  "loginSub": "Sign in to manage your stay, your tab and your Olas.",
+  "loginBtns": [
+    "Continue with Apple",
+    "Continue with Google",
+    "Use email"
+  ],
+  "loginOr": "or",
+  "loginGuest": "Continue without an account",
+  "loginGuestSub": "Order, browse and book by your bed, table or room number",
+  "loginTerms": "Km 7.5, Zona Hotelera Tulum",
+  "guestTitle": "No account needed.",
+  "guestSub": "Tell us where you are and we'll do the rest. Nothing to create, nothing to remember.",
+  "guestPaths": [
+    [
+      "⌗",
+      "Scan the code at your spot",
+      "Every sun bed and table has one. It binds this session to bed 14 or table 6.",
+      "Scan"
+    ],
+    [
+      "◫",
+      "I'm staying at Mía",
+      "Room number and the last name on the booking.",
+      "Find my stay"
+    ],
+    [
+      "◇",
+      "I have a reservation",
+      "Confirmation code from your email.",
+      "Enter code"
+    ]
+  ],
+  "guestLimitsTitle": "As a guest you can",
+  "guestLimits": [
+    [
+      "Browse everything and see live schedules",
+      1
+    ],
+    [
+      "Order food and drinks to your spot",
+      1
+    ],
+    [
+      "Reserve sun beds, yoga, temazcal and the cenote shuttle",
+      1
+    ],
+    [
+      "Pay on the tab tied to your bed or room",
+      1
+    ],
+    [
+      "Open your door with the digital key",
+      0
+    ],
+    [
+      "Earn and spend Olas",
+      0
+    ],
+    [
+      "Keep your history after today",
+      0
+    ]
+  ],
+  "guestFooter": "Guest sessions end at close of day, or at checkout. You can turn one into an account at any point and keep today's spend.",
+  "guestScanning": "Point at the sticker on your sun bed",
+  "eyebrow": "Tulum · 29° · Sunset 6:41",
+  "yourDay": "Your day",
+  "date": "Sat 15 Aug",
+  "dayOf": "Day 2 of 4",
+  "remind": "Remind me",
+  "heroTitle": [
+    "Where the music meets the sea.",
+    "Front row is open.",
+    "Beyond the sand."
+  ],
+  "modes": [
+    "Stay",
+    "Beach Club",
+    "Explore"
+  ],
+  "discoverTitle": [
+    "Today at Mía",
+    "On the sand",
+    "Worth the trip"
+  ],
+  "guestBannerTitle": "You're on bed 14, no account",
+  "guestBannerSub": "Today's spend would be 1,840 Olas · about half a free day pass",
+  "joinCta": "Join Círculo",
+  "memberBannerTitle": "Marea · 12,480 Olas",
+  "memberBannerSub": "1,520 to Cenote · guaranteed front row and a free temazcal",
+  "bcTitle": "Mía Beach Club",
+  "bcAward": "Best Beachfront Beach Club, Riviera Maya · Best of Best Awards, Dubai 2024",
+  "bcSub": "Sun beds, the bar, the music and the water. If you're staying with us, your room key opens all of it for the whole stay.",
+  "bcTabs": [
+    "Kitchen",
+    "Admission",
+    "Sun beds"
+  ],
+  "bcOpen": "Open today · 8:00 to late",
+  "bcIncludedTitle": "Every admission includes",
+  "bcIncluded": [
+    "Welcome drink",
+    "Daily yoga class",
+    "Live DJ sets",
+    "Sun bed & towel",
+    "Pool access",
+    "Free parking",
+    "Pet friendly"
+  ],
+  "bcAdmTitle": "Choose your admission",
+  "bcAdmNote": "Fully consumable — what you pay comes back as food and drinks.",
+  "bcCurrency": "MXN",
+  "bcPerPerson": "per person, per day",
+  "bcCta": "Continue",
+  "bcPick": "Pick your spot",
+  "beachTitle": "Pick your spot",
+  "beachSub": "Front row goes first. Beds are held 45 minutes past your arrival time.",
+  "seaSide": "← Sea",
+  "arrival": "Arrival",
+  "spotModes": [
+    "Sun beds",
+    "Tables"
+  ],
+  "rowLabels": [
+    "Front row",
+    "Second row",
+    "Palapa shade"
+  ],
+  "tableLabels": [
+    "Sand tables",
+    "Deck tables"
+  ],
+  "legend": [
+    "Free",
+    "Yours",
+    "Taken"
+  ],
+  "hold": "Hold",
+  "bedTimes": [
+    "10:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "16:00"
+  ],
+  "bedPick": "Bed",
+  "tablePick": "Table",
+  "bedNone": "Nothing selected",
+  "bedTap": "Tap a spot on the map",
+  "bedFrom": "Front row · $60 · comes back as food and drinks",
+  "qrNote": "The code on your bed binds your order and your tab to this spot.",
+  "dineTitle": "Menu & order",
+  "deliverTo": "Deliver to sun bed 14, front row",
+  "changeLbl": "Change",
+  "dineCats": [
+    "Beach menu",
+    "Breakfast",
+    "Drinks",
+    "Wine cellar",
+    "Chef's table"
+  ],
+  "order": "Order",
+  "eta": "12–18 min to your bed",
+  "items": "items",
+  "item": "item",
+  "tabTitle": "On your tab",
+  "tabNote": "Charged to bed 14 · settle when you leave",
+  "resortTitle": "Resort",
+  "resortSub": "Beachfront rooms for travelers who come to Tulum to actually live it.",
+  "stayIncTitle": "Every stay includes",
+  "stayIncludes": [
+    [
+      "✦",
+      "Full breakfast, every morning",
+      "Fresh fruit, local ingredients, real coffee."
+    ],
+    [
+      "≋",
+      "Full beach club access",
+      "Your room key opens sun beds, the bar, the music and the water."
+    ],
+    [
+      "◐",
+      "Daily yoga class",
+      "Every morning under the palapa, every level welcome."
+    ],
+    [
+      "⌾",
+      "Pet friendly",
+      "Because the best trips are the ones where nobody gets left behind."
+    ]
+  ],
+  "dates": "Dates",
+  "dateRange": "15–19 Aug",
+  "guests": "Guests",
+  "twoAdults": "2 adults",
+  "directRate": "Book direct for the member rate",
+  "perNight": "per night",
+  "from": "from",
+  "features": [
+    [
+      "◫",
+      "Ocean view"
+    ],
+    [
+      "≋",
+      "Private jacuzzi"
+    ],
+    [
+      "✦",
+      "Breakfast 8 AM"
+    ],
+    [
+      "⌾",
+      "Pet friendly"
+    ]
+  ],
+  "mealPlan": "Meal plan",
+  "plans": [
+    [
+      "Bed & Breakfast",
+      "Main dish, coffee, juice, fruit",
+      "Included"
+    ],
+    [
+      "Full Board Experience",
+      "Breakfast, lunch and dinner, drinks in",
+      "+$95"
+    ]
+  ],
+  "totalNights": "4 nights, taxes in",
+  "reserve": "Reserve",
+  "groupTitle": "Traveling with a group?",
+  "groupBody": "Send us your dates, the number of guests and what you have in mind, and we'll put together a personalized quote.",
+  "groupCta": "Ask the team",
+  "coTitle": "Checkout",
+  "coStay": "Your stay",
+  "coBreak": "Price",
+  "coPayTitle": "Payment",
+  "coPays": [
+    [
+      "Apple Pay",
+      "Face ID"
+    ],
+    [
+      "Visa ···· 4242",
+      "Ana L."
+    ],
+    [
+      "Pay at the property",
+      "Card held, charged on arrival"
+    ]
+  ],
+  "coEarn": "You'll earn",
+  "coRoom": "Room",
+  "coTaxes": "Taxes & fees",
+  "coEarnNight": "a free night, ocean view",
+  "coEarnNights": "free nights, ocean view",
+  "coEarnPasses": "free day passes",
+  "coEarnToward": "toward your first free night",
+  "coBtn": "Confirm and pay",
+  "coPolicy": "Free cancellation until 12 Aug · Check-in 3:00 PM",
+  "wedTitle": "Weddings",
+  "wedSub": "Beachfront weddings in Tulum, Riviera Maya",
+  "wedBody": "Celebrate love where the Caribbean Sea embraces every moment. From intimate ceremonies to grand celebrations, our oceanfront setting transforms to tell your story.",
+  "wedNoFee": "No venue rental fee",
+  "wedPoints": [
+    [
+      "1.",
+      "Special packages for intimate, mid-size & grand weddings"
+    ],
+    [
+      "2.",
+      "Professional lighting, sound & ambiance"
+    ],
+    [
+      "3.",
+      "Oceanfront rooms for your guests"
+    ],
+    [
+      "4.",
+      "Banquets and signature cocktails"
+    ]
+  ],
+  "wedGalleryTitle": "The collection",
+  "wedTestiTitle": "From couples who married here",
+  "wedTesti": [
+    "We planned everything from a distance and they turned our dream into reality.",
+    "Andrea"
+  ],
+  "wedCta": "Request a date",
+  "wedCtaSub": "A planner replies personally, usually same day",
+  "wedForm": [
+    [
+      "Estimated date",
+      "March 2027"
+    ],
+    [
+      "Guests",
+      "80"
+    ],
+    [
+      "Type of ceremony",
+      "Beachfront, symbolic"
+    ]
+  ],
+  "wellTitle": "Wellness",
+  "wellSub": "Slow down. Breathe. You're in Tulum.",
+  "wellBody": "Wellness at Mía is not a spa menu. It's the rhythm of this place — the light, the waves through the palapa, the smell of copal before a temazcal begins.",
+  "wellPillars": [
+    [
+      "Yoga",
+      "Every morning under the palapa, facing the sea. Led by experienced instructors, all levels welcome.",
+      "Included for hotel guests · day visitors reserve ahead",
+      "yogaMats"
+    ],
+    [
+      "Temazcal",
+      "A sacred Mayan sweat lodge, led by a trained guide. Heat, darkness, herbs, breath.",
+      "Arrive hydrated · no heavy meals 3 hours before",
+      "temazcal2"
+    ],
+    [
+      "Massage by the sea",
+      "Open-air treatments steps from the Caribbean, customized to what your body actually needs.",
+      "Daily, subject to therapist availability",
+      "massage"
+    ]
+  ],
+  "wellBookTitle": "Book a session",
+  "wellGroup": "Private group bookings available for retreats, bachelorettes and corporate teams.",
+  "expTitle": "Experiences",
+  "expSub": "Tulum doesn't happen to you. You happen to Tulum.",
+  "expBody": "An amenity is something you check off a list. An experience is something you talk about when you get home.",
+  "expAsk": "Ask about this",
+  "expIncluded": "Included with your stay",
+  "included": "Included",
+  "cenoteBody": "Casa Tortuga is a complex of cenotes in the jungle — open pools, cave systems and jungle trails, under 30 minutes from the beach. Access is complimentary with every stay. You only pick the shuttle.",
+  "cenoteFacts": [
+    [
+      "Distance",
+      "25 min"
+    ],
+    [
+      "Duration",
+      "3 hrs"
+    ],
+    [
+      "Price",
+      "Included"
+    ]
+  ],
+  "shuttle": "Shuttle",
+  "free": "Included",
+  "shuttleNone": "Pick a shuttle time",
+  "tonightTitle": "Today at Mía",
+  "tonightSub": "Sat 15 Aug",
+  "startsIn": "Starts in 2h 14m",
+  "sunsetSet": "Kalimba — sunset set",
+  "noCover": "On the sand · no cover for guests",
+  "lineup": "On the decks",
+  "weekTitle": "This week",
+  "orderFromHere": "Order without leaving your spot",
+  "concierge": "Concierge",
+  "online": "Replies in ~2 min",
+  "typeMsg": "Message",
+  "quick": [
+    "Hold two seats",
+    "Book the chef's table",
+    "Extra towels"
+  ],
+  "chatWa": "Also on WhatsApp · +52 984 167 9090",
+  "stayTitle": "Your stay",
+  "roomKey": "Suite",
+  "keyOff": "Tap to unlock · hold near the door",
+  "keyOnHint": "Unlocked — the door responds for 8 seconds",
+  "keyGuest": "Digital key needs an account",
+  "keyGuestSub": "Sign in and we'll issue it to this phone",
+  "active": "Active",
+  "planIncl": [
+    [
+      "Breakfast, daily",
+      1
+    ],
+    [
+      "Lunch, 2 courses + 2 drinks",
+      0
+    ],
+    [
+      "Dinner, 3 courses + 2 drinks",
+      0
+    ],
+    [
+      "Cenote Casa Tortuga",
+      1
+    ]
+  ],
+  "planInclFbe": [
+    [
+      "Breakfast, daily",
+      1
+    ],
+    [
+      "Lunch, 2 courses + 2 drinks",
+      1
+    ],
+    [
+      "Dinner, 3 courses + 2 drinks",
+      1
+    ],
+    [
+      "Cenote Casa Tortuga",
+      1
+    ]
+  ],
+  "planUp": "Upgrade to Full Board",
+  "planUpSub": "+$95 per night · every meal covered",
+  "planDown": "Back to Bed & Breakfast",
+  "planDownSub": "Keep breakfast only",
+  "folio": "Balance",
+  "openTotal": "Open balance",
+  "settle": "Settle now",
+  "stayDates": "15–19 Aug · Suite 204",
+  "cirName": "Mía Círculo",
+  "cirSub": "The circle is small on purpose.",
+  "cirPoints": "Olas",
+  "cirBalance": "12,480",
+  "cirTier": "Marea",
+  "cirNext": "Cenote",
+  "cirToNext": "1,520 Olas to Cenote",
+  "cirProgress": 78,
+  "cirEarnTitle": "How you earn",
+  "cirEarn": [
+    [
+      "Rooms, booked direct",
+      "12 Olas per $1"
+    ],
+    [
+      "Day passes and beach club spend",
+      "12 Olas per $1"
+    ],
+    [
+      "Wellness, private dinners, events",
+      "12 Olas per $1"
+    ],
+    [
+      "Referring someone who stays",
+      "2,000 Olas"
+    ]
+  ],
+  "cirTiersTitle": "Tiers",
+  "cirTiers": [
+    [
+      "Arena",
+      "Join",
+      "10 Olas per $1 · member rate · welcome drink"
+    ],
+    [
+      "Marea",
+      "5 nights or 5 day passes",
+      "12 Olas per $1 · early check-in · sun bed held to 13:00 · 10% off day passes"
+    ],
+    [
+      "Cenote",
+      "15 nights",
+      "15 Olas per $1 · upgrade when available · one temazcal per stay · front row priority · 14:00 checkout"
+    ],
+    [
+      "Círculo Interior",
+      "30 nights, by invitation",
+      "20 Olas per $1 · guaranteed upgrade · VIP Backstage at no cover · a free night each year · your own concierge"
+    ]
+  ],
+  "cirRedeemTitle": "Spend your Olas",
+  "cirRedeem": [
+    [
+      "A free night, ocean view",
+      "12,000",
+      1
+    ],
+    [
+      "Day pass, Traditional",
+      "3,500",
+      1
+    ],
+    [
+      "Massage by the sea",
+      "4,500",
+      1
+    ],
+    [
+      "Temazcal ceremony",
+      "3,000",
+      1
+    ],
+    [
+      "Chef's table, one seat",
+      "8,000",
+      1
+    ]
+  ],
+  "cirJoinTitle": "Join Círculo",
+  "cirJoinSub": "Today's spend on bed 14 becomes 1,840 Olas the moment you do.",
+  "cirJoin": "Create my account",
+  "cirRes": "Residentes verified — local rate saved to your account",
+  "cirRedeemCta": "Redeem",
+  "contactTitle": "Contact",
+  "contactSub": "Km 7.5, Zona Hotelera Tulum",
+  "contactHoursTitle": "Good to know",
+  "contactSocial": "Follow",
+  "contactMapCta": "Open in maps",
+  "blogTitle": "Journal",
+  "blogSub": "Notes from the beach, the kitchen and the decks.",
+  "blogNote": "Proposed structure — the site's blog has no posts yet, so these are placeholders for the kind of pieces that would run here.",
+  "blogRead": "Read",
+  "cTitleRoom": "Suite reserved.",
+  "cTitleBed": "Your spot is held.",
+  "cTitleOrder": "On its way.",
+  "cTitleWell": "Session reserved.",
+  "cTitleShuttle": "Seat saved.",
+  "cTitlePass": "Day pass confirmed.",
+  "cTitleJoin": "Welcome to Círculo.",
+  "cTitleWed": "Request sent.",
+  "cBodyRoom": "Held under your name. A confirmation is in your inbox and the team knows you're coming.",
+  "cBodyBed": "Held 45 minutes past your arrival. Order straight to it whenever you like.",
+  "cBodyOrder": "The kitchen has it. We'll bring it to you — no need to move.",
+  "cBodyWell": "Bring nothing. Mats and towels are set out ten minutes before.",
+  "cBodyShuttle": "Meet at reception ten minutes early. Towels are in the van.",
+  "cBodyPass": "Show this at the entrance. Your admission is fully consumable once you're in.",
+  "cBodyJoin": "Today's spend is already counted. Your key and your Olas are live.",
+  "cBodyWed": "A planner will reach out personally, usually the same day.",
+  "kWhen": "When",
+  "kWhere": "Where",
+  "kPlan": "Plan",
+  "kTotal": "Total",
+  "kBed": "Spot",
+  "kEta": "Ready in",
+  "kSeats": "Seats",
+  "kOlas": "Olas earned",
+  "kTier": "Tier",
+  "kGuests": "Guests",
+  "kAdmission": "Admission",
+  "backToDay": "Back to my day",
+  "ask": "Ask",
+  "addWallet": "Add to wallet",
+  "wip": "Under construction — coming this week",
+  "back": "Back",
+  "menuLabel": "Menu",
+  "staffKitchenTitle": "Kitchen — orders",
+  "staffBeachTitle": "Beach — spot map"
+}

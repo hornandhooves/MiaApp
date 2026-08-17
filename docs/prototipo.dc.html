@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+<style>
+body{margin:0;background:#DAD3C7;font-family:Jost,system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#0B0B0C}
+a{color:#0B0B0C;text-decoration:none}
+a:hover{color:#E2593F}
+.sc{scrollbar-width:none;-ms-overflow-style:none}
+.sc::-webkit-scrollbar{display:none;width:0;height:0}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+</helmet>
+<div style="--acc:{{ accent }};--pf:{{ photoFilter }};min-height:100vh;display:flex;gap:44px;align-items:flex-start;padding:44px 48px 60px;box-sizing:border-box">
+
+<aside style="flex:none;width:230px;position:sticky;top:44px">
+<div style="font:400 30px/1 'Bodoni Moda',serif;letter-spacing:.02em">Mía Tulum</div>
+<div style="margin-top:8px;font:400 10px/1.5 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:.5">Guest app · v2</div>
+<p style="margin:16px 0 0;font:300 12.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.6);text-wrap:pretty">Every site section folded into the app, plus sign-in, guest mode and the Círculo loyalty proposal.</p>
+
+<div style="margin:22px 0 0;display:flex;gap:0;border:1px solid rgba(11,11,12,.22);border-radius:999px;overflow:hidden;width:max-content">
+<button onClick="{{ setEn }}" style="border:0;cursor:pointer;padding:8px 18px;font:500 12px/1 Jost,sans-serif;letter-spacing:.12em;background:{{ enBg }};color:{{ enFg }}">EN</button>
+<button onClick="{{ setEs }}" style="border:0;cursor:pointer;padding:8px 18px;font:500 12px/1 Jost,sans-serif;letter-spacing:.12em;background:{{ esBg }};color:{{ esFg }}">ES</button>
+</div>
+
+<div style="margin:22px 0 0;padding:12px 14px;background:rgba(11,11,12,.05);border-radius:12px">
+<div style="font:500 9.5px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:.45">Session</div>
+<div style="margin-top:9px;font:400 14px/1.3 Jost,sans-serif">{{ sessionLabel }}</div>
+<div style="margin-top:5px;font:300 11.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.55)">{{ sessionSub }}</div>
+<div style="display:flex;gap:6px;margin-top:11px">
+<sc-for list="{{ authSwitch }}" as="a" hint-placeholder-count="3">
+<button onClick="{{ a.onClick }}" style="border:1px solid {{ a.bd }};background:{{ a.bg }};color:{{ a.fg }};border-radius:999px;padding:6px 11px;font:400 11px/1 Jost,sans-serif;cursor:pointer">{{ a.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-for list="{{ railGroups }}" as="g" hint-placeholder-count="3">
+<div style="margin:22px 0 0">
+<div style="font:500 9.5px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:.45">{{ g.title }}</div>
+<div style="display:flex;flex-direction:column;gap:1px;margin-top:10px">
+<sc-for list="{{ g.items }}" as="s" hint-placeholder-count="5">
+<button onClick="{{ s.onClick }}" style="text-align:left;border:0;background:{{ s.bg }};color:{{ s.fg }};cursor:pointer;padding:8px 11px;border-radius:8px;font:400 12.5px/1.2 Jost,sans-serif;display:flex;justify-content:space-between;align-items:center;gap:8px">
+<span>{{ s.label }}</span><span style="font:500 8.5px/1 ui-monospace,Menlo,monospace;opacity:.35">{{ s.num }}</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</aside>
+
+<div style="flex:none;width:390px;height:844px;border-radius:36px;overflow:hidden;position:relative;background:#F4EFE7;box-shadow:0 30px 74px rgba(0,0,0,.24)">
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;overflow:hidden">
+<div role="img" aria-label="Mía Tulum at sunset" style="position:absolute;inset:0;background-color:#1A1A1C;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJ1_1+%281%29-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,12,.45) 0%,rgba(11,11,12,.15) 34%,rgba(11,11,12,.9) 78%,rgba(11,11,12,.97) 100%)"></div>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:0 30px 34px">
+<div style="height:46px;display:flex;align-items:center;justify-content:space-between;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<img src="https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Logo-Blanco-Sinfondo-480w.png" alt="Mía Tulum" style="height:64px;width:auto;align-self:flex-start;margin:14px 0 0 -6px">
+<div style="flex:1"></div>
+<div style="font:400 38px/1.04 'Bodoni Moda',serif;color:#fff;text-wrap:balance">{{ L.loginTitle }}</div>
+<div style="margin-top:13px;font:300 14px/1.55 Jost,sans-serif;color:rgba(255,255,255,.66);text-wrap:pretty">{{ L.loginSub }}</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:26px">
+<sc-for list="{{ loginBtns }}" as="b" hint-placeholder-count="3">
+<div onClick="{{ b.onClick }}" style="text-align:center;background:{{ b.bg }};color:{{ b.fg }};border:1px solid {{ b.bd }};border-radius:999px;padding:15px 0;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ b.label }}</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:22px 0 0">
+<span style="flex:1;height:1px;background:rgba(255,255,255,.18)"></span>
+<span style="font:300 11px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.42)">{{ L.loginOr }}</span>
+<span style="flex:1;height:1px;background:rgba(255,255,255,.18)"></span>
+</div>
+<div onClick="{{ goGuest }}" style="margin-top:20px;cursor:pointer">
+<div style="font:400 15px/1 Jost,sans-serif;color:#fff;text-decoration:underline;text-underline-offset:5px;text-decoration-color:rgba(255,255,255,.35)">{{ L.loginGuest }}</div>
+<div style="margin-top:9px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(255,255,255,.5);text-wrap:pretty">{{ L.loginGuestSub }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;background:#F4EFE7">
+<div style="height:46px"></div>
+<div style="padding:6px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ goLogin }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(11,11,12,.18);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer;flex:none">‹</div>
+<div style="font:400 27px/1.05 'Bodoni Moda',serif">{{ L.guestTitle }}</div>
+</div>
+<div style="margin:14px 24px 0;font:300 13.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.6);text-wrap:pretty">{{ L.guestSub }}</div>
+<div style="padding:22px 24px 0;display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ guestPaths }}" as="p" hint-placeholder-count="3">
+<div onClick="{{ p.onClick }}" style="background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:17px 18px;cursor:pointer;display:flex;gap:15px;align-items:flex-start">
+<div style="width:38px;height:38px;flex:none;border-radius:50%;background:rgba(11,11,12,.05);display:flex;align-items:center;justify-content:center;font:400 17px/1 Jost,sans-serif;color:var(--acc,#E2593F)">{{ p.icon }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:400 17px/1.2 'Bodoni Moda',serif">{{ p.title }}</div>
+<div style="margin-top:6px;font:300 12.5px/1.45 Jost,sans-serif;color:rgba(11,11,12,.55);text-wrap:pretty">{{ p.sub }}</div>
+<div style="margin-top:11px;display:inline-block;border:1px solid rgba(11,11,12,.2);border-radius:999px;padding:8px 15px;font:500 12px/1 Jost,sans-serif">{{ p.cta }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="margin:26px 24px 0;padding:18px 18px 16px;border:1px dashed rgba(11,11,12,.2);border-radius:16px">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.guestLimitsTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:13px">
+<sc-for list="{{ guestLimits }}" as="g" hint-placeholder-count="7">
+<div style="display:flex;align-items:flex-start;gap:9px;font:300 12.5px/1.35 Jost,sans-serif;color:{{ g.fg }}">
+<span style="width:15px;height:15px;border-radius:50%;background:{{ g.bg }};color:#fff;display:flex;align-items:center;justify-content:center;font:400 8.5px/1 Jost,sans-serif;flex:none;margin-top:1px">{{ g.mark }}</span>{{ g.label }}
+</div>
+</sc-for>
+</div>
+<div style="margin-top:15px;padding-top:13px;border-top:1px solid rgba(11,11,12,.1);font:300 11.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.5);text-wrap:pretty">{{ L.guestFooter }}</div>
+</div>
+<div style="height:40px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:380px">
+<sc-if value="{{ isMode0 }}" hint-placeholder-val="{{ true }}"><div role="img" aria-label="Mía Tulum beachfront" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJ1_1+%281%29-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div></sc-if>
+<sc-if value="{{ isMode1 }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="Sun beds at Mía Beach Club" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSCF9720-ac5ae8ee-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div></sc-if>
+<sc-if value="{{ isMode2 }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="Cenote Casa Tortuga" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/1781016627071-4_3-XAE-640w.png);background-size:cover;background-position:center;filter:var(--pf,none)"></div></sc-if>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 36%,rgba(0,0,0,.08) 54%,rgba(0,0,0,.76) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div style="position:absolute;top:50px;left:24px;right:24px;display:flex;align-items:center;justify-content:space-between">
+<div onClick="{{ openSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<img src="https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Logo-Blanco-Sinfondo-480w.png" alt="Mía Tulum" style="height:46px;width:auto">
+<div onClick="{{ goChat }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font:400 14px/1 Jost,sans-serif;color:#fff;cursor:pointer">◇</div>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.82)">{{ L.eyebrow }}</div>
+<div style="margin-top:12px;font:400 38px/1.03 'Bodoni Moda',serif;color:#fff;text-wrap:balance">{{ heroTitle }}</div>
+</div>
+</div>
+
+<div style="position:sticky;top:0;z-index:3;background:rgba(244,239,231,.94);backdrop-filter:blur(14px);border-bottom:1px solid rgba(11,11,12,.07)">
+<div class="sc" style="display:flex;gap:8px;padding:14px 24px;overflow-x:auto">
+<sc-for list="{{ modes }}" as="m" hint-placeholder-count="3">
+<button onClick="{{ m.onClick }}" style="flex:none;border:1px solid {{ m.bd }};background:{{ m.bg }};color:{{ m.fg }};border-radius:999px;padding:9px 17px;font:400 13px/1 Jost,sans-serif;cursor:pointer;white-space:nowrap">{{ m.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{ showBanner }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ onBanner }}" style="margin:18px 24px 0;background:{{ bannerBg }};border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;cursor:pointer;animation:fade .3s ease">
+<div style="flex:1;min-width:0">
+<div style="font:400 14px/1.25 Jost,sans-serif;color:{{ bannerFg }}">{{ bannerTitle }}</div>
+<div style="margin-top:5px;font:300 11.5px/1.4 Jost,sans-serif;color:{{ bannerSubFg }};text-wrap:pretty">{{ bannerSub }}</div>
+</div>
+<div style="flex:none;background:{{ bannerCtaBg }};color:#fff;border-radius:999px;padding:9px 14px;font:500 11.5px/1 Jost,sans-serif;white-space:nowrap">{{ bannerCta }}</div>
+</div>
+</sc-if>
+
+<div style="padding:22px 24px 0;display:flex;align-items:baseline;justify-content:space-between">
+<div style="font:400 27px/1 'Bodoni Moda',serif">{{ L.yourDay }}</div>
+<div style="font:300 11.5px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ L.date }} · {{ L.dayOf }}</div>
+</div>
+
+<div style="padding:18px 24px 0">
+<sc-for list="{{ agenda }}" as="i" hint-placeholder-count="5">
+<div style="display:flex;gap:14px">
+<div style="width:48px;flex:none;text-align:right;padding-top:3px;font:500 12.5px/1 Jost,sans-serif;color:{{ i.timeFg }}">{{ i.time }}</div>
+<div style="flex:none;width:13px;display:flex;flex-direction:column;align-items:center">
+<span style="width:9px;height:9px;border-radius:50%;background:{{ i.dot }};margin-top:4px;flex:none;box-shadow:0 0 0 4px {{ i.ring }}"></span>
+<span style="flex:1;width:1px;background:rgba(11,11,12,.13)"></span>
+</div>
+<div style="flex:1;min-width:0;padding-bottom:20px">
+<div style="background:{{ i.cardBg }};border:1px solid {{ i.cardBd }};border-radius:16px;overflow:hidden">
+<div onClick="{{ i.onToggle }}" style="padding:14px 15px;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+<div style="flex:1;min-width:0">
+<div style="font:400 18.5px/1.15 'Bodoni Moda',serif;color:{{ i.titleFg }}">{{ i.title }}</div>
+<div style="margin-top:5px;font:300 12.5px/1.3 Jost,sans-serif;color:{{ i.metaFg }}">{{ i.place }}</div>
+</div>
+<div style="flex:none;font:500 9.5px/1 Jost,sans-serif;letter-spacing:.13em;text-transform:uppercase;padding:5px 9px;border-radius:999px;background:{{ i.tagBg }};color:{{ i.tagFg }};white-space:nowrap">{{ i.tag }}</div>
+</div>
+<sc-if value="{{ i.open }}" hint-placeholder-val="{{ false }}">
+<div>
+<div role="img" aria-label="{{ i.title }}" style="width:100%;height:128px;background-color:#DED8CE;background-image:url({{ i.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="padding:14px 15px 15px">
+<div style="font:300 13px/1.5 Jost,sans-serif;color:rgba(11,11,12,.68);text-wrap:pretty">{{ i.body }}</div>
+<div style="display:flex;gap:9px;margin-top:14px">
+<div onClick="{{ i.onCta }}" style="background:#0B0B0C;color:#fff;border-radius:999px;padding:11px 19px;font:500 12.5px/1 Jost,sans-serif;cursor:pointer">{{ i.cta }}</div>
+<div style="border:1px solid rgba(11,11,12,.2);border-radius:999px;padding:11px 17px;font:400 12.5px/1 Jost,sans-serif;cursor:pointer">{{ L.remind }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="padding:6px 24px 0;font:400 27px/1 'Bodoni Moda',serif">{{ discoverTitle }}</div>
+<div class="sc" style="display:flex;gap:13px;padding:16px 24px 0;overflow-x:auto">
+<sc-for list="{{ discover }}" as="c" hint-placeholder-count="3">
+<div onClick="{{ c.onClick }}" style="flex:none;width:206px;cursor:pointer">
+<div style="position:relative;height:258px;border-radius:16px;overflow:hidden;background:#DED8CE">
+<div role="img" aria-label="{{ c.title }}" style="width:100%;height:100%;background-image:url({{ c.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.7) 100%)"></div>
+<div style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.94);border-radius:999px;padding:5px 11px;font:500 11px/1 Jost,sans-serif">{{ c.time }}</div>
+<div style="position:absolute;left:14px;right:14px;bottom:14px;color:#fff">
+<div style="font:400 19px/1.15 'Bodoni Moda',serif">{{ c.title }}</div>
+<div style="margin-top:5px;font:300 12px/1.3 Jost,sans-serif;color:rgba(255,255,255,.82)">{{ c.meta }}</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="height:132px"></div>
+</div>
+</sc-if>
+<sc-if value="{{ isBeach }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:330px">
+<div role="img" aria-label="Mía Beach Club" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Mia+Beach+Club+%281%29-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 34%,rgba(11,11,12,.85) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div onClick="{{ openSheet }}" style="position:absolute;top:50px;left:24px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:22px;color:#fff">
+<div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);border-radius:999px;padding:6px 12px">
+<span style="width:6px;height:6px;border-radius:50%;background:#5BD08A;animation:blip 2.4s ease-in-out infinite"></span>
+<span style="font:400 10px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase">{{ L.bcOpen }}</span>
+</div>
+<div style="margin-top:14px;font:400 34px/1.04 'Bodoni Moda',serif">{{ L.bcTitle }}</div>
+<div style="margin-top:10px;font:300 11.5px/1.5 Jost,sans-serif;color:rgba(255,255,255,.62);text-wrap:pretty">{{ L.bcAward }}</div>
+</div>
+</div>
+
+<div style="background:#0B0B0C;position:sticky;top:0;z-index:3">
+<div class="sc" style="display:flex;gap:24px;padding:15px 24px 0;overflow-x:auto">
+<sc-for list="{{ bcTabs }}" as="t" hint-placeholder-count="3">
+<button onClick="{{ t.onClick }}" style="flex:none;background:transparent;border:0;border-bottom:2px solid {{ t.bd }};color:{{ t.fg }};padding:0 0 11px;font:400 14px/1 Jost,sans-serif;cursor:pointer;white-space:nowrap">{{ t.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{ bcKitchenOn }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="margin:20px 24px 0;font:300 13.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.62);text-wrap:pretty">{{ L.bcSub }}</div>
+<div style="padding:20px 24px 0;display:flex;flex-direction:column;gap:13px">
+<sc-for list="{{ kitchen }}" as="k" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;overflow:hidden;display:flex">
+<div role="img" aria-label="{{ k.name }}" style="width:104px;flex:none;background-color:#DED8CE;background-image:url({{ k.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="flex:1;min-width:0;padding:15px 16px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+<div style="font:400 19px/1.15 'Bodoni Moda',serif">{{ k.name }}</div>
+<div style="font:500 11.5px/1 Jost,sans-serif;color:var(--acc,#E2593F);white-space:nowrap">{{ k.hours }}</div>
+</div>
+<div style="margin-top:8px;font:300 12px/1.45 Jost,sans-serif;color:rgba(11,11,12,.55);text-wrap:pretty">{{ k.desc }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div onClick="{{ goDine }}" style="margin:16px 24px 0;background:#0B0B0C;border-radius:16px;padding:16px;display:flex;align-items:center;gap:13px;cursor:pointer">
+<div style="font:400 18px/1 Jost,sans-serif;color:var(--acc,#E2593F)">◑</div>
+<div style="flex:1"><div style="font:400 14.5px/1.2 Jost,sans-serif;color:#fff">{{ L.dineTitle }}</div><div style="margin-top:4px;font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.45)">{{ L.orderFromHere }}</div></div>
+<div style="font:300 18px/1 Jost,sans-serif;color:rgba(255,255,255,.3)">›</div>
+</div>
+<div style="height:120px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ bcAdmOn }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="padding:20px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.bcIncludedTitle }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:12px">
+<sc-for list="{{ bcIncluded }}" as="c" hint-placeholder-count="7">
+<span style="border:1px solid rgba(11,11,12,.14);border-radius:999px;padding:7px 13px;font:300 12px/1 Jost,sans-serif;color:rgba(11,11,12,.7)">{{ c.label }}</span>
+</sc-for>
+</div>
+</div>
+<div style="padding:24px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.bcAdmTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+<sc-for list="{{ admissions }}" as="a" hint-placeholder-count="3">
+<div onClick="{{ a.onClick }}" style="border:1.5px solid {{ a.bd }};background:{{ a.bg }};border-radius:18px;padding:16px 17px;cursor:pointer">
+<div style="display:flex;align-items:flex-start;gap:12px">
+<span style="width:19px;height:19px;border-radius:50%;border:1.5px solid {{ a.dotBd }};background:{{ a.dotBg }};flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font:400 11px/1 Jost,sans-serif;margin-top:3px">{{ a.mark }}</span>
+<div style="flex:1;min-width:0">
+<div style="font:400 20px/1.1 'Bodoni Moda',serif">{{ a.name }}</div>
+<div style="margin-top:7px;font:300 12.5px/1.45 Jost,sans-serif;color:rgba(11,11,12,.58);text-wrap:pretty">{{ a.desc }}</div>
+</div>
+<div style="flex:none;text-align:right">
+<div style="font:500 17px/1 Jost,sans-serif">${{ a.price }}</div>
+<div style="margin-top:4px;font:300 9.5px/1 Jost,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.bcCurrency }}</div>
+</div>
+</div>
+<sc-if value="{{ a.showPerks }}" hint-placeholder-val="{{ false }}">
+<div style="margin:14px 0 0 31px;padding-top:13px;border-top:1px solid rgba(11,11,12,.09);display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{ a.perks }}" as="p" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:9px;font:300 12.5px/1.3 Jost,sans-serif;color:rgba(11,11,12,.72)">
+<span style="width:5px;height:5px;border-radius:50%;background:var(--acc,#E2593F);flex:none"></span>{{ p.label }}
+</div>
+</sc-for>
+<div style="margin-top:5px;font:300 11px/1.4 Jost,sans-serif;color:rgba(11,11,12,.45)">{{ L.bcPerPerson }}</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:12px;font:300 12px/1.5 Jost,sans-serif;color:var(--acc,#E2593F);text-wrap:pretty">{{ L.bcAdmNote }}</div>
+<div onClick="{{ buyPass }}" style="margin-top:18px;background:#0B0B0C;color:#fff;border-radius:999px;padding:16px 0;text-align:center;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ admSummary }}</div>
+</div>
+<div style="height:120px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ bcSpotOn }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="padding:20px 24px 0;font:300 13.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.62);text-wrap:pretty">{{ L.beachSub }}</div>
+<div onClick="{{ goSunbeds }}" style="margin:18px 24px 0;position:relative;height:230px;border-radius:20px;overflow:hidden;cursor:pointer">
+<div role="img" aria-label="Sun beds" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSCF9720-ac5ae8ee-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(11,11,12,.85) 100%)"></div>
+<div style="position:absolute;left:18px;right:18px;bottom:18px;color:#fff">
+<div style="font:400 22px/1.1 'Bodoni Moda',serif">{{ L.bcPick }}</div>
+<div style="margin-top:7px;font:300 12px/1.3 Jost,sans-serif;color:rgba(255,255,255,.7)">{{ L.bedFrom }}</div>
+</div>
+<div style="position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font:300 16px/1 Jost,sans-serif">›</div>
+</div>
+<div style="margin:16px 24px 0;padding:15px 16px;background:rgba(11,11,12,.05);border-radius:14px;display:flex;gap:12px;align-items:flex-start">
+<div style="font:400 16px/1 Jost,sans-serif;color:var(--acc,#E2593F);flex:none">⌗</div>
+<div style="font:300 12.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62);text-wrap:pretty">{{ L.qrNote }}</div>
+</div>
+<div style="height:120px"></div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSunbeds }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:120px;box-sizing:border-box">
+<div style="height:46px"></div>
+<div style="padding:6px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ goBeach }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(11,11,12,.18);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer;flex:none">‹</div>
+<div style="font:400 27px/1 'Bodoni Moda',serif">{{ L.beachTitle }}</div>
+</div>
+<div class="sc" style="display:flex;gap:8px;padding:16px 24px 0;overflow-x:auto">
+<sc-for list="{{ spotModes }}" as="s" hint-placeholder-count="2">
+<button onClick="{{ s.onClick }}" style="flex:none;border:1px solid {{ s.bd }};background:{{ s.bg }};color:{{ s.fg }};border-radius:999px;padding:9px 16px;font:400 13px/1 Jost,sans-serif;cursor:pointer">{{ s.label }}</button>
+</sc-for>
+</div>
+<div style="margin:18px 24px 0;background:#0B0B0C;border-radius:20px;padding:20px 18px 18px">
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.4)">{{ L.seaSide }}</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">
+<sc-for list="{{ bedRows }}" as="row" hint-placeholder-count="3">
+<div>
+<div style="font:300 9.5px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-bottom:7px">{{ row.label }}</div>
+<div style="display:flex;gap:7px">
+<sc-for list="{{ row.beds }}" as="b" hint-placeholder-count="6">
+<div onClick="{{ b.onClick }}" style="flex:1;height:44px;border-radius:9px;background:{{ b.bg }};border:1px solid {{ b.bd }};display:flex;align-items:center;justify-content:center;font:500 11.5px/1 Jost,sans-serif;color:{{ b.fg }};cursor:{{ b.cursor }}">{{ b.n }}</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:16px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)">
+<sc-for list="{{ bedLegend }}" as="g" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:6px;font:300 10.5px/1 Jost,sans-serif;color:rgba(255,255,255,.5)">
+<span style="width:9px;height:9px;border-radius:3px;background:{{ g.c }};border:1px solid {{ g.bd }}"></span>{{ g.label }}
+</div>
+</sc-for>
+</div>
+</div>
+<div style="margin:18px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.arrival }}</div>
+<div class="sc" style="display:flex;gap:8px;margin-top:12px;overflow-x:auto">
+<sc-for list="{{ bedTimes }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ t.onClick }}" style="flex:none;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};border-radius:999px;padding:10px 16px;font:400 13px/1 Jost,sans-serif;cursor:pointer">{{ t.label }}</button>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;background:rgba(244,239,231,.96);backdrop-filter:blur(18px);border-top:1px solid rgba(11,11,12,.09);padding:14px 24px 26px;display:flex;align-items:center;gap:14px">
+<div style="flex:1;min-width:0">
+<div style="font:500 16px/1.2 Jost,sans-serif">{{ bedSummary }}</div>
+<div style="margin-top:5px;font:300 11.5px/1.3 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ bedSummarySub }}</div>
+</div>
+<div onClick="{{ bookBed }}" style="background:#0B0B0C;color:#fff;border-radius:999px;padding:15px 26px;font:500 14px/1 Jost,sans-serif;cursor:pointer;flex:none">{{ L.hold }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDine }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:120px;box-sizing:border-box">
+<div style="height:46px"></div>
+<div style="padding:6px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ goBeach }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(11,11,12,.18);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer;flex:none">‹</div>
+<div style="font:400 27px/1 'Bodoni Moda',serif">{{ L.dineTitle }}</div>
+</div>
+<div style="margin:14px 24px 0;background:#0B0B0C;border-radius:15px;padding:13px 16px;display:flex;align-items:center;gap:11px">
+<span style="width:7px;height:7px;border-radius:50%;background:#5BD08A;flex:none;animation:blip 2.4s ease-in-out infinite"></span>
+<div style="flex:1;min-width:0;font:400 13.5px/1.2 Jost,sans-serif;color:#fff">{{ L.deliverTo }}</div>
+<div style="font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.5)">{{ L.changeLbl }}</div>
+</div>
+<div class="sc" style="display:flex;gap:8px;padding:16px 24px 0;overflow-x:auto">
+<sc-for list="{{ dineCats }}" as="c" hint-placeholder-count="5">
+<button onClick="{{ c.onClick }}" style="flex:none;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:999px;padding:9px 16px;font:400 13px/1 Jost,sans-serif;cursor:pointer;white-space:nowrap">{{ c.label }}</button>
+</sc-for>
+</div>
+<div style="padding:8px 24px 0">
+<sc-for list="{{ dishes }}" as="d" hint-placeholder-count="5">
+<div style="display:flex;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid rgba(11,11,12,.09)">
+<div style="flex:1;min-width:0">
+<div style="font:400 18px/1.15 'Bodoni Moda',serif">{{ d.name }}</div>
+<div style="margin-top:5px;font:300 12px/1.4 Jost,sans-serif;color:rgba(11,11,12,.52);text-wrap:pretty">{{ d.desc }}</div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:9px">
+<span style="font:500 14px/1 Jost,sans-serif">{{ d.price }}</span>
+<span style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:{{ d.tagFg }};background:{{ d.tagBg }};padding:4px 8px;border-radius:999px">{{ d.tag }}</span>
+</div>
+</div>
+<div onClick="{{ d.onAdd }}" style="width:38px;height:38px;flex:none;border-radius:50%;background:{{ d.btnBg }};color:{{ d.btnFg }};display:flex;align-items:center;justify-content:center;font:400 19px/1 Jost,sans-serif;cursor:pointer">{{ d.btn }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:0;right:0;bottom:0;background:rgba(244,239,231,.96);backdrop-filter:blur(18px);border-top:1px solid rgba(11,11,12,.09);padding:14px 24px 26px;display:flex;align-items:center;gap:14px;animation:rise .22s ease">
+<div style="flex:1;min-width:0">
+<div style="font:500 16px/1.2 Jost,sans-serif">{{ cartLabel }}</div>
+<div style="margin-top:5px;font:300 11.5px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ L.eta }}</div>
+</div>
+<div onClick="{{ placeOrder }}" style="background:var(--acc,#E2593F);color:#fff;border-radius:999px;padding:15px 26px;font:500 14px/1 Jost,sans-serif;cursor:pointer;flex:none">{{ L.order }}</div>
+</div>
+</sc-if>
+</sc-if>
+<sc-if value="{{ isResort }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:300px">
+<div role="img" aria-label="Mía Tulum rooms" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Mia_51+%282%29-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.48) 0%,rgba(0,0,0,0) 36%,rgba(0,0,0,.78) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div onClick="{{ openSheet }}" style="position:absolute;top:50px;left:24px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;color:#fff">
+<div style="font:400 34px/1.04 'Bodoni Moda',serif">{{ L.resortTitle }}</div>
+<div style="margin-top:11px;font:300 13px/1.5 Jost,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty">{{ L.resortSub }}</div>
+</div>
+</div>
+
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.stayIncTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:2px;margin-top:12px">
+<sc-for list="{{ stayIncludes }}" as="s" hint-placeholder-count="4">
+<div style="display:flex;gap:13px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(11,11,12,.08)">
+<div style="width:26px;flex:none;font:400 15px/1 Jost,sans-serif;color:var(--acc,#E2593F);padding-top:2px">{{ s.icon }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:400 14.5px/1.2 Jost,sans-serif">{{ s.label }}</div>
+<div style="margin-top:5px;font:300 12px/1.4 Jost,sans-serif;color:rgba(11,11,12,.52);text-wrap:pretty">{{ s.sub }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="margin:22px 24px 0;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:16px;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+<div>
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.dates }}</div>
+<div style="margin-top:7px;font:400 15px/1 Jost,sans-serif">{{ L.dateRange }}</div>
+</div>
+<div style="text-align:right">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.guests }}</div>
+<div style="margin-top:7px;font:400 15px/1 Jost,sans-serif">{{ L.twoAdults }}</div>
+</div>
+<div style="width:34px;height:34px;border-radius:50%;background:#0B0B0C;color:#fff;display:flex;align-items:center;justify-content:center;font:300 15px/1 Jost,sans-serif;flex:none;cursor:pointer">⌕</div>
+</div>
+<div style="margin:8px 24px 0;font:300 12px/1.4 Jost,sans-serif;color:var(--acc,#E2593F)">{{ L.directRate }}</div>
+
+<div style="padding:16px 24px 0">
+<sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6">
+<div onClick="{{ r.onClick }}" style="margin-bottom:15px;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;overflow:hidden;cursor:pointer">
+<div role="img" aria-label="{{ r.name }}" style="width:100%;height:168px;background-color:#DED8CE;background-image:url({{ r.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="padding:15px 16px 16px">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+<div style="flex:1;min-width:0">
+<div style="font:400 19px/1.15 'Bodoni Moda',serif;text-wrap:balance">{{ r.name }}</div>
+<div style="margin-top:6px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.55)">{{ r.meta }}</div>
+</div>
+<div style="text-align:right;flex:none">
+<div style="font:300 9.5px/1 Jost,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(11,11,12,.42)">{{ L.from }}</div>
+<div style="margin-top:6px;font:500 17px/1 Jost,sans-serif">{{ r.price }}</div>
+<div style="margin-top:4px;font:300 10px/1 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.perNight }}</div>
+</div>
+</div>
+<div style="margin-top:12px;font:400 10px/1 Jost,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:{{ r.availFg }}">{{ r.avail }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div onClick="{{ goChat }}" style="margin:2px 24px 0;border:1px dashed rgba(11,11,12,.22);border-radius:18px;padding:18px;cursor:pointer">
+<div style="font:400 20px/1.1 'Bodoni Moda',serif">{{ L.groupTitle }}</div>
+<div style="margin-top:9px;font:300 12.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.58);text-wrap:pretty">{{ L.groupBody }}</div>
+<div style="margin-top:13px;display:inline-block;background:#0B0B0C;color:#fff;border-radius:999px;padding:10px 17px;font:500 12.5px/1 Jost,sans-serif">{{ L.groupCta }}</div>
+</div>
+<div style="height:124px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRoom }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:340px">
+<div role="img" aria-label="{{ room.name }}" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url({{ room.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 40%)"></div>
+<div onClick="{{ goResort }}" style="position:absolute;top:56px;left:24px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer">‹</div>
+</div>
+<div style="margin-top:-26px;position:relative;background:#F4EFE7;border-radius:26px 26px 0 0;padding:26px 24px 0">
+<div style="font:400 29px/1.08 'Bodoni Moda',serif;text-wrap:balance">{{ room.name }}</div>
+<div style="margin-top:9px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ room.meta }}</div>
+<div style="margin-top:14px;font:300 13px/1.6 Jost,sans-serif;color:rgba(11,11,12,.65);text-wrap:pretty">{{ room.body }}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px">
+<sc-for list="{{ roomFeatures }}" as="f" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid rgba(11,11,12,.08);border-radius:13px;padding:13px 14px">
+<div style="font:400 16px/1 Jost,sans-serif;color:var(--acc,#E2593F)">{{ f.icon }}</div>
+<div style="margin-top:9px;font:400 13px/1.2 Jost,sans-serif">{{ f.label }}</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:24px;font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.mealPlan }}</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+<sc-for list="{{ plans }}" as="p" hint-placeholder-count="2">
+<div onClick="{{ p.onClick }}" style="border:1.5px solid {{ p.bd }};background:{{ p.bg }};border-radius:15px;padding:14px 15px;cursor:pointer;display:flex;align-items:center;gap:13px">
+<span style="width:19px;height:19px;border-radius:50%;border:1.5px solid {{ p.dotBd }};background:{{ p.dotBg }};flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font:400 11px/1 Jost,sans-serif">{{ p.mark }}</span>
+<div style="flex:1;min-width:0">
+<div style="font:400 15px/1.2 Jost,sans-serif">{{ p.name }}</div>
+<div style="margin-top:4px;font:300 12px/1.3 Jost,sans-serif;color:rgba(11,11,12,.52)">{{ p.meta }}</div>
+</div>
+<div style="font:500 14px/1 Jost,sans-serif;flex:none">{{ p.price }}</div>
+</div>
+</sc-for>
+</div>
+<div style="height:140px"></div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;background:rgba(244,239,231,.96);backdrop-filter:blur(18px);border-top:1px solid rgba(11,11,12,.09);padding:14px 24px 26px;display:flex;align-items:center;gap:14px">
+<div style="flex:1">
+<div style="font:500 20px/1 Jost,sans-serif">{{ roomTotal }}</div>
+<div style="margin-top:5px;font:300 11.5px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ L.totalNights }}</div>
+</div>
+<div onClick="{{ goCheckout }}" style="background:#0B0B0C;color:#fff;border-radius:999px;padding:15px 28px;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.reserve }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:120px;box-sizing:border-box">
+<div style="height:46px"></div>
+<div style="padding:6px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ goResort }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(11,11,12,.18);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer;flex:none">‹</div>
+<div style="font:400 27px/1 'Bodoni Moda',serif">{{ L.coTitle }}</div>
+</div>
+
+<div style="margin:20px 24px 0;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:6px 18px">
+<sc-for list="{{ coStayRows }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid rgba(11,11,12,.07)">
+<span style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.45);flex:none">{{ r.k }}</span>
+<span style="font:400 14px/1.3 Jost,sans-serif;text-align:right">{{ r.v }}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.coBreak }}</div>
+<div style="margin-top:12px">
+<sc-for list="{{ coLines }}" as="l" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid rgba(11,11,12,.08)">
+<span style="font:300 13.5px/1.3 Jost,sans-serif;color:rgba(11,11,12,.68)">{{ l.k }}</span>
+<span style="font:500 14.5px/1 Jost,sans-serif;white-space:nowrap">{{ l.v }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.coPayTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+<sc-for list="{{ coPays }}" as="p" hint-placeholder-count="3">
+<div onClick="{{ p.onClick }}" style="border:1.5px solid {{ p.bd }};background:{{ p.bg }};border-radius:15px;padding:14px 15px;cursor:pointer;display:flex;align-items:center;gap:13px">
+<span style="width:19px;height:19px;border-radius:50%;border:1.5px solid {{ p.dotBd }};background:{{ p.dotBg }};flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font:400 11px/1 Jost,sans-serif">{{ p.mark }}</span>
+<div style="flex:1;min-width:0">
+<div style="font:400 15px/1.2 Jost,sans-serif">{{ p.label }}</div>
+<div style="margin-top:4px;font:300 12px/1.3 Jost,sans-serif;color:rgba(11,11,12,.52)">{{ p.sub }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="margin:22px 24px 0;background:#0B0B0C;border-radius:18px;padding:18px">
+<div style="display:flex;align-items:baseline;gap:9px">
+<span style="font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.55)">{{ L.coEarn }}</span>
+<span style="font:400 26px/1 'Bodoni Moda',serif;color:#fff">{{ coEarnVal }}</span>
+</div>
+<div style="margin-top:8px;font:300 12px/1.4 Jost,sans-serif;color:var(--acc,#E2593F)">{{ coEarnSub }}</div>
+</div>
+<div style="margin:14px 24px 0;font:300 11.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ L.coPolicy }}</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;background:rgba(244,239,231,.96);backdrop-filter:blur(18px);border-top:1px solid rgba(11,11,12,.09);padding:14px 24px 26px;display:flex;align-items:center;gap:14px">
+<div style="flex:1"><div style="font:500 20px/1 Jost,sans-serif">{{ roomTotal }}</div><div style="margin-top:5px;font:300 11.5px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ L.totalNights }}</div></div>
+<div onClick="{{ payNow }}" style="background:var(--acc,#E2593F);color:#fff;border-radius:999px;padding:15px 24px;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.coBtn }}</div>
+</div>
+</sc-if>
+<sc-if value="{{ isWeddings }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:400px">
+<div role="img" aria-label="Beachfront wedding aisle at Mía Tulum" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/ceremonia+explanada-640w.jpeg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 34%,rgba(0,0,0,.8) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div onClick="{{ openSheet }}" style="position:absolute;top:50px;left:24px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:26px;color:#fff">
+<div style="display:inline-block;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:6px 12px;font:400 9.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase">{{ L.wedNoFee }}</div>
+<div style="margin-top:14px;font:400 40px/1.02 'Bodoni Moda',serif">{{ L.wedTitle }}</div>
+<div style="margin-top:11px;font:300 12.5px/1.5 Jost,sans-serif;color:rgba(255,255,255,.72)">{{ L.wedSub }}</div>
+</div>
+</div>
+<div style="padding:24px 24px 0">
+<div style="font:300 13.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.66);text-wrap:pretty">{{ L.wedBody }}</div>
+<div style="display:flex;flex-direction:column;gap:2px;margin-top:22px">
+<sc-for list="{{ wedPoints }}" as="p" hint-placeholder-count="4">
+<div style="display:flex;gap:15px;align-items:baseline;padding:14px 0;border-bottom:1px solid rgba(11,11,12,.09)">
+<div style="font:400 22px/1 'Bodoni Moda',serif;color:var(--acc,#E2593F);width:26px;flex:none">{{ p.n }}</div>
+<div style="flex:1;font:400 14.5px/1.35 Jost,sans-serif;text-wrap:pretty">{{ p.label }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="margin:24px 0 0">
+<div style="padding:0 24px;font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.wedGalleryTitle }}</div>
+<div class="sc" style="display:flex;gap:11px;padding:14px 24px 0;overflow-x:auto">
+<sc-for list="{{ wedGallery }}" as="g" hint-placeholder-count="5">
+<div role="img" aria-label="Wedding at Mía Tulum" style="flex:none;width:172px;height:230px;border-radius:14px;background-color:#DED8CE;background-image:url({{ g.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+</sc-for>
+</div>
+</div>
+<div style="margin:26px 24px 0;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:18px">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.wedTestiTitle }}</div>
+<div style="margin-top:13px;font:400 19px/1.35 'Bodoni Moda',serif;text-wrap:pretty">{{ wedTesti.quote }}</div>
+<div style="margin-top:11px;font:400 12px/1 Jost,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(11,11,12,.5)">{{ wedTesti.who }}</div>
+</div>
+<div style="margin:22px 24px 0;background:#0B0B0C;border-radius:20px;padding:20px">
+<div style="font:400 22px/1.1 'Bodoni Moda',serif;color:#fff">{{ L.wedCta }}</div>
+<div style="margin-top:9px;font:300 12px/1.4 Jost,sans-serif;color:rgba(255,255,255,.5)">{{ L.wedCtaSub }}</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+<sc-for list="{{ wedForm }}" as="f" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:13px 14px">
+<span style="font:300 12px/1 Jost,sans-serif;color:rgba(255,255,255,.45)">{{ f.k }}</span>
+<span style="font:400 13.5px/1 Jost,sans-serif;color:#fff">{{ f.v }}</span>
+</div>
+</sc-for>
+</div>
+<div onClick="{{ sendWed }}" style="margin-top:14px;background:var(--acc,#E2593F);color:#fff;border-radius:999px;padding:15px 0;text-align:center;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.wedCta }}</div>
+</div>
+<div style="height:124px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isWellness }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:340px">
+<div role="img" aria-label="Yoga on the beach at Mía Tulum" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSC_2348-56bb79f1-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 36%,rgba(0,0,0,.78) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div onClick="{{ openSheet }}" style="position:absolute;top:50px;left:24px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;color:#fff">
+<div style="font:400 36px/1.03 'Bodoni Moda',serif">{{ L.wellTitle }}</div>
+<div style="margin-top:11px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(255,255,255,.74)">{{ L.wellSub }}</div>
+</div>
+</div>
+<div style="padding:22px 24px 0;font:300 13.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.66);text-wrap:pretty">{{ L.wellBody }}</div>
+<div style="padding:20px 24px 0;display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ wellPillars }}" as="p" hint-placeholder-count="3">
+<div style="background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;overflow:hidden">
+<div role="img" aria-label="{{ p.name }}" style="width:100%;height:150px;background-color:#DED8CE;background-image:url({{ p.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="padding:16px 17px 17px">
+<div style="font:400 22px/1.1 'Bodoni Moda',serif">{{ p.name }}</div>
+<div style="margin-top:9px;font:300 12.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.6);text-wrap:pretty">{{ p.body }}</div>
+<div style="margin-top:12px;padding-top:11px;border-top:1px solid rgba(11,11,12,.08);font:400 11px/1.4 Jost,sans-serif;letter-spacing:.04em;color:var(--acc,#E2593F);text-wrap:pretty">{{ p.note }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="padding:26px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.wellBookTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+<sc-for list="{{ sessions }}" as="s" hint-placeholder-count="4">
+<div onClick="{{ s.onClick }}" style="background:{{ s.bg }};border:1.5px solid {{ s.bd }};border-radius:16px;padding:15px 16px;cursor:pointer;display:flex;align-items:center;gap:14px">
+<div style="width:52px;flex:none">
+<div style="font:500 14px/1 Jost,sans-serif;color:{{ s.timeFg }}">{{ s.time }}</div>
+<div style="margin-top:5px;font:300 10.5px/1 Jost,sans-serif;color:rgba(11,11,12,.42)">{{ s.dur }}</div>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font:400 17px/1.15 'Bodoni Moda',serif">{{ s.name }}</div>
+<div style="margin-top:5px;font:300 12px/1.3 Jost,sans-serif;color:rgba(11,11,12,.52)">{{ s.meta }}</div>
+</div>
+<div style="flex:none;text-align:right">
+<div style="font:500 13.5px/1 Jost,sans-serif">{{ s.price }}</div>
+<div style="margin-top:5px;font:400 9.5px/1 Jost,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:{{ s.leftFg }}">{{ s.left }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div onClick="{{ bookSession }}" style="margin-top:14px;background:#0B0B0C;color:#fff;border-radius:999px;padding:16px 0;text-align:center;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.reserve }} · {{ sessionSummary }}</div>
+<div style="margin-top:14px;font:300 12px/1.5 Jost,sans-serif;color:rgba(11,11,12,.5);text-wrap:pretty">{{ L.wellGroup }}</div>
+</div>
+<div style="height:124px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isExperiences }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden">
+<div style="position:relative;height:300px">
+<div role="img" aria-label="Aerial view of Mía Tulum" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJI_20260101173036_0029_D-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.44) 0%,rgba(0,0,0,0) 36%,rgba(0,0,0,.78) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div onClick="{{ openSheet }}" style="position:absolute;top:50px;left:24px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;color:#fff">
+<div style="font:400 36px/1.03 'Bodoni Moda',serif">{{ L.expTitle }}</div>
+<div style="margin-top:11px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(255,255,255,.74)">{{ L.expSub }}</div>
+</div>
+</div>
+<div style="padding:22px 24px 0;font:300 13.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.66);text-wrap:pretty">{{ L.expBody }}</div>
+<div style="padding:20px 24px 0;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ expItems }}" as="e" hint-placeholder-count="9">
+<div style="background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;overflow:hidden">
+<div onClick="{{ e.onToggle }}" style="cursor:pointer;display:flex;align-items:stretch">
+<div role="img" aria-label="{{ e.name }}" style="width:112px;flex:none;background-color:#DED8CE;background-image:url({{ e.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="flex:1;min-width:0;padding:16px 16px">
+<div style="font:400 18px/1.15 'Bodoni Moda',serif;text-wrap:balance">{{ e.name }}</div>
+<div style="margin-top:7px;font:300 11.5px/1.45 Jost,sans-serif;color:rgba(11,11,12,.52);text-wrap:pretty">{{ e.body }}</div>
+</div>
+</div>
+<sc-if value="{{ e.open }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ e.onClick }}" style="padding:0 16px 16px;cursor:pointer">
+<div style="display:inline-block;background:#0B0B0C;color:#fff;border-radius:999px;padding:11px 18px;font:500 12.5px/1 Jost,sans-serif">{{ e.cta }}</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="height:124px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCenote }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:120px;box-sizing:border-box">
+<div style="position:relative;height:330px">
+<div role="img" aria-label="Cenote Casa Tortuga" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/1781016627071-4_3-XAE-640w.png);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,0) 42%,rgba(0,0,0,.62) 100%)"></div>
+<div onClick="{{ goHome }}" style="position:absolute;top:56px;left:24px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer">‹</div>
+<div style="position:absolute;left:24px;right:24px;bottom:22px;color:#fff">
+<div style="display:inline-block;background:var(--acc,#E2593F);border-radius:999px;padding:6px 12px;font:500 9.5px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase">{{ L.included }}</div>
+<div style="margin-top:12px;font:400 33px/1.04 'Bodoni Moda',serif">Cenote Casa Tortuga</div>
+</div>
+</div>
+<div style="padding:22px 24px 0">
+<div style="font:300 13.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.66);text-wrap:pretty">{{ L.cenoteBody }}</div>
+<div style="display:flex;gap:26px;margin-top:20px;padding:16px 0;border-top:1px solid rgba(11,11,12,.1);border-bottom:1px solid rgba(11,11,12,.1)">
+<sc-for list="{{ cenoteFacts }}" as="f" hint-placeholder-count="3">
+<div>
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.42)">{{ f.k }}</div>
+<div style="margin-top:7px;font:400 15px/1 Jost,sans-serif">{{ f.v }}</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:22px;font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.shuttle }}</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+<sc-for list="{{ shuttles }}" as="s" hint-placeholder-count="3">
+<div onClick="{{ s.onClick }}" style="border:1.5px solid {{ s.bd }};background:{{ s.bg }};border-radius:15px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:13px">
+<span style="width:19px;height:19px;border-radius:50%;border:1.5px solid {{ s.dotBd }};background:{{ s.dotBg }};flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font:400 11px/1 Jost,sans-serif">{{ s.mark }}</span>
+<div style="flex:1;min-width:0;font:400 15px/1.2 Jost,sans-serif">{{ s.time }}</div>
+<div style="font:300 12px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ s.seats }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;background:rgba(244,239,231,.96);backdrop-filter:blur(18px);border-top:1px solid rgba(11,11,12,.09);padding:14px 24px 26px;display:flex;align-items:center;gap:14px">
+<div style="flex:1"><div style="font:500 16px/1.2 Jost,sans-serif">{{ L.free }}</div><div style="margin-top:5px;font:300 11.5px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ shuttleSummary }}</div></div>
+<div onClick="{{ bookShuttle }}" style="background:#0B0B0C;color:#fff;border-radius:999px;padding:15px 26px;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.reserve }}</div>
+</div>
+</sc-if>
+<sc-if value="{{ isTonight }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;background:#0B0B0C;padding-bottom:120px;box-sizing:border-box">
+<div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div style="padding:6px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ openSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.24);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer;flex:none">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="flex:1"><div style="font:400 26px/1 'Bodoni Moda',serif;color:#fff">{{ L.tonightTitle }}</div></div>
+<div style="font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.45)">{{ L.tonightSub }}</div>
+</div>
+<div style="margin:20px 24px 0;position:relative;height:300px;border-radius:20px;overflow:hidden">
+<div role="img" aria-label="{{ L.sunsetSet }}" style="position:absolute;inset:0;background-color:#1A1A1C;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJI_20260115095150_0094_D+%281%29-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,12,.2) 0%,rgba(11,11,12,0) 40%,rgba(11,11,12,.92) 100%)"></div>
+<div style="position:absolute;top:16px;left:16px;background:var(--acc,#E2593F);color:#fff;border-radius:999px;padding:6px 12px;font:500 9.5px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase">{{ L.startsIn }}</div>
+<div style="position:absolute;left:20px;right:20px;bottom:20px;color:#fff">
+<div style="font:400 31px/1.06 'Bodoni Moda',serif">{{ L.sunsetSet }}</div>
+<div style="margin-top:8px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(255,255,255,.7)">{{ L.noCover }}</div>
+</div>
+</div>
+<div style="margin:24px 24px 0">
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.42)">{{ L.lineup }}</div>
+<sc-for list="{{ lineup }}" as="l" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.09)">
+<div style="font:500 12px/1 Jost,sans-serif;color:{{ l.timeFg }};width:52px;flex:none">{{ l.time }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:400 17px/1.2 'Bodoni Moda',serif;color:#fff">{{ l.name }}</div>
+<div style="margin-top:4px;font:300 11.5px/1.2 Jost,sans-serif;color:rgba(255,255,255,.42)">{{ l.genre }}</div>
+</div>
+<div style="font:300 18px/1 Jost,sans-serif;color:rgba(255,255,255,.28)">›</div>
+</div>
+</sc-for>
+</div>
+<div style="margin:24px 24px 0">
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.42)">{{ L.weekTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:13px">
+<sc-for list="{{ weekRows }}" as="w" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:14px;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:13px 15px">
+<div style="font:500 11.5px/1 Jost,sans-serif;color:var(--acc,#E2593F);width:30px;flex:none;letter-spacing:.06em">{{ w.d }}</div>
+<div style="flex:1;min-width:0;font:400 14px/1.2 Jost,sans-serif;color:#fff">{{ w.name }}</div>
+<div style="font:300 12px/1 Jost,sans-serif;color:rgba(255,255,255,.45)">{{ w.time }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div onClick="{{ goDine }}" style="margin:22px 24px 0;border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:16px;display:flex;align-items:center;gap:13px;cursor:pointer">
+<div style="font:400 18px/1 Jost,sans-serif;color:var(--acc,#E2593F)">◑</div>
+<div style="flex:1"><div style="font:400 14.5px/1.2 Jost,sans-serif;color:#fff">{{ L.orderFromHere }}</div><div style="margin-top:4px;font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.42)">{{ L.deliverTo }}</div></div>
+<div style="font:300 18px/1 Jost,sans-serif;color:rgba(255,255,255,.3)">›</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isChat }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="flex:none;background:#fff;border-bottom:1px solid rgba(11,11,12,.09)">
+<div style="height:46px"></div>
+<div style="padding:4px 24px 16px;display:flex;align-items:center;gap:13px">
+<div onClick="{{ goHome }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(11,11,12,.18);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;cursor:pointer;flex:none">‹</div>
+<div style="width:38px;height:38px;border-radius:50%;background:#0B0B0C;color:#fff;display:flex;align-items:center;justify-content:center;font:400 14px/1 'Bodoni Moda',serif;flex:none">M</div>
+<div style="flex:1;min-width:0">
+<div style="font:400 16px/1.2 Jost,sans-serif">{{ L.concierge }}</div>
+<div style="margin-top:3px;display:flex;align-items:center;gap:6px;font:300 11.5px/1 Jost,sans-serif;color:rgba(11,11,12,.5)"><span style="width:6px;height:6px;border-radius:50%;background:#3FAE6A"></span>{{ L.online }}</div>
+</div>
+</div>
+</div>
+<div class="sc" style="flex:1;overflow-y:auto;padding:20px 20px 8px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ messages }}" as="m" hint-placeholder-count="5">
+<div style="align-self:{{ m.align }};max-width:78%;background:{{ m.bg }};color:{{ m.fg }};border:1px solid {{ m.bd }};border-radius:{{ m.radius }};padding:12px 15px;font:300 13.5px/1.45 Jost,sans-serif;text-wrap:pretty">{{ m.text }}</div>
+</sc-for>
+<div style="align-self:center;margin-top:6px;font:300 11px/1 Jost,sans-serif;color:rgba(11,11,12,.38)">{{ L.chatWa }}</div>
+</div>
+<div style="flex:none;padding:6px 20px 0">
+<div class="sc" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px">
+<sc-for list="{{ quickReplies }}" as="q" hint-placeholder-count="3">
+<button onClick="{{ q.onClick }}" style="flex:none;border:1px solid rgba(11,11,12,.2);background:transparent;border-radius:999px;padding:9px 15px;font:400 12.5px/1 Jost,sans-serif;cursor:pointer;white-space:nowrap">{{ q.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="flex:none;padding:8px 20px 26px;display:flex;gap:10px;align-items:center;border-top:1px solid rgba(11,11,12,.08)">
+<div style="flex:1;background:#fff;border:1px solid rgba(11,11,12,.12);border-radius:999px;padding:13px 18px;font:300 13.5px/1 Jost,sans-serif;color:rgba(11,11,12,.38)">{{ L.typeMsg }}</div>
+<div style="width:44px;height:44px;border-radius:50%;background:#0B0B0C;color:#fff;display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;flex:none;cursor:pointer">↑</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStay }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:124px;box-sizing:border-box">
+<div style="background:#0B0B0C;border-radius:0 0 26px 26px;padding-bottom:26px">
+<div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div style="padding:8px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ openSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.24);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer;flex:none">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="flex:1"><div style="font:400 26px/1 'Bodoni Moda',serif;color:#fff">{{ L.stayTitle }}</div></div>
+<div style="font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.45)">{{ L.stayDates }}</div>
+</div>
+<div onClick="{{ toggleKey }}" style="margin:22px 24px 0;border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:22px 20px;cursor:pointer;background:{{ keyBg }}">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div>
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.55)">{{ keyLabel }}</div>
+<div style="margin-top:11px;font:400 38px/1 'Bodoni Moda',serif;color:#fff">{{ keyNum }}</div>
+</div>
+<div style="width:60px;height:60px;border-radius:50%;border:2px solid {{ keyRing }};display:flex;align-items:center;justify-content:center;font:300 24px/1 Jost,sans-serif;color:#fff">{{ keyIcon }}</div>
+</div>
+<div style="margin-top:16px;font:300 12.5px/1.4 Jost,sans-serif;color:{{ keyHintFg }};text-wrap:pretty">{{ keyHint }}</div>
+</div>
+</div>
+
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.mealPlan }}</div>
+<div style="margin-top:12px;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:18px 18px 16px">
+<div style="display:flex;align-items:baseline;justify-content:space-between">
+<div style="font:400 22px/1 'Bodoni Moda',serif">{{ currentPlan }}</div>
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--acc,#E2593F)">{{ L.active }}</div>
+</div>
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{ planIncludes }}" as="p" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:9px;font:300 12.5px/1 Jost,sans-serif;color:{{ p.fg }}">
+<span style="width:15px;height:15px;border-radius:50%;background:{{ p.bg }};color:#fff;display:flex;align-items:center;justify-content:center;font:400 9px/1 Jost,sans-serif;flex:none">{{ p.mark }}</span>{{ p.label }}
+</div>
+</sc-for>
+</div>
+<div onClick="{{ togglePlan }}" style="margin-top:16px;padding-top:15px;border-top:1px solid rgba(11,11,12,.08);display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px">
+<div style="flex:1;min-width:0">
+<div style="font:400 14px/1.2 Jost,sans-serif">{{ planCta }}</div>
+<div style="margin-top:4px;font:300 11.5px/1.3 Jost,sans-serif;color:rgba(11,11,12,.5)">{{ planCtaSub }}</div>
+</div>
+<div style="font:300 18px/1 Jost,sans-serif;color:rgba(11,11,12,.3)">›</div>
+</div>
+</div>
+</div>
+
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.folio }}</div>
+<div style="margin-top:12px;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:6px 18px">
+<sc-for list="{{ folio }}" as="f" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid rgba(11,11,12,.07)">
+<div style="flex:1;min-width:0"><div style="font:400 14px/1.2 Jost,sans-serif">{{ f.label }}</div><div style="margin-top:4px;font:300 11px/1 Jost,sans-serif;color:rgba(11,11,12,.45)">{{ f.when }}</div></div>
+<div style="font:500 14px/1 Jost,sans-serif">{{ f.amt }}</div>
+</div>
+</sc-for>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 0 8px">
+<div style="font:400 15px/1 Jost,sans-serif">{{ L.openTotal }}</div>
+<div style="font:500 19px/1 Jost,sans-serif">{{ folioTotal }}</div>
+</div>
+<div style="padding:0 0 16px"><div style="background:#0B0B0C;color:#fff;border-radius:999px;padding:13px 0;text-align:center;font:500 13px/1 Jost,sans-serif;cursor:pointer">{{ L.settle }}</div></div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ isCirculo }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:124px;box-sizing:border-box">
+<div style="background:#0B0B0C;padding-bottom:28px;border-radius:0 0 26px 26px">
+<div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div style="padding:8px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ openSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.24);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer;flex:none">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="flex:1">
+<div style="font:400 26px/1 'Bodoni Moda',serif;color:#fff">{{ L.cirName }}</div>
+</div>
+</div>
+<div style="padding:20px 24px 0;font:300 12.5px/1.5 Jost,sans-serif;color:rgba(255,255,255,.5)">{{ L.cirSub }}</div>
+
+<sc-if value="{{ cirIsMember }}" hint-placeholder-val="{{ false }}">
+<div style="padding:22px 24px 0">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px">
+<div>
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.45)">{{ L.cirTier }}</div>
+<div style="margin-top:10px;font:400 52px/.92 'Bodoni Moda',serif;color:#fff">{{ L.cirBalance }}</div>
+<div style="margin-top:8px;font:400 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,#E2593F)">{{ L.cirPoints }}</div>
+</div>
+<div style="text-align:right;flex:none">
+<div style="font:400 24px/1 'Bodoni Moda',serif;color:#fff">{{ L.cirTier }}</div>
+<div style="margin-top:7px;font:300 11px/1 Jost,sans-serif;color:rgba(255,255,255,.45)">{{ L.stayDates }}</div>
+</div>
+</div>
+<div style="margin-top:20px;height:3px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden">
+<div style="height:100%;width:{{ cirProgressW }};background:var(--acc,#E2593F)"></div>
+</div>
+<div style="margin-top:10px;font:300 11.5px/1 Jost,sans-serif;color:rgba(255,255,255,.55)">{{ L.cirToNext }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showJoin }}" hint-placeholder-val="{{ true }}">
+<div style="margin:22px 24px 0;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:20px">
+<div style="font:400 24px/1.08 'Bodoni Moda',serif;color:#fff">{{ L.cirJoinTitle }}</div>
+<div style="margin-top:10px;font:300 12.5px/1.5 Jost,sans-serif;color:rgba(255,255,255,.55);text-wrap:pretty">{{ L.cirJoinSub }}</div>
+<div onClick="{{ joinCirculo }}" style="margin-top:16px;background:#fff;color:#0B0B0C;border-radius:999px;padding:15px 0;text-align:center;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.cirJoin }}</div>
+<div style="margin-top:13px;display:flex;align-items:center;gap:9px;font:300 11.5px/1.4 Jost,sans-serif;color:rgba(255,255,255,.45)">
+<span style="width:15px;height:15px;border-radius:50%;background:var(--acc,#E2593F);color:#fff;display:flex;align-items:center;justify-content:center;font:400 9px/1 Jost,sans-serif;flex:none">✓</span>{{ L.cirRes }}
+</div>
+</div>
+</sc-if>
+</div>
+
+<div style="padding:24px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.cirEarnTitle }}</div>
+<div style="margin-top:12px">
+<sc-for list="{{ cirEarn }}" as="e" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(11,11,12,.08)">
+<span style="font:300 13.5px/1.35 Jost,sans-serif;color:rgba(11,11,12,.68)">{{ e.k }}</span>
+<span style="font:500 13.5px/1 Jost,sans-serif;white-space:nowrap">{{ e.v }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:24px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.cirTiersTitle }}</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+<sc-for list="{{ cirTiers }}" as="t" hint-placeholder-count="4">
+<div style="background:{{ t.bg }};border:1px solid {{ t.bd }};border-radius:18px;padding:17px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+<div style="font:400 22px/1 'Bodoni Moda',serif;color:{{ t.fg }}">{{ t.name }}</div>
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--acc,#E2593F);white-space:nowrap">{{ t.badge }}</div>
+</div>
+<div style="margin-top:7px;font:300 11.5px/1 Jost,sans-serif;letter-spacing:.04em;color:{{ t.subFg }}">{{ t.req }}</div>
+<div style="margin-top:11px;font:300 12.5px/1.55 Jost,sans-serif;color:{{ t.perkFg }};text-wrap:pretty">{{ t.perks }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:24px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.cirRedeemTitle }}</div>
+<div style="margin-top:12px;background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:4px 18px">
+<sc-for list="{{ cirRedeem }}" as="r" hint-placeholder-count="5">
+<div onClick="{{ r.onClick }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid rgba(11,11,12,.07);cursor:pointer">
+<div style="flex:1;min-width:0;font:400 14px/1.3 Jost,sans-serif">{{ r.label }}</div>
+<div style="flex:none;text-align:right">
+<div style="font:500 14px/1 Jost,sans-serif">{{ r.cost }}</div>
+<div style="margin-top:4px;font:300 9.5px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(11,11,12,.42)">{{ L.cirPoints }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:124px;box-sizing:border-box">
+<div style="position:relative;height:230px">
+<div role="img" aria-label="Mía Tulum beach" style="position:absolute;inset:0;background-color:#DED8CE;background-image:url(https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJ1_1+%281%29-640w.jpg);background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.44) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,.72) 100%)"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:500 13px/1 Jost,sans-serif;color:#fff"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid #fff;border-radius:2px;display:inline-block"></span><span style="width:15px;height:9px;background:#fff;border-radius:1px;display:inline-block;opacity:.85"></span></span></div>
+<div onClick="{{ openSheet }}" style="position:absolute;top:50px;left:24px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.45);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer">
+<span style="width:14px;height:1px;background:#fff"></span><span style="width:14px;height:1px;background:#fff"></span>
+</div>
+<div style="position:absolute;left:24px;right:24px;bottom:22px;color:#fff">
+<div style="font:400 32px/1.04 'Bodoni Moda',serif">{{ L.contactTitle }}</div>
+<div style="margin-top:9px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(255,255,255,.7)">{{ L.contactSub }}</div>
+</div>
+</div>
+<div style="padding:20px 24px 0">
+<div style="background:#fff;border:1px solid rgba(11,11,12,.09);border-radius:18px;padding:4px 18px">
+<sc-for list="{{ contactRows }}" as="c" hint-placeholder-count="5">
+<div style="display:flex;align-items:flex-start;gap:14px;padding:15px 0;border-bottom:1px solid rgba(11,11,12,.07);cursor:pointer">
+<div style="width:22px;flex:none;font:400 15px/1 Jost,sans-serif;color:var(--acc,#E2593F);padding-top:2px">{{ c.icon }}</div>
+<div style="flex:1;min-width:0">
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ c.k }}</div>
+<div style="margin-top:7px;font:400 14px/1.4 Jost,sans-serif;text-wrap:pretty">{{ c.v }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.contactHoursTitle }}</div>
+<div style="margin-top:12px">
+<sc-for list="{{ contactHours }}" as="h" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(11,11,12,.08)">
+<span style="font:300 13.5px/1 Jost,sans-serif;color:rgba(11,11,12,.68)">{{ h.k }}</span>
+<span style="font:500 13.5px/1 Jost,sans-serif">{{ h.v }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="padding:22px 24px 0">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ L.contactSocial }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+<sc-for list="{{ socials }}" as="s" hint-placeholder-count="4">
+<span style="border:1px solid rgba(11,11,12,.18);border-radius:999px;padding:9px 15px;font:400 12.5px/1 Jost,sans-serif;cursor:pointer">{{ s.label }}</span>
+</sc-for>
+</div>
+</div>
+<div style="margin:22px 24px 0;background:#0B0B0C;color:#fff;border-radius:999px;padding:15px 0;text-align:center;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.contactMapCta }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBlog }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:124px;box-sizing:border-box">
+<div style="height:46px"></div>
+<div style="padding:6px 24px 0;display:flex;align-items:center;gap:14px">
+<div onClick="{{ openSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(11,11,12,.18);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer;flex:none">
+<span style="width:14px;height:1px;background:#0B0B0C"></span><span style="width:14px;height:1px;background:#0B0B0C"></span>
+</div>
+<div style="font:400 27px/1 'Bodoni Moda',serif">{{ L.blogTitle }}</div>
+</div>
+<div style="margin:14px 24px 0;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.6)">{{ L.blogSub }}</div>
+<div style="margin:14px 24px 0;padding:12px 14px;border:1px dashed rgba(11,11,12,.22);border-radius:12px;font:300 11.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.5);text-wrap:pretty">{{ L.blogNote }}</div>
+<div style="padding:18px 24px 0;display:flex;flex-direction:column;gap:16px">
+<sc-for list="{{ blogPosts }}" as="p" hint-placeholder-count="4">
+<div style="cursor:pointer">
+<div role="img" aria-label="{{ p.title }}" style="width:100%;height:172px;border-radius:16px;background-color:#DED8CE;background-image:url({{ p.img }});background-size:cover;background-position:center;filter:var(--pf,none)"></div>
+<div style="margin-top:13px;font:400 21px/1.18 'Bodoni Moda',serif;text-wrap:balance">{{ p.title }}</div>
+<div style="margin-top:7px;font:300 12.5px/1.45 Jost,sans-serif;color:rgba(11,11,12,.55);text-wrap:pretty">{{ p.sub }}</div>
+<div style="margin-top:10px;display:flex;align-items:center;gap:10px;font:400 10px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--acc,#E2593F)">
+<span>{{ L.blogRead }}</span><span style="color:rgba(11,11,12,.35)">{{ p.read }}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position:absolute;inset:0;background:#0B0B0C;overflow-y:auto;overflow-x:hidden;animation:rise .3s ease">
+<div style="min-height:844px;display:flex;flex-direction:column;justify-content:center;padding:60px 32px;box-sizing:border-box">
+<div style="width:62px;height:62px;border-radius:50%;border:1.5px solid var(--acc,#E2593F);display:flex;align-items:center;justify-content:center;font:300 26px/1 Jost,sans-serif;color:var(--acc,#E2593F);flex:none">✓</div>
+<div style="margin-top:26px;font:400 36px/1.08 'Bodoni Moda',serif;color:#fff;text-wrap:balance">{{ confirm.title }}</div>
+<div style="margin-top:14px;font:300 14px/1.6 Jost,sans-serif;color:rgba(255,255,255,.6);text-wrap:pretty">{{ confirm.body }}</div>
+<div style="margin-top:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,.13);display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ confirmRows }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px">
+<span style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);flex:none">{{ r.k }}</span>
+<span style="font:400 15px/1.3 Jost,sans-serif;color:#fff;text-align:right">{{ r.v }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:10px;margin-top:32px">
+<div onClick="{{ goHome }}" style="flex:1;text-align:center;background:#fff;color:#0B0B0C;border-radius:999px;padding:15px 0;font:500 14px/1 Jost,sans-serif;cursor:pointer">{{ L.backToDay }}</div>
+<div onClick="{{ goChat }}" style="border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:15px 20px;font:400 14px/1 Jost,sans-serif;cursor:pointer">{{ L.ask }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ showSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:20;background:rgba(11,11,12,.97);backdrop-filter:blur(6px);display:flex;flex-direction:column;animation:fade .2s ease">
+<div style="height:46px"></div>
+<div style="padding:8px 28px 0;display:flex;align-items:center;justify-content:space-between">
+<img src="https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Logo-Blanco-Sinfondo-480w.png" alt="Mía Tulum" style="height:46px;width:auto;margin-left:-6px">
+<div onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font:300 17px/1 Jost,sans-serif;color:#fff;cursor:pointer">✕</div>
+</div>
+<div class="sc" style="flex:1;overflow-y:auto;padding:26px 28px 34px">
+<div style="font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.38)">{{ L.sheetSite }}</div>
+<div style="display:flex;flex-direction:column;gap:1px;margin-top:14px">
+<sc-for list="{{ sheetSite }}" as="s" hint-placeholder-count="8">
+<div onClick="{{ s.onClick }}" style="padding:9px 0;font:400 27px/1.2 'Bodoni Moda',serif;color:{{ s.fg }};cursor:pointer">{{ s.label }}</div>
+</sc-for>
+</div>
+<div style="margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.13);font:400 9.5px/1 Jost,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.38)">{{ L.sheetApp }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+<sc-for list="{{ sheetApp }}" as="s" hint-placeholder-count="6">
+<div onClick="{{ s.onClick }}" style="border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:10px 16px;font:400 13px/1 Jost,sans-serif;color:{{ s.fg }};cursor:pointer">{{ s.label }}</div>
+</sc-for>
+</div>
+<div onClick="{{ goLogin }}" style="margin-top:28px;font:300 12.5px/1 Jost,sans-serif;color:rgba(255,255,255,.45);cursor:pointer;text-decoration:underline;text-underline-offset:5px">{{ L.screenNames.login }}</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:24px;display:flex;gap:2px;align-items:center;background:rgba(11,11,12,.94);backdrop-filter:blur(20px);border-radius:999px;padding:7px;box-shadow:0 14px 38px rgba(0,0,0,.32);z-index:9">
+<sc-for list="{{ tabs }}" as="n" hint-placeholder-count="5">
+<div onClick="{{ n.onClick }}" style="display:flex;align-items:center;gap:7px;padding:10px 13px;border-radius:999px;background:{{ n.bg }};color:{{ n.fg }};cursor:pointer">
+<span style="font:400 15px/1 Jost,sans-serif">{{ n.icon }}</span>
+<sc-if value="{{ n.active }}" hint-placeholder-val="{{ false }}"><span style="font:400 11.5px/1 Jost,sans-serif;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap">{{ n.label }}</span></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<div style="flex:1;min-width:260px;max-width:420px;position:sticky;top:44px">
+<div style="font:400 10px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:.45">{{ L.noteTitle }}</div>
+<div style="margin-top:14px;display:flex;flex-direction:column;gap:16px">
+<sc-for list="{{ notes }}" as="n" hint-placeholder-count="4">
+<div style="border-left:1px solid rgba(11,11,12,.18);padding-left:14px">
+<div style="font:400 15px/1.25 'Bodoni Moda',serif">{{ n.h }}</div>
+<div style="margin-top:6px;font:300 12.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.65);text-wrap:pretty">{{ n.b }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#E2593F&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#E2593F&quot;,&quot;#E9A13B&quot;,&quot;#2FA8A0&quot;,&quot;#0B0B0C&quot;],&quot;section&quot;:&quot;Brand&quot;},&quot;photoTreatment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Full color&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;Full color&quot;,&quot;Warm graded&quot;,&quot;Duotone&quot;],&quot;section&quot;:&quot;Brand&quot;},&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;es&quot;],&quot;section&quot;:&quot;Content&quot;}}">
+class Component extends DCLogic {
+  state = { lang: null, screen: "login", auth: "none", sheet: false,
+            mode: 0, openA: 1, roomIdx: 0, plan: 0, bed: 14, bedTime: 1, tier: 1,
+            cart: [], dineCat: 0, session: 1, shuttle: 0, keyOn: false, planFbe: false,
+            confirm: null, orderTotal: 0, admission: 1, bcTab: 0, expIdx: -1, spot: null };
+
+  CDN = "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/";
+
+  IMG = {
+    aerial: this.CDN + "DJ1_1+%281%29-640w.jpg",
+    aerial2: this.CDN + "DJI_20260115095150_0094_D+%281%29-640w.jpg",
+    aerial3: this.CDN + "DJI_20260101173036_0029_D-640w.jpg",
+    beach: this.CDN + "Mia_8+%284%29-640w.jpg",
+    loungers: this.CDN + "DSCF9720-ac5ae8ee-640w.jpg",
+    bcGirls: this.CDN + "Mia+Beach+Club+%281%29-640w.jpg",
+    rest: this.CDN + "MiaTulum-18-640w.jpg",
+    roomsHero: this.CDN + "Mia_51+%282%29-640w.jpg",
+    suite1: this.CDN + "dsc_9126--6a03a7f04fde6-640w.jpg",
+    suite2: this.CDN + "_dsc0682-hdr--6a03a70cc2a7f-640w.jpg",
+    suite3: this.CDN + "_dsc1055-hdr--6a03a90aa3dfd-640w.jpg",
+    yoga: this.CDN + "DSCF9662-640w.jpg",
+    yogaPal: this.CDN + "DSCF9450-bc277cb4-640w.jpg",
+    yogaMats: this.CDN + "DSCF9508-640w.jpg",
+    palapa: this.CDN + "AW5A5534-640w.jpg",
+    backbend: this.CDN + "DSC_2348-56bb79f1-640w.jpg",
+    massage: this.CDN + "Masaje+Mia.mp4.00_32_48_21.Imagen+fija001-640w.jpg",
+    temazcal1: this.CDN + "DSC_1638-640w.jpg",
+    temazcal2: this.CDN + "DSC_1810-640w.jpg",
+    palmLeaf: this.CDN + "MiaTulum-3359-640w.jpg",
+    surf: this.CDN + "MiaTulum-5054-640w.jpg",
+    gardenLight: this.CDN + "MiaTulum-5346-640w.jpg",
+    pathNice: this.CDN + "aw5a5459_1--6a037315c79e8-640w.jpg",
+    sunsetHands: this.CDN + "MiaTulum-4715-640w.jpg",
+    lying: this.CDN + "Alberca+Nat-57-640w.jpg",
+    wedAisle: this.CDN + "ceremonia+explanada-640w.jpeg",
+    wedDining: this.CDN + "ceremonia+de+playa-640w.webp",
+    wedTable: this.CDN + "E-I+sneakpeek-31-640w.jpg",
+    wedWomen: this.CDN + "Mia+Tulum+Wedding+Photographers-49-640w.jpg",
+    neonRoom: this.CDN + "E-I+sneakpeek-30-640w.jpg",
+    cenote: this.CDN + "1781016627071-4_3-XAE-640w.png",
+    logo: this.CDN + "Logo-Blanco-Sinfondo-480w.png"
+  };
+
+  SCREENS = ["login","guest","home","beach","sunbeds","dine","resort","room","checkout",
+             "weddings","wellness","experiences","cenote","tonight","chat","stay","circulo","contact","blog","confirm"];
+
+  D = { en: {
+    railAccess: "Getting in", railSite: "Site sections", railApp: "App tools",
+    screenNames: { login: "Sign in", guest: "Guest access", home: "Home", beach: "Beach Club",
+      sunbeds: "Sun bed map", dine: "Menu & order", resort: "Resort", room: "Room detail",
+      checkout: "Checkout", weddings: "Weddings", wellness: "Wellness", experiences: "Experiences",
+      cenote: "Cenote", tonight: "Today at Mía", chat: "Concierge", stay: "Your stay",
+      circulo: "Mía Círculo", contact: "Contact", blog: "Journal", confirm: "Confirmation" },
+    sessionLabels: { none: "Signed out", guest: "Guest session", member: "Ana L. · Marea" },
+    sessionSubs: { none: "Login screen is the entry point", guest: "Expires at end of day · no key, no points", member: "12,480 Olas · Suite 204" },
+    authShort: { none: "Out", guest: "Guest", member: "Member" },
+    spotBound: "Bound to",
+    noteTitle: "Design notes",
+    notes: [
+      ["Sign in is optional, never a wall", "The app opens on sign-in but every screen below it works without an account. Browsing, menus, schedules and admission prices need no identity at all — only things tied to money or a door do."],
+      ["Guests are tracked by their spot, not their name", "A QR sticker on each sun bed and table binds a session to bed 14 or table 6. Scanning it is the whole onboarding: the kitchen knows where to walk, the tab knows what to charge, and nobody typed an email. Room number plus last name does the same for in-house guests."],
+      ["What guest mode can't do", "No digital key (a door is a security boundary), no saved cards, no points, and the session dies at end of day or checkout. That gap is the honest reason to make an account, and the app says so at the moment it matters — right after a bill closes."],
+      ["Mía Círculo is the conversion engine", "Points (Olas) accrue on rooms, day passes, food, spa. Day guests earn too, which is the part Bonvoy and Hyatt can't do at a beach club — a Tulum local on the Residentes rate becomes a member with a stay in reach."],
+      ["Site IA, app hierarchy", "The website's eight sections all exist here, but the tab bar holds only what a person opens twice a day. Weddings, Journal and Contact live one tap deeper in the nav sheet, where low-frequency, high-intent content belongs."]
+    ],
+    tabs: [["Home", "◈"], ["Beach", "≋"], ["Resort", "◫"], ["Círculo", "✦"], ["You", "○"]],
+    sheetTitle: "Mía Tulum", sheetSite: "Explore", sheetApp: "Your visit", sheetClose: "Close",
+    sheetSiteKeys: ["home", "beach", "resort", "weddings", "wellness", "experiences", "blog", "contact"],
+    sheetAppKeys: ["tonight", "dine", "sunbeds", "chat", "stay", "circulo"],
+
+    loginTitle: "Where the music meets the sea.",
+    loginSub: "Sign in to manage your stay, your tab and your Olas.",
+    loginBtns: [["Continue with Apple", "", "#fff", "#0B0B0C"], ["Continue with Google", "", "transparent", "#fff"], ["Use email", "", "transparent", "#fff"]],
+    loginOr: "or", loginGuest: "Continue without an account",
+    loginGuestSub: "Order, browse and book by your bed, table or room number",
+    loginTerms: "Km 7.5, Zona Hotelera Tulum",
+    guestTitle: "No account needed.",
+    guestSub: "Tell us where you are and we'll do the rest. Nothing to create, nothing to remember.",
+    guestPaths: [
+      ["⌗", "Scan the code at your spot", "Every sun bed and table has one. It binds this session to bed 14 or table 6.", "Scan"],
+      ["◫", "I'm staying at Mía", "Room number and the last name on the booking.", "Find my stay"],
+      ["◇", "I have a reservation", "Confirmation code from your email.", "Enter code"]
+    ],
+    guestLimitsTitle: "As a guest you can",
+    guestLimits: [["Browse everything and see live schedules", 1], ["Order food and drinks to your spot", 1],
+      ["Reserve sun beds, yoga, temazcal and the cenote shuttle", 1], ["Pay on the tab tied to your bed or room", 1],
+      ["Open your door with the digital key", 0], ["Earn and spend Olas", 0], ["Keep your history after today", 0]],
+    guestFooter: "Guest sessions end at close of day, or at checkout. You can turn one into an account at any point and keep today's spend.",
+    guestScanning: "Point at the sticker on your sun bed",
+    eyebrow: "Tulum · 29° · Sunset 6:41", yourDay: "Your day", date: "Sat 15 Aug",
+    dayOf: "Day 2 of 4", remind: "Remind me",
+    heroTitle: ["Where the music meets the sea.", "Front row is open.", "Beyond the sand."],
+    modes: ["Stay", "Beach Club", "Explore"],
+    discoverTitle: ["Today at Mía", "On the sand", "Worth the trip"],
+    guestBannerTitle: "You're on bed 14, no account",
+    guestBannerSub: "Today's spend would be 1,840 Olas · about half a free day pass",
+    joinCta: "Join Círculo",
+    memberBannerTitle: "Marea · 12,480 Olas",
+    memberBannerSub: "1,520 to Cenote · guaranteed front row and a free temazcal",
+    agenda: [
+      ["08:00", "Breakfast", "Restaurant, beach side", "Included", "rest", "Fresh fruit, local ingredients, real coffee. Served steps from the sea, included in every stay, no exceptions.", "See the menu", "dine"],
+      ["09:00", "Daily yoga", "Palapa, ocean side · all levels", "6 left", "yogaPal", "Led by experienced instructors and open to every level. Included in your stay. The only requirement is showing up.", "Reserve a mat", "wellness"],
+      ["12:00", "Sun bed 14", "Front row, held until 13:00", "Held", "loungers", "Front row, two back from the water. Order food and drinks straight to it — the code on the bed knows where you are.", "Order to bed 14", "dine"],
+      ["18:41", "Sunset", "Best from the north deck", "Free", "aerial2", "Kalimba plays the sunset set on the sand from 17:30. No cover for guests staying with us.", "See today's line-up", "tonight"],
+      ["21:00", "Chef's table", "Six seats · Mexican tasting", "Book", "rest", "One menu, six seats, cooked in front of you. Mezcal pairing optional.", "Book a seat", "dine"]
+    ],
+    discover: [
+      [["15:00", "Massage by the sea", "50 or 80 min", "massage", "wellness"], ["25 min", "Cenote Casa Tortuga", "Included with your stay", "cenote", "cenote"], ["Thu · Sun", "Temazcal ritual", "Mayan sweat lodge at dusk", "temazcal1", "wellness"]],
+      [["12:00", "Sun beds", "Front row from $60", "loungers", "sunbeds"], ["17:30", "Sunset set", "Live DJ on the sand", "aerial2", "tonight"], ["Day pass", "VIP Backstage", "From $600 MXN", "bcGirls", "beach"]],
+      [["25 min", "Cenote Casa Tortuga", "Included with your stay", "cenote", "cenote"], ["Any date", "Beachfront weddings", "No venue rental fee", "wedAisle", "weddings"], ["Groups", "Private dinners", "A table set on the sand", "wedTable", "experiences"]]
+    ],
+
+    bcTitle: "Mía Beach Club",
+    bcAward: "Best Beachfront Beach Club, Riviera Maya · Best of Best Awards, Dubai 2024",
+    bcSub: "Sun beds, the bar, the music and the water. If you're staying with us, your room key opens all of it for the whole stay.",
+    bcTabs: ["Kitchen", "Admission", "Sun beds"],
+    bcOpen: "Open today · 8:00 to late",
+    kitchen: [
+      ["Breakfast", "8:00 – 11:00", "Fresh fruit, local ingredients, real coffee. Served steps from the sea, included in every stay.", "rest"],
+      ["Lunch", "11:30 – 18:00", "Ceviche, catch of the day off the grill and the beach club classics, brought to your bed.", "bcGirls"],
+      ["Dinner", "18:00 – late", "Candlelight on the sand, a kitchen that stays serious, and music that builds as the night does.", "wedTable"],
+      ["Wine cellar", "All day", "Labels from Mexico, France and further afield, plus mezcal chosen by the house.", "neonRoom"]
+    ],
+    bcIncludedTitle: "Every admission includes",
+    bcIncluded: ["Welcome drink", "Daily yoga class", "Live DJ sets", "Sun bed & towel", "Pool access", "Free parking", "Pet friendly"],
+    bcAdmTitle: "Choose your admission",
+    bcAdmNote: "Fully consumable — what you pay comes back as food and drinks.",
+    admissions: [
+      ["VIP Backstage", "1,500", "Front row bed, the best table at sunset, and a host who stays with you all day.",
+        ["Front row bed, guaranteed", "Reserved table for sunset", "Dedicated host", "Priority kitchen and bar", "Fully consumable"]],
+      ["Traditional", "1,000", "The whole beach club — bed, pool, music and kitchen, with your spend coming back on the plate.",
+        ["Sun bed by availability", "Pool access", "Towel service", "Fully consumable"]],
+      ["Residentes", "600", "For Quintana Roo residents. Same beach, same music, local rate — bring ID.",
+        ["Sun bed by availability", "Pool access", "Fully consumable", "Valid QR resident ID required"]]
+    ],
+    bcCurrency: "MXN", bcPerPerson: "per person, per day",
+    bcCta: "Continue", bcPick: "Pick your spot",
+
+    beachTitle: "Pick your spot", 
+    beachSub: "Front row goes first. Beds are held 45 minutes past your arrival time.",
+    seaSide: "← Sea", arrival: "Arrival", spotModes: ["Sun beds", "Tables"],
+    rowLabels: ["Front row", "Second row", "Palapa shade"],
+    tableLabels: ["Sand tables", "Deck tables"],
+    legend: ["Free", "Yours", "Taken"], hold: "Hold",
+    bedTimes: ["10:00", "12:00", "13:00", "14:00", "16:00"],
+    bedPick: "Bed", tablePick: "Table", bedNone: "Nothing selected", bedTap: "Tap a spot on the map",
+    bedFrom: "Front row · $60 · comes back as food and drinks",
+    qrNote: "The code on your bed binds your order and your tab to this spot.",
+
+    dineTitle: "Menu & order", deliverTo: "Deliver to sun bed 14, front row", changeLbl: "Change",
+    dineCats: ["Beach menu", "Breakfast", "Drinks", "Wine cellar", "Chef's table"],
+    dishes: [
+      [["Ceviche verde", "Catch of the day, serrano, lime, avocado", "$24", "Chef's pick"],
+       ["Grilled octopus", "Charred, chile de árbol, potato", "$28", ""],
+       ["Tuna tostadas", "Three, chipotle mayo, sesame", "$19", ""],
+       ["Watermelon & feta", "Mint, lime, chile salt", "$14", "Vegetarian"],
+       ["Whole fish", "For two, salsa macha, tortillas", "$52", ""]],
+      [["Chilaquiles verdes", "Egg, crema, queso fresco", "Included", "In your stay"],
+       ["Seasonal fruit", "Papaya, melon, lime", "Included", "In your stay"],
+       ["Huevos rancheros", "Two eggs, black beans, salsa", "Included", "In your stay"],
+       ["Cold brew", "House blend, over ice", "$6", ""]],
+      [["Mezcal negroni", "Espadín, campari, sweet vermouth", "$16", "House"],
+       ["Tulum spritz", "Hibiscus, prosecco, soda", "$14", ""],
+       ["Coco frío", "Straight from the coconut", "$9", ""],
+       ["Immunity shot", "Ginger, turmeric, citrus", "Included", "With admission"]],
+      [["Valle de Guadalupe, red", "Nebbiolo, Baja California", "$68", "Bottle"],
+       ["Natural wine, glass", "Ask for today's pour", "$13", ""],
+       ["Champagne, brut", "Reims, France", "$140", "Bottle"],
+       ["Mezcal flight", "Three pours, guided", "$38", ""]],
+      [["Chef's table, per seat", "Six courses, Mexican tasting", "$95", "6 seats"],
+       ["Mezcal pairing", "Four pours, guided", "$45", ""],
+       ["Private dinner on the sand", "Designed with you, from 2 guests", "Ask", "By request"]]
+    ],
+    order: "Order", eta: "12–18 min to your bed", items: "items", item: "item",
+    tabTitle: "On your tab", tabNote: "Charged to bed 14 · settle when you leave",
+
+    resortTitle: "Resort", resortSub: "Beachfront rooms for travelers who come to Tulum to actually live it.",
+    stayIncTitle: "Every stay includes",
+    stayIncludes: [["✦", "Full breakfast, every morning", "Fresh fruit, local ingredients, real coffee."],
+      ["≋", "Full beach club access", "Your room key opens sun beds, the bar, the music and the water."],
+      ["◐", "Daily yoga class", "Every morning under the palapa, every level welcome."],
+      ["⌾", "Pet friendly", "Because the best trips are the ones where nobody gets left behind."]],
+    dates: "Dates", dateRange: "15–19 Aug", guests: "Guests", twoAdults: "2 adults",
+    directRate: "Book direct for the member rate", perNight: "per night", from: "from",
+    rooms: [
+      ["Suite Premium, Ocean View with Jacuzzi", "30 m² · Private jacuzzi · King · Ocean view", "480", "suite1", "2 left at this rate", 1,
+       "The most immersive stay at Mía, opening toward the Caribbean with a private jacuzzi that makes the horizon feel like yours alone."],
+      ["Suite Deluxe, Ocean View with Jacuzzi", "Ocean view · King · Jacuzzi · Breakfast bar", "420", "suite2", "Available", 0,
+       "A majestic direct view of the Caribbean and a private whirlpool tub. Ideal for couples with the sound of the waves as company."],
+      ["King Deluxe, Ocean View", "Ocean view · King · Private balcony · Minibar", "360", "suite3", "Available", 0,
+       "Wake to an uninterrupted view of the Caribbean and let the sea breeze in from your private balcony."],
+      ["Deluxe, Partial Ocean View", "Partial ocean view · King · Balcony · AC", "310", "suite2", "Available", 0,
+       "A sanctuary of peace where luxury blends with the freshness of the natural surroundings."],
+      ["Double Partial, Ocean View", "2 full + 2 single beds · Balcony · AC", "340", "roomsHero", "3 left", 0,
+       "Designed for families or groups sharing unique moments, with a charming partial view of the Caribbean."],
+      ["Suite Garden View", "Garden view · King · Balcony · AC", "280", "pathNice", "Available", 0,
+       "An intimate retreat overlooking the tropical garden, with the sounds of the Mayan jungle from your balcony."],
+      ["Family, 4 beds", "25 m² · 4 singles · En-suite · Breakfast for all", "260", "roomsHero", "Available", 0,
+       "Individual beds in a private setting — for friends, retreats and travelers who want social but exclusive."],
+      ["Family, 6 beds", "25 m² · 6 singles · En-suite · Breakfast for all", "320", "suite2", "1 left", 1,
+       "Everyone gets their own space while the group stays together. One breakfast. One yoga class. One beach."],
+      ["Family, 8 beds", "25 m² · 8 singles · En-suite · Breakfast for all", "380", "suite3", "Available", 0,
+       "Configured for larger groups without sacrificing the atmosphere that defines the property."],
+      ["Studio with Terrace", "16 m² + terrace · Shared bathroom · Breakfast included", "175", "suite3", "Available", 0,
+       "Everything the Studio offers, plus your own outdoor space for morning coffee and afternoon shade."],
+      ["Studio", "16 m² · Shared bathroom · Ideal for solo travelers", "160", "suite1", "Available", 0,
+       "Smart and efficiently laid out — everything you need for a genuinely great stay, without anything you don't."],
+      ["Teepee, Partial Ocean View", "10 m² · Shared bathroom · Best value at Mía", "150", "beach", "1 left", 1,
+       "Intimate, personal and full of character. Intentionally minimal, for travelers who know the room isn't where the day happens."],
+      ["Teepee Garden View", "Garden view · Shared bathroom · Beach club access", "130", "palmLeaf", "Available", 0,
+       "Tucked into Mía's tropical grounds, surrounded by the vegetation that makes Tulum what it is."]
+    ],
+    features: [["◫", "Ocean view"], ["≋", "Private jacuzzi"], ["✦", "Breakfast 8 AM"], ["⌾", "Pet friendly"]],
+    mealPlan: "Meal plan",
+    plans: [["Bed & Breakfast", "Main dish, coffee, juice, fruit", "Included"], ["Full Board Experience", "Breakfast, lunch and dinner, drinks in", "+$95"]],
+    totalNights: "4 nights, taxes in", reserve: "Reserve", groupTitle: "Traveling with a group?",
+    groupBody: "Send us your dates, the number of guests and what you have in mind, and we'll put together a personalized quote.",
+    groupCta: "Ask the team",
+
+    coTitle: "Checkout", coStay: "Your stay", coBreak: "Price",
+    coPayTitle: "Payment", coPays: [["Apple Pay", "Face ID"], ["Visa ···· 4242", "Ana L."], ["Pay at the property", "Card held, charged on arrival"]],
+    coEarn: "You'll earn", coRoom: "Room", coTaxes: "Taxes & fees",
+    coEarnNight: "a free night, ocean view", coEarnNights: "free nights, ocean view",
+    coEarnPasses: "free day passes", coEarnToward: "toward your first free night",
+    coBtn: "Confirm and pay", coPolicy: "Free cancellation until 12 Aug · Check-in 3:00 PM",
+
+    wedTitle: "Weddings", wedSub: "Beachfront weddings in Tulum, Riviera Maya",
+    wedBody: "Celebrate love where the Caribbean Sea embraces every moment. From intimate ceremonies to grand celebrations, our oceanfront setting transforms to tell your story.",
+    wedNoFee: "No venue rental fee",
+    wedPoints: [["1.", "Special packages for intimate, mid-size & grand weddings"], ["2.", "Professional lighting, sound & ambiance"],
+      ["3.", "Oceanfront rooms for your guests"], ["4.", "Banquets and signature cocktails"]],
+    wedGalleryTitle: "The collection",
+    wedGallery: ["wedAisle", "wedTable", "wedWomen", "wedDining", "neonRoom"],
+    wedTestiTitle: "From couples who married here",
+    wedTesti: ["We planned everything from a distance and they turned our dream into reality.", "Andrea"],
+    wedCta: "Request a date", wedCtaSub: "A planner replies personally, usually same day",
+    wedForm: [["Estimated date", "March 2027"], ["Guests", "80"], ["Type of ceremony", "Beachfront, symbolic"]],
+
+    wellTitle: "Wellness", wellSub: "Slow down. Breathe. You're in Tulum.",
+    wellBody: "Wellness at Mía is not a spa menu. It's the rhythm of this place — the light, the waves through the palapa, the smell of copal before a temazcal begins.",
+    wellPillars: [
+      ["Yoga", "Every morning under the palapa, facing the sea. Led by experienced instructors, all levels welcome.", "Included for hotel guests · day visitors reserve ahead", "yogaMats"],
+      ["Temazcal", "A sacred Mayan sweat lodge, led by a trained guide. Heat, darkness, herbs, breath.", "Arrive hydrated · no heavy meals 3 hours before", "temazcal2"],
+      ["Massage by the sea", "Open-air treatments steps from the Caribbean, customized to what your body actually needs.", "Daily, subject to therapist availability", "massage"]
+    ],
+    wellBookTitle: "Book a session",
+    sessions: [
+      ["07:00", "45 min", "Sunrise yoga", "Palapa, ocean side", "Included", "6 left"],
+      ["09:00", "45 min", "Daily yoga", "Palapa, ocean side", "Included", "2 left"],
+      ["15:00", "50 min", "Massage by the sea", "Cabana on the sand", "$110", "Available"],
+      ["18:00", "90 min", "Temazcal ritual", "Thu & Sun only", "$85", "4 left"]
+    ],
+    wellGroup: "Private group bookings available for retreats, bachelorettes and corporate teams.",
+
+    expTitle: "Experiences", expSub: "Tulum doesn't happen to you. You happen to Tulum.",
+    expBody: "An amenity is something you check off a list. An experience is something you talk about when you get home.",
+    expItems: [
+      ["Bachelorette Party", "Reserved VIP beach area exclusively for your group.", "bcGirls", "chat"],
+      ["Group Beach Day", "Reserved sun bed sections, dedicated service and group menus, organized before you arrive.", "lying", "chat"],
+      ["Private Dinners", "A table set just for you, on the sand, with candlelight and the sound of the Caribbean.", "wedTable", "chat"],
+      ["Romantic Dinner", "Two people. The Caribbean. The rest figures itself out.", "wedDining", "chat"],
+      ["Marriage Proposals", "Completely personal, completely private, completely unexpected — planned to the last detail.", "sunsetHands", "chat"],
+      ["Beachfront Ceremonies", "The sea as your witness. Intimate ceremonies for twenty to celebrations for three hundred.", "wedAisle", "weddings"],
+      ["Corporate Groups", "Private venue spaces, custom catering, wellness programming and a dedicated host.", "aerial3", "chat"],
+      ["Music & Community", "Live sessions, afterbeach events and gatherings. Come alone, leave with a table full of people.", "aerial2", "tonight"],
+      ["Cenotes & Nature", "Complimentary access to Cenote Casa Tortuga, plus excursions to the wider cenote network.", "cenote", "cenote"]
+    ],
+    expAsk: "Ask about this", expIncluded: "Included with your stay",
+
+    included: "Included",
+    cenoteBody: "Casa Tortuga is a complex of cenotes in the jungle — open pools, cave systems and jungle trails, under 30 minutes from the beach. Access is complimentary with every stay. You only pick the shuttle.",
+    cenoteFacts: [["Distance", "25 min"], ["Duration", "3 hrs"], ["Price", "Included"]],
+    shuttle: "Shuttle", shuttles: [["09:00", "6 seats"], ["11:30", "3 seats"], ["14:00", "8 seats"]],
+    free: "Included", shuttleNone: "Pick a shuttle time",
+
+    tonightTitle: "Today at Mía", tonightSub: "Sat 15 Aug",
+    startsIn: "Starts in 2h 14m", sunsetSet: "Kalimba — sunset set",
+    noCover: "On the sand · no cover for guests", lineup: "On the decks",
+    lineupRows: [["09:00", "Daily yoga", "Palapa · included"], ["17:30", "Kalimba", "Organic house"],
+      ["20:00", "Sofía Vera", "Downtempo"], ["22:30", "Residents", "Afro house"], ["01:00", "Close", "Slow burn"]],
+    weekTitle: "This week", weekRows: [["Thu", "Temazcal at dusk", "18:00"], ["Fri", "Afterbeach session", "16:00"], ["Sun", "Live band, full moon", "19:00"]],
+    orderFromHere: "Order without leaving your spot",
+
+    concierge: "Concierge", online: "Replies in ~2 min", typeMsg: "Message",
+    chat: [
+      [0, "Good morning Ana — your bed is held in the front row until 13:00. Anything you need before then?"],
+      [1, "Can we get a late checkout on Tuesday?"],
+      [0, "Done — 14:00 on Tuesday, no charge. I've added it to your stay."],
+      [1, "Perfect. And is the cenote shuttle still open at 11:30?"],
+      [0, "Three seats left. Want me to hold two?"]
+    ],
+    quick: ["Hold two seats", "Book the chef's table", "Extra towels"],
+    chatWa: "Also on WhatsApp · +52 984 167 9090",
+
+    stayTitle: "Your stay", roomKey: "Suite", keyOff: "Tap to unlock · hold near the door",
+    keyOnHint: "Unlocked — the door responds for 8 seconds",
+    keyGuest: "Digital key needs an account", keyGuestSub: "Sign in and we'll issue it to this phone",
+    active: "Active",
+    planIncl: [["Breakfast, daily", 1], ["Lunch, 2 courses + 2 drinks", 0], ["Dinner, 3 courses + 2 drinks", 0], ["Cenote Casa Tortuga", 1]],
+    planInclFbe: [["Breakfast, daily", 1], ["Lunch, 2 courses + 2 drinks", 1], ["Dinner, 3 courses + 2 drinks", 1], ["Cenote Casa Tortuga", 1]],
+    planUp: "Upgrade to Full Board", planUpSub: "+$95 per night · every meal covered",
+    planDown: "Back to Bed & Breakfast", planDownSub: "Keep breakfast only",
+    folio: "Balance", folioRows: [["Mezcal negroni ×2", "Yesterday, 19:40", "$32"], ["Massage by the sea", "Yesterday, 15:00", "$110"],
+      ["Ceviche verde", "Today, 13:20", "$24"], ["Coco frío", "Today, 14:05", "$18"]],
+    openTotal: "Open balance", settle: "Settle now", stayDates: "15–19 Aug · Suite 204",
+
+    cirName: "Mía Círculo", cirSub: "The circle is small on purpose.",
+    cirPoints: "Olas", cirBalance: "12,480", cirTier: "Marea", cirNext: "Cenote",
+    cirToNext: "1,520 Olas to Cenote", cirProgress: 78,
+    cirEarnTitle: "How you earn",
+    cirEarn: [["Rooms, booked direct", "12 Olas per $1"], ["Day passes and beach club spend", "12 Olas per $1"],
+      ["Wellness, private dinners, events", "12 Olas per $1"], ["Referring someone who stays", "2,000 Olas"]],
+    cirTiersTitle: "Tiers",
+    cirTiers: [
+      ["Arena", "Join", "10 Olas per $1 · member rate · welcome drink"],
+      ["Marea", "5 nights or 5 day passes", "12 Olas per $1 · early check-in · sun bed held to 13:00 · 10% off day passes"],
+      ["Cenote", "15 nights", "15 Olas per $1 · upgrade when available · one temazcal per stay · front row priority · 14:00 checkout"],
+      ["Círculo Interior", "30 nights, by invitation", "20 Olas per $1 · guaranteed upgrade · VIP Backstage at no cover · a free night each year · your own concierge"]
+    ],
+    cirRedeemTitle: "Spend your Olas",
+    cirRedeem: [["A free night, ocean view", "12,000", 1], ["Day pass, Traditional", "3,500", 1],
+      ["Massage by the sea", "4,500", 1], ["Temazcal ceremony", "3,000", 1], ["Chef's table, one seat", "8,000", 1]],
+    cirJoinTitle: "Join Círculo", cirJoinSub: "Today's spend on bed 14 becomes 1,840 Olas the moment you do.",
+    cirJoin: "Create my account", cirRes: "Residentes verified — local rate saved to your account",
+    cirRedeemCta: "Redeem",
+
+    contactTitle: "Contact", contactSub: "Km 7.5, Zona Hotelera Tulum",
+    contactRows: [["Call", "+52 984 167 9090", "◐"], ["WhatsApp", "+52 984 167 9090", "◇"],
+      ["Concierge", "concierge@miatulum.com", "✦"], ["General", "info@miatulum.com", "○"],
+      ["Address", "Carretera Tulum Boca-Paila km 7.5, Zona Hotelera, 77760 Tulum, Q.R.", "◈"]],
+    contactHoursTitle: "Good to know",
+    contactHours: [["Breakfast", "from 8:00 AM"], ["Check-in", "3:00 PM"], ["Check-out", "11:00 AM"], ["Beach club", "8:00 AM – late"]],
+    contactSocial: "Follow", socials: ["Instagram", "Facebook", "TikTok", "YouTube"],
+    contactMapCta: "Open in maps",
+
+    blogTitle: "Journal", blogSub: "Notes from the beach, the kitchen and the decks.",
+    blogNote: "Proposed structure — the site's blog has no posts yet, so these are placeholders for the kind of pieces that would run here.",
+    blogPosts: [
+      ["A guide to Tulum's cenotes, starting with the one you already have", "Casa Tortuga, and where to go after it", "6 min", "cenote"],
+      ["What actually happens in a temazcal", "Heat, herbs and the part nobody warns you about", "4 min", "temazcal1"],
+      ["The sunset set, explained", "How the music at Mía is built, hour by hour", "5 min", "aerial2"],
+      ["Traveling to Tulum with your dog", "What to pack and where they're welcome", "3 min", "pathNice"]
+    ],
+    blogRead: "Read",
+
+    cTitleRoom: "Suite reserved.", cTitleBed: "Your spot is held.", cTitleOrder: "On its way.",
+    cTitleWell: "Session reserved.", cTitleShuttle: "Seat saved.", cTitlePass: "Day pass confirmed.",
+    cTitleJoin: "Welcome to Círculo.", cTitleWed: "Request sent.",
+    cBodyRoom: "Held under your name. A confirmation is in your inbox and the team knows you're coming.",
+    cBodyBed: "Held 45 minutes past your arrival. Order straight to it whenever you like.",
+    cBodyOrder: "The kitchen has it. We'll bring it to you — no need to move.",
+    cBodyWell: "Bring nothing. Mats and towels are set out ten minutes before.",
+    cBodyShuttle: "Meet at reception ten minutes early. Towels are in the van.",
+    cBodyPass: "Show this at the entrance. Your admission is fully consumable once you're in.",
+    cBodyJoin: "Today's spend is already counted. Your key and your Olas are live.",
+    cBodyWed: "A planner will reach out personally, usually the same day.",
+    kWhen: "When", kWhere: "Where", kPlan: "Plan", kTotal: "Total", kBed: "Spot", kEta: "Ready in",
+    kSeats: "Seats", kOlas: "Olas earned", kTier: "Tier", kGuests: "Guests", kAdmission: "Admission",
+    backToDay: "Back to my day", ask: "Ask", addWallet: "Add to wallet"
+  }, es: {
+    railAccess: "Entrar", railSite: "Secciones del sitio", railApp: "Herramientas",
+    screenNames: { login: "Iniciar sesión", guest: "Acceso sin cuenta", home: "Inicio", beach: "Beach Club",
+      sunbeds: "Mapa de camastros", dine: "Menú y pedidos", resort: "Resort", room: "Detalle",
+      checkout: "Pago", weddings: "Bodas", wellness: "Bienestar", experiences: "Experiencias",
+      cenote: "Cenote", tonight: "Hoy en Mía", chat: "Concierge", stay: "Tu estancia",
+      circulo: "Mía Círculo", contact: "Contacto", blog: "Diario", confirm: "Confirmación" },
+    sessionLabels: { none: "Sin sesión", guest: "Sesión de invitado", member: "Ana L. · Marea" },
+    sessionSubs: { none: "La entrada es la pantalla de login", guest: "Expira al cerrar el día · sin llave ni puntos", member: "12,480 Olas · Suite 204" },
+    authShort: { none: "Fuera", guest: "Invitado", member: "Socia" },
+    spotBound: "Ligada a", noteTitle: "Notas de diseño",
+    tabs: [["Inicio", "◈"], ["Playa", "≋"], ["Resort", "◫"], ["Círculo", "✦"], ["Tú", "○"]],
+    sheetSite: "Explorar", sheetApp: "Tu visita", sheetClose: "Cerrar",
+    loginTitle: "Donde la música se encuentra con el mar.",
+    loginSub: "Inicia sesión para manejar tu estancia, tu cuenta y tus Olas.",
+    loginBtns: [["Continuar con Apple", "", "#fff", "#0B0B0C"], ["Continuar con Google", "", "transparent", "#fff"], ["Usar correo", "", "transparent", "#fff"]],
+    loginOr: "o", loginGuest: "Continuar sin cuenta",
+    loginGuestSub: "Pide, explora y reserva con tu camastro, mesa o habitación",
+    guestTitle: "No necesitas cuenta.",
+    guestSub: "Dinos dónde estás y nosotros hacemos el resto. Nada que crear, nada que recordar.",
+    guestPaths: [
+      ["⌗", "Escanea el código de tu lugar", "Cada camastro y mesa tiene uno. Liga esta sesión al camastro 14 o la mesa 6.", "Escanear"],
+      ["◫", "Estoy hospedado en Mía", "Número de habitación y apellido de la reserva.", "Buscar mi estancia"],
+      ["◇", "Tengo una reserva", "Código de confirmación de tu correo.", "Ingresar código"]
+    ],
+    guestLimitsTitle: "Como invitado puedes",
+    guestLimits: [["Explorar todo y ver horarios en vivo", 1], ["Pedir comida y bebida a tu lugar", 1],
+      ["Reservar camastros, yoga, temazcal y transporte al cenote", 1], ["Pagar en la cuenta de tu camastro o habitación", 1],
+      ["Abrir tu puerta con la llave digital", 0], ["Acumular y usar Olas", 0], ["Conservar tu historial después de hoy", 0]],
+    guestFooter: "Las sesiones de invitado terminan al cerrar el día o al hacer checkout. Puedes convertirla en cuenta cuando quieras y conservar el consumo de hoy.",
+    guestScanning: "Apunta al sticker de tu camastro",
+    eyebrow: "Tulum · 29° · Atardecer 6:41", yourDay: "Tu día", date: "Sáb 15 Ago",
+    dayOf: "Día 2 de 4", remind: "Recordar",
+    heroTitle: ["Donde la música se encuentra con el mar.", "Primera fila libre.", "Más allá de la arena."],
+    modes: ["Hospedaje", "Beach Club", "Explorar"],
+    discoverTitle: ["Hoy en Mía", "En la arena", "Vale el viaje"],
+    guestBannerTitle: "Estás en el camastro 14, sin cuenta",
+    guestBannerSub: "El consumo de hoy serían 1,840 Olas · medio day pass",
+    joinCta: "Unirme a Círculo",
+    memberBannerTitle: "Marea · 12,480 Olas",
+    memberBannerSub: "1,520 para Cenote · primera fila garantizada y un temazcal",
+    bcTitle: "Mía Beach Club", bcOpen: "Abierto hoy · 8:00 hasta tarde",
+    bcAward: "Mejor Beach Club frente al mar, Riviera Maya · Best of Best Awards, Dubái 2024",
+    bcSub: "Camastros, la barra, la música y el agua. Si te hospedas con nosotros, tu llave abre todo durante toda la estancia.",
+    bcTabs: ["Cocina", "Admisión", "Camastros"],
+    bcIncludedTitle: "Toda admisión incluye",
+    bcIncluded: ["Bebida de bienvenida", "Clase de yoga diaria", "DJ en vivo", "Camastro y toalla", "Alberca", "Estacionamiento", "Pet friendly"],
+    bcAdmTitle: "Elige tu admisión", bcAdmNote: "Totalmente consumible — lo que pagas regresa en alimentos y bebidas.",
+    bcCurrency: "MXN", bcPerPerson: "por persona, por día", bcCta: "Continuar", bcPick: "Elige tu lugar",
+    beachTitle: "Elige tu lugar", beachSub: "La primera fila se va primero. Se aparta 45 minutos después de tu hora de llegada.",
+    seaSide: "← Mar", arrival: "Llegada", spotModes: ["Camastros", "Mesas"],
+    rowLabels: ["Primera fila", "Segunda fila", "Sombra palapa"], tableLabels: ["Mesas en arena", "Mesas en deck"],
+    legend: ["Libre", "Tuyo", "Ocupado"], hold: "Apartar",
+    bedPick: "Camastro", tablePick: "Mesa", bedNone: "Sin selección", bedTap: "Toca un lugar en el mapa",
+    bedFrom: "Primera fila · $60 · regresa en consumo",
+    qrNote: "El código de tu camastro liga tu pedido y tu cuenta a este lugar.",
+    dineTitle: "Menú y pedidos", deliverTo: "Entregar en camastro 14, primera fila", changeLbl: "Cambiar",
+    dineCats: ["Menú playa", "Desayuno", "Bebidas", "Cava", "Mesa del chef"],
+    order: "Pedir", eta: "12–18 min a tu camastro", items: "artículos", item: "artículo",
+    tabTitle: "En tu cuenta", tabNote: "Cargado al camastro 14 · liquidas al salir",
+    resortTitle: "Resort", resortSub: "Habitaciones frente al mar para quien viene a Tulum a vivirlo de verdad.",
+    stayIncTitle: "Toda estancia incluye",
+    dates: "Fechas", dateRange: "15–19 Ago", guests: "Huéspedes", twoAdults: "2 adultos",
+    directRate: "Reserva directo para la tarifa de socio", perNight: "por noche", from: "desde",
+    mealPlan: "Plan de comidas", totalNights: "4 noches, impuestos incl.", reserve: "Reservar",
+    groupTitle: "¿Viajas en grupo?", groupCta: "Escribir al equipo",
+    coTitle: "Pago", coStay: "Tu estancia", coBreak: "Precio", coPayTitle: "Método de pago",
+    coEarn: "Vas a acumular", coRoom: "Habitación", coTaxes: "Impuestos y cargos",
+    coEarnNight: "una noche gratis, vista al mar", coEarnNights: "noches gratis, vista al mar",
+    coEarnPasses: "day passes gratis", coEarnToward: "para tu primera noche gratis",
+    coBtn: "Confirmar y pagar", coPolicy: "Cancelación gratis hasta el 12 Ago · Check-in 3:00 PM",
+    wedTitle: "Bodas", wedSub: "Bodas frente al mar en Tulum, Riviera Maya", wedNoFee: "Sin renta de venue",
+    wedGalleryTitle: "La colección", wedTestiTitle: "De parejas que se casaron aquí",
+    wedCta: "Solicitar una fecha", wedCtaSub: "Una planner responde personalmente, casi siempre el mismo día",
+    wellTitle: "Bienestar", wellSub: "Baja el ritmo. Respira. Estás en Tulum.", wellBookTitle: "Reservar sesión",
+    expTitle: "Experiencias", expSub: "Tulum no te pasa. Tú le pasas a Tulum.",
+    expAsk: "Preguntar", expIncluded: "Incluido en tu estancia", included: "Incluido",
+    shuttle: "Transporte", free: "Incluido", shuttleNone: "Elige un horario",
+    tonightTitle: "Hoy en Mía", tonightSub: "Sáb 15 Ago", startsIn: "Empieza en 2h 14m",
+    sunsetSet: "Kalimba — set de atardecer", noCover: "En la arena · sin cover para huéspedes",
+    lineup: "En cabina", weekTitle: "Esta semana", orderFromHere: "Pide sin moverte de tu lugar",
+    concierge: "Concierge", online: "Responde en ~2 min", typeMsg: "Mensaje",
+    quick: ["Aparta dos lugares", "Reservar mesa del chef", "Toallas extra"],
+    chatWa: "También por WhatsApp · +52 984 167 9090",
+    stayTitle: "Tu estancia", roomKey: "Suite", keyOff: "Toca para abrir · acerca a la puerta",
+    keyOnHint: "Abierta — la puerta responde 8 segundos",
+    keyGuest: "La llave digital requiere cuenta", keyGuestSub: "Inicia sesión y la emitimos a este teléfono",
+    active: "Activo", planUp: "Cambiar a Full Board", planUpSub: "+$95 por noche · todas las comidas",
+    planDown: "Volver a Bed & Breakfast", planDownSub: "Solo desayuno",
+    folio: "Saldo", openTotal: "Saldo abierto", settle: "Liquidar ahora", stayDates: "15–19 Ago · Suite 204",
+    cirSub: "El círculo es pequeño a propósito.", cirEarnTitle: "Cómo acumulas",
+    cirTiersTitle: "Niveles", cirRedeemTitle: "Usa tus Olas", cirToNext: "1,520 Olas para Cenote",
+    cirJoinTitle: "Unirme a Círculo", cirJoinSub: "El consumo de hoy en el camastro 14 se vuelven 1,840 Olas al hacerlo.",
+    cirJoin: "Crear mi cuenta", cirRes: "Residente verificado — tarifa local guardada en tu cuenta",
+    cirRedeemCta: "Canjear",
+    contactTitle: "Contacto", contactSub: "Km 7.5, Zona Hotelera Tulum",
+    contactHoursTitle: "Bueno saber", contactSocial: "Síguenos", contactMapCta: "Abrir en mapas",
+    blogTitle: "Diario", blogSub: "Notas de la playa, la cocina y la cabina.", blogRead: "Leer",
+    cTitleRoom: "Suite reservada.", cTitleBed: "Tu lugar está apartado.", cTitleOrder: "Va en camino.",
+    cTitleWell: "Sesión reservada.", cTitleShuttle: "Lugar guardado.", cTitlePass: "Day pass confirmado.",
+    cTitleJoin: "Bienvenida a Círculo.", cTitleWed: "Solicitud enviada.",
+    kWhen: "Cuándo", kWhere: "Dónde", kPlan: "Plan", kTotal: "Total", kBed: "Lugar", kEta: "Listo en",
+    kSeats: "Lugares", kOlas: "Olas ganadas", kTier: "Nivel", kGuests: "Personas", kAdmission: "Admisión",
+    backToDay: "Volver a mi día", ask: "Preguntar", addWallet: "Añadir a wallet"
+  } };
+
+  go = s => this.setState({ screen: s, sheet: false });
+  money = n => "$" + n.toLocaleString("en-US");
+  NIGHT = 12000; PASS = 3500;
+
+  earnSub(L, olas) {
+    if (olas >= this.NIGHT) {
+      const n = Math.floor(olas / this.NIGHT);
+      return L.cirPoints + " — " + (n === 1 ? L.coEarnNight : n + " " + L.coEarnNights);
+    }
+    if (olas >= this.PASS) return L.cirPoints + " — " + Math.floor(olas / this.PASS) + " " + L.coEarnPasses;
+    return L.cirPoints + " — " + L.coEarnToward;
+  }
+
+  renderVals() {
+    const lang = this.state.lang || this.props.lang || "en";
+    const L = lang === "en" ? this.D.en : Object.assign({}, this.D.en, this.D.es);
+    const I = this.IMG, st = this.state;
+    const acc = this.props.accent || "#E2593F";
+    const pf = { "Full color": "none", "Warm graded": "saturate(1.06) sepia(.1) contrast(1.03)",
+      "Duotone": "grayscale(1) sepia(.45) hue-rotate(-14deg) contrast(1.08) brightness(.96)" }[this.props.photoTreatment] || "none";
+    const sc = st.screen, go = this.go, on = (b, y, n) => (b ? y : n);
+
+    const rail = [
+      { title: L.railAccess, keys: ["login", "guest"] },
+      { title: L.railSite, keys: ["home", "beach", "resort", "weddings", "wellness", "experiences", "blog", "contact"] },
+      { title: L.railApp, keys: ["sunbeds", "dine", "tonight", "chat", "stay", "circulo", "room", "checkout", "cenote", "confirm"] }
+    ];
+
+    const room = L.rooms[st.roomIdx];
+    const nightly = parseInt(room[2], 10);
+    const planLine = st.plan === 1 ? 380 : 0;
+    const sub = nightly * 4 + planLine;
+    const tax = Math.round(sub * 0.16);
+    const grand = sub + tax;
+    const roomTotal = grand;
+    const cartTotal = st.cart.reduce((s, k) => {
+      const p = k.split(":"), price = L.dishes[+p[0]][+p[1]][2];
+      return s + (price.charAt(0) === "$" ? parseInt(price.slice(1), 10) : 0);
+    }, 0);
+    const adm = L.admissions[st.admission];
+    const confirms = {
+      room: { title: L.cTitleRoom, body: L.cBodyRoom, rows: [[L.kWhen, L.dateRange], [L.kWhere, room[0]],
+        [L.kPlan, L.plans[st.plan][0]], [L.kTotal, "$" + grand], [L.kOlas, (grand * 12).toLocaleString("en-US")]] },
+      bed: { title: L.cTitleBed, body: L.cBodyBed, rows: [[L.kBed, "#" + st.bed],
+        [L.kWhen, L.bedTimes[st.bedTime]], [L.kTotal, "$60"]] },
+      order: { title: L.cTitleOrder, body: L.cBodyOrder, rows: [[L.kWhere, L.bedPick + " 14"],
+        [L.kEta, "12–18 min"], [L.kTotal, st.orderTotal ? "$" + st.orderTotal : L.included]] },
+      well: { title: L.cTitleWell, body: L.cBodyWell, rows: [[L.kWhen, L.sessions[st.session][0]],
+        [L.kWhere, L.sessions[st.session][3]], [L.kTotal, L.sessions[st.session][4]]] },
+      shuttle: { title: L.cTitleShuttle, body: L.cBodyShuttle, rows: [[L.kWhen, L.shuttles[st.shuttle][0]],
+        [L.kSeats, "2"], [L.kTotal, L.free]] },
+      pass: { title: L.cTitlePass, body: L.cBodyPass, rows: [[L.kAdmission, adm[0]], [L.kWhen, L.date],
+        [L.kGuests, "2"], [L.kTotal, "$" + adm[1] + " " + L.bcCurrency]] },
+      join: { title: L.cTitleJoin, body: L.cBodyJoin, rows: [[L.kTier, "Arena"], [L.kOlas, "1,840"],
+        [L.kWhere, L.bedPick + " 14"]] },
+      wed: { title: L.cTitleWed, body: L.cBodyWed, rows: [[L.kWhen, "March 2027"], [L.kGuests, "80"]] }
+    };
+    const cf = confirms[st.confirm] || confirms.room;
+
+    return {
+      accent: acc, photoFilter: pf, L, img: I,
+      setEn: () => this.setState({ lang: "en" }), setEs: () => this.setState({ lang: "es" }),
+      enBg: on(lang === "en", "#0B0B0C", "transparent"), enFg: on(lang === "en", "#fff", "#0B0B0C"),
+      esBg: on(lang === "es", "#0B0B0C", "transparent"), esFg: on(lang === "es", "#fff", "#0B0B0C"),
+
+      sessionLabel: L.sessionLabels[st.auth],
+      sessionSub: st.auth === "guest" && st.spot ? L.spotBound + " " + st.spot : L.sessionSubs[st.auth],
+      authSwitch: ["none", "guest", "member"].map(a => ({
+        label: L.authShort[a], onClick: () => this.setState({ auth: a }),
+        bg: on(st.auth === a, "#0B0B0C", "transparent"), fg: on(st.auth === a, "#fff", "rgba(11,11,12,.6)"),
+        bd: on(st.auth === a, "#0B0B0C", "rgba(11,11,12,.2)")
+      })),
+
+      railGroups: rail.map(g => ({ title: g.title, items: g.keys.map(k => ({
+        label: L.screenNames[k], num: String(this.SCREENS.indexOf(k) + 1).padStart(2, "0"),
+        onClick: () => this.setState({ screen: k, sheet: false, confirm: st.confirm || "room" }),
+        bg: on(sc === k, "#0B0B0C", "transparent"), fg: on(sc === k, "#fff", "rgba(11,11,12,.66)")
+      })) })),
+
+      notes: L.notes.map(n => ({ h: n[0], b: n[1] })),
+
+      isLogin: sc === "login", isGuest: sc === "guest", isHome: sc === "home", isBeach: sc === "beach",
+      isSunbeds: sc === "sunbeds", isDine: sc === "dine", isResort: sc === "resort", isRoom: sc === "room",
+      isCheckout: sc === "checkout", isWeddings: sc === "weddings", isWellness: sc === "wellness",
+      isExperiences: sc === "experiences", isCenote: sc === "cenote", isTonight: sc === "tonight",
+      isChat: sc === "chat", isStay: sc === "stay", isCirculo: sc === "circulo", isContact: sc === "contact",
+      isBlog: sc === "blog", isConfirm: sc === "confirm",
+      showTabs: ["home","beach","resort","weddings","wellness","experiences","tonight","stay","circulo","contact","blog"].indexOf(sc) > -1,
+      showSheet: st.sheet,
+      openSheet: () => this.setState({ sheet: true }), closeSheet: () => this.setState({ sheet: false }),
+      goHome: () => go("home"), goBeach: () => go("beach"), goResort: () => go("resort"),
+      goSunbeds: () => go("sunbeds"), goDine: () => go("dine"), goChat: () => go("chat"),
+      goCirculo: () => go("circulo"), goGuest: () => go("guest"), goWeddings: () => go("weddings"),
+      goLogin: () => this.setState({ screen: "login", auth: "none", spot: null }),
+
+      tabs: L.tabs.map((t, i) => {
+        const target = ["home", "beach", "resort", "circulo", "stay"][i];
+        const active = sc === target;
+        return { label: t[0], icon: t[1], active, onClick: () => go(target),
+          bg: on(active, "#fff", "transparent"), fg: on(active, "#0B0B0C", "rgba(255,255,255,.6)") };
+      }),
+      sheetSite: L.sheetSiteKeys.map(k => ({ label: L.screenNames[k], onClick: () => go(k),
+        fg: on(sc === k, acc, "#fff") })),
+      sheetApp: L.sheetAppKeys.map(k => ({ label: L.screenNames[k], onClick: () => go(k),
+        fg: on(sc === k, acc, "rgba(255,255,255,.72)") })),
+
+      loginBtns: L.loginBtns.map(b => ({ label: b[0], bg: b[2], fg: b[3],
+        bd: on(b[2] === "#fff", "#fff", "rgba(255,255,255,.34)"),
+        onClick: () => this.setState({ auth: "member", screen: "home" }) })),
+      guestPaths: L.guestPaths.map((p, i) => ({ icon: p[0], title: p[1], sub: p[2], cta: p[3],
+        onClick: () => this.setState({ auth: "guest", screen: "home", spot: ["Sun bed 14", "Suite 204", "Res. MIA-8841"][i] }) })),
+      guestLimits: L.guestLimits.map(g => ({ label: g[0], mark: on(g[1] === 1, "✓", "✕"),
+        bg: on(g[1] === 1, acc, "rgba(11,11,12,.12)"),
+        fg: on(g[1] === 1, "rgba(11,11,12,.8)", "rgba(11,11,12,.4)") })),
+
+      isMode0: st.mode === 0, isMode1: st.mode === 1, isMode2: st.mode === 2,
+      heroTitle: L.heroTitle[st.mode], discoverTitle: L.discoverTitle[st.mode],
+      modes: L.modes.map((label, i) => ({ label, onClick: () => this.setState({ mode: i }),
+        bg: on(i === st.mode, "#0B0B0C", "transparent"), fg: on(i === st.mode, "#fff", "rgba(11,11,12,.7)"),
+        bd: on(i === st.mode, "#0B0B0C", "rgba(11,11,12,.2)") })),
+      showBanner: st.auth !== "none",
+      bannerTitle: on(st.auth === "guest", L.guestBannerTitle, L.memberBannerTitle),
+      bannerSub: on(st.auth === "guest", L.guestBannerSub, L.memberBannerSub),
+      bannerCta: on(st.auth === "guest", L.joinCta, L.cirPoints),
+      bannerBg: on(st.auth === "guest", "#0B0B0C", "rgba(255,255,255,.62)"),
+      bannerFg: on(st.auth === "guest", "#fff", "#0B0B0C"),
+      bannerSubFg: on(st.auth === "guest", "rgba(255,255,255,.6)", "rgba(11,11,12,.55)"),
+      bannerCtaBg: on(st.auth === "guest", acc, "#0B0B0C"),
+      onBanner: () => go("circulo"),
+      agenda: L.agenda.map((it, i) => {
+        const open = i === st.openA, past = i === 0;
+        return { time: it[0], title: it[1], place: it[2], tag: it[3], img: I[it[4]], body: it[5], cta: it[6],
+          open, onToggle: () => this.setState({ openA: st.openA === i ? -1 : i }), onCta: () => go(it[7]),
+          timeFg: on(past, "rgba(11,11,12,.3)", "rgba(11,11,12,.62)"),
+          dot: open ? acc : past ? "rgba(11,11,12,.2)" : "#0B0B0C",
+          ring: on(open, "rgba(226,89,63,.16)", "transparent"),
+          cardBg: open ? "#fff" : past ? "transparent" : "rgba(255,255,255,.6)",
+          cardBd: on(open, "rgba(11,11,12,.1)", "rgba(11,11,12,.08)"),
+          titleFg: on(past, "rgba(11,11,12,.42)", "#0B0B0C"),
+          metaFg: on(past, "rgba(11,11,12,.32)", "rgba(11,11,12,.5)"),
+          tagBg: open ? acc : "rgba(11,11,12,.07)", tagFg: on(open, "#fff", "rgba(11,11,12,.5)") };
+      }),
+      discover: L.discover[st.mode].map(c => ({ time: c[0], title: c[1], meta: c[2], img: I[c[3]], onClick: () => go(c[4]) })),
+
+      bcTabs: L.bcTabs.map((label, i) => ({ label, onClick: () => this.setState({ bcTab: i }),
+        bd: on(i === st.bcTab, acc, "transparent"), fg: on(i === st.bcTab, "#fff", "rgba(255,255,255,.5)") })),
+      bcKitchenOn: st.bcTab === 0, bcAdmOn: st.bcTab === 1, bcSpotOn: st.bcTab === 2,
+      kitchen: L.kitchen.map(k => ({ name: k[0], hours: k[1], desc: k[2], img: I[k[3]] })),
+      bcIncluded: L.bcIncluded.map(label => ({ label })),
+      admissions: L.admissions.map((a, i) => ({
+        name: a[0], price: a[1], desc: a[2], perks: a[3].map(p => ({ label: p })),
+        onClick: () => this.setState({ admission: i }),
+        bd: on(i === st.admission, "#0B0B0C", "rgba(11,11,12,.1)"),
+        bg: on(i === st.admission, "#fff", "rgba(255,255,255,.55)"),
+        mark: on(i === st.admission, "✓", ""),
+        dotBd: on(i === st.admission, "#0B0B0C", "rgba(11,11,12,.25)"),
+        dotBg: on(i === st.admission, "#0B0B0C", "transparent"),
+        showPerks: i === st.admission
+      })),
+      admSummary: L.admissions[st.admission][0] + " · $" + L.admissions[st.admission][1] + " " + L.bcCurrency,
+      buyPass: () => this.setState({ confirm: "pass", screen: "confirm" }),
+
+      spotModes: L.spotModes.map((label, i) => ({ label, onClick: () => this.setState({ bed: on(i === 0, 14, 62) }),
+        bg: on((i === 0) === (st.bed < 50), "#0B0B0C", "transparent"),
+        fg: on((i === 0) === (st.bed < 50), "#fff", "rgba(11,11,12,.7)"),
+        bd: on((i === 0) === (st.bed < 50), "#0B0B0C", "rgba(11,11,12,.2)") })),
+      bedRows: (st.bed < 50
+        ? [[L.rowLabels[0], [11,12,13,14,15,16]], [L.rowLabels[1], [21,22,23,24,25,26]], [L.rowLabels[2], [31,32,33,34,35,36]]]
+        : [[L.tableLabels[0], [61,62,63,64]], [L.tableLabels[1], [71,72,73,74]]]
+      ).map(r => ({ label: r[0], beds: r[1].map(n => {
+        const taken = [11,15,21,24,32,33,63,72].indexOf(n) > -1, mine = n === st.bed;
+        return { n, onClick: taken ? () => {} : () => this.setState({ bed: n }),
+          bg: mine ? acc : taken ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.13)",
+          bd: mine ? acc : taken ? "rgba(255,255,255,.06)" : "rgba(255,255,255,.16)",
+          fg: mine ? "#fff" : taken ? "rgba(255,255,255,.22)" : "rgba(255,255,255,.8)",
+          cursor: on(taken, "not-allowed", "pointer") };
+      }) })),
+      bedLegend: [{ c: "rgba(255,255,255,.13)", bd: "rgba(255,255,255,.16)", label: L.legend[0] },
+        { c: acc, bd: acc, label: L.legend[1] },
+        { c: "rgba(255,255,255,.05)", bd: "rgba(255,255,255,.06)", label: L.legend[2] }],
+      bedTimes: L.bedTimes.map((label, i) => ({ label, onClick: () => this.setState({ bedTime: i }),
+        bg: on(i === st.bedTime, "#0B0B0C", "transparent"), fg: on(i === st.bedTime, "#fff", "rgba(11,11,12,.7)"),
+        bd: on(i === st.bedTime, "#0B0B0C", "rgba(11,11,12,.2)") })),
+      bedSummary: (st.bed < 50 ? L.bedPick : L.tablePick) + " " + st.bed + " · " + L.bedTimes[st.bedTime],
+      bedSummarySub: L.bedFrom,
+      bookBed: () => this.setState({ confirm: "bed", screen: "confirm" }),
+
+      dineCats: L.dineCats.map((label, i) => ({ label, onClick: () => this.setState({ dineCat: i }),
+        bg: on(i === st.dineCat, "#0B0B0C", "transparent"), fg: on(i === st.dineCat, "#fff", "rgba(11,11,12,.7)"),
+        bd: on(i === st.dineCat, "#0B0B0C", "rgba(11,11,12,.2)") })),
+      dishes: L.dishes[st.dineCat].map((d, i) => {
+        const key = st.dineCat + ":" + i, inCart = st.cart.indexOf(key) > -1;
+        return { name: d[0], desc: d[1], price: d[2], tag: d[3],
+          tagBg: on(!!d[3], "rgba(11,11,12,.07)", "transparent"),
+          tagFg: on(!!d[3], "rgba(11,11,12,.5)", "transparent"),
+          btn: on(inCart, "✓", "+"), btnBg: inCart ? acc : "rgba(11,11,12,.07)",
+          btnFg: on(inCart, "#fff", "#0B0B0C"),
+          onAdd: () => this.setState({ cart: inCart ? st.cart.filter(c => c !== key) : st.cart.concat([key]) }) };
+      }),
+      hasCart: st.cart.length > 0,
+      cartLabel: st.cart.length + " " + (st.cart.length === 1 ? L.item : L.items) + (cartTotal ? " · $" + cartTotal : ""),
+      placeOrder: () => this.setState({ confirm: "order", screen: "confirm", cart: [], orderTotal: cartTotal }),
+
+      stayIncludes: L.stayIncludes.map(s => ({ icon: s[0], label: s[1], sub: s[2] })),
+      rooms: L.rooms.map((r, i) => ({ name: r[0], meta: r[1], price: "$" + r[2], img: I[r[3]], avail: r[4],
+        availFg: on(r[5] === 1, acc, "rgba(11,11,12,.42)"),
+        onClick: () => this.setState({ roomIdx: i, screen: "room" }) })),
+      room: { name: room[0], img: I[room[3]], body: room[6], meta: room[1] },
+      roomFeatures: L.features.map(f => ({ icon: f[0], label: f[1] })),
+      plans: L.plans.map((p, i) => ({ name: p[0], meta: p[1], price: p[2],
+        onClick: () => this.setState({ plan: i }),
+        bd: on(i === st.plan, "#0B0B0C", "rgba(11,11,12,.1)"),
+        bg: on(i === st.plan, "#fff", "rgba(255,255,255,.5)"),
+        dotBd: on(i === st.plan, "#0B0B0C", "rgba(11,11,12,.25)"),
+        dotBg: on(i === st.plan, "#0B0B0C", "transparent"), mark: on(i === st.plan, "✓", "") })),
+      roomTotal: this.money(roomTotal),
+      goCheckout: () => go("checkout"),
+
+      coStayRows: [{ k: L.dates, v: L.dateRange }, { k: L.guests, v: L.twoAdults },
+        { k: L.coRoom, v: room[0] }, { k: L.mealPlan, v: L.plans[st.plan][0] }],
+      coLines: [{ k: room[0] + " × 4", v: this.money(nightly * 4) },
+        { k: L.plans[st.plan][0], v: on(st.plan === 1, this.money(planLine), L.included) },
+        { k: L.coTaxes, v: this.money(tax) },
+        { k: L.kTotal, v: this.money(grand) }],
+      coEarnSub: this.earnSub(L, grand * 12),
+      coPays: L.coPays.map((p, i) => ({ label: p[0], sub: p[1],
+        onClick: () => this.setState({ tier: i }),
+        bd: on(i === st.tier, "#0B0B0C", "rgba(11,11,12,.1)"),
+        bg: on(i === st.tier, "#fff", "rgba(255,255,255,.5)"),
+        dotBd: on(i === st.tier, "#0B0B0C", "rgba(11,11,12,.25)"),
+        dotBg: on(i === st.tier, "#0B0B0C", "transparent"), mark: on(i === st.tier, "✓", "") })),
+      coEarnVal: (grand * 12).toLocaleString("en-US"),
+      payNow: () => this.setState({ confirm: "room", screen: "confirm" }),
+
+      wedPoints: L.wedPoints.map(p => ({ n: p[0], label: p[1] })),
+      wedGallery: L.wedGallery.map(k => ({ img: I[k] })),
+      wedTesti: { quote: L.wedTesti[0], who: L.wedTesti[1] },
+      wedForm: L.wedForm.map(f => ({ k: f[0], v: f[1] })),
+      sendWed: () => this.setState({ confirm: "wed", screen: "confirm" }),
+
+      wellPillars: L.wellPillars.map(p => ({ name: p[0], body: p[1], note: p[2], img: I[p[3]] })),
+      sessions: L.sessions.map((s, i) => ({ time: s[0], dur: s[1], name: s[2], meta: s[3], price: s[4], left: s[5],
+        onClick: () => this.setState({ session: i }),
+        bg: on(i === st.session, "#fff", "rgba(255,255,255,.5)"),
+        bd: on(i === st.session, "#0B0B0C", "rgba(11,11,12,.09)"),
+        timeFg: on(i === st.session, acc, "#0B0B0C"),
+        leftFg: on(s[5].charAt(0) === "2", acc, "rgba(11,11,12,.42)") })),
+      sessionSummary: L.sessions[st.session][2] + " · " + L.sessions[st.session][0],
+      bookSession: () => this.setState({ confirm: "well", screen: "confirm" }),
+
+      expItems: L.expItems.map((e, i) => ({ name: e[0], body: e[1], img: I[e[2]],
+        onClick: () => go(e[3]), open: i === st.expIdx,
+        onToggle: () => this.setState({ expIdx: st.expIdx === i ? -1 : i }),
+        cta: on(e[2] === "cenote", L.expIncluded, L.expAsk) })),
+
+      cenoteFacts: L.cenoteFacts.map(f => ({ k: f[0], v: f[1] })),
+      shuttles: L.shuttles.map((s, i) => ({ time: s[0], seats: s[1], onClick: () => this.setState({ shuttle: i }),
+        bd: on(i === st.shuttle, "#0B0B0C", "rgba(11,11,12,.1)"),
+        bg: on(i === st.shuttle, "#fff", "rgba(255,255,255,.5)"),
+        dotBd: on(i === st.shuttle, "#0B0B0C", "rgba(11,11,12,.25)"),
+        dotBg: on(i === st.shuttle, "#0B0B0C", "transparent"), mark: on(i === st.shuttle, "✓", "") })),
+      shuttleSummary: L.shuttles[st.shuttle][0] + " · " + L.shuttles[st.shuttle][1],
+      bookShuttle: () => this.setState({ confirm: "shuttle", screen: "confirm" }),
+
+      lineup: L.lineupRows.map((l, i) => ({ time: l[0], name: l[1], genre: l[2],
+        timeFg: on(i === 1, acc, "rgba(255,255,255,.5)") })),
+      weekRows: L.weekRows.map(w => ({ d: w[0], name: w[1], time: w[2] })),
+
+      messages: L.chat.map(m => {
+        const me = m[0] === 1;
+        return { text: m[1], align: on(me, "flex-end", "flex-start"),
+          bg: me ? "#0B0B0C" : "#fff", fg: on(me, "#fff", "#0B0B0C"),
+          bd: on(me, "#0B0B0C", "rgba(11,11,12,.09)"),
+          radius: on(me, "18px 18px 5px 18px", "18px 18px 18px 5px") };
+      }),
+      quickReplies: L.quick.map((label, i) => ({ label, onClick: () => go(["cenote", "dine", "stay"][i]) })),
+
+      isMember: st.auth === "member",
+      toggleKey: () => st.auth === "member" && this.setState({ keyOn: !st.keyOn }),
+      keyBg: on(st.keyOn, acc, "transparent"),
+      keyRing: on(st.keyOn, "rgba(255,255,255,.85)", "rgba(255,255,255,.3)"),
+      keyIcon: on(st.keyOn, "◉", "○"),
+      keyLabel: on(st.auth === "member", L.roomKey, L.keyGuest),
+      keyNum: on(st.auth === "member", "204", "—"),
+      keyHint: st.auth === "member" ? (st.keyOn ? L.keyOnHint : L.keyOff) : L.keyGuestSub,
+      keyHintFg: on(st.keyOn, "rgba(255,255,255,.8)", "rgba(255,255,255,.45)"),
+      currentPlan: L.plans[on(st.planFbe, 1, 0)][0],
+      planIncludes: (st.planFbe ? L.planInclFbe : L.planIncl).map(p => ({ label: p[0],
+        mark: on(p[1] === 1, "✓", "·"), bg: on(p[1] === 1, acc, "rgba(11,11,12,.15)"),
+        fg: on(p[1] === 1, "rgba(11,11,12,.8)", "rgba(11,11,12,.35)") })),
+      togglePlan: () => this.setState({ planFbe: !st.planFbe }),
+      planCta: on(st.planFbe, L.planDown, L.planUp),
+      planCtaSub: on(st.planFbe, L.planDownSub, L.planUpSub),
+      folio: L.folioRows.map(f => ({ label: f[0], when: f[1], amt: f[2] })),
+      folioTotal: "$184",
+
+      cirTiers: L.cirTiers.map((t, i) => ({ name: t[0], req: t[1], perks: t[2],
+        current: i === 1,
+        bg: on(i === 1, "#0B0B0C", "rgba(255,255,255,.55)"),
+        fg: on(i === 1, "#fff", "#0B0B0C"),
+        subFg: on(i === 1, "rgba(255,255,255,.55)", "rgba(11,11,12,.5)"),
+        perkFg: on(i === 1, "rgba(255,255,255,.8)", "rgba(11,11,12,.62)"),
+        bd: on(i === 1, "#0B0B0C", "rgba(11,11,12,.1)"),
+        badge: on(i === 1, L.active, "") })),
+      cirEarn: L.cirEarn.map(e => ({ k: e[0], v: e[1] })),
+      cirRedeem: L.cirRedeem.map(r => ({ label: r[0], cost: r[1],
+        onClick: () => go("chat") })),
+      cirProgressW: L.cirProgress + "%",
+      cirIsMember: st.auth === "member", showJoin: st.auth !== "member",
+      joinCirculo: () => this.setState({ auth: "member", confirm: "join", screen: "confirm" }),
+
+      contactRows: L.contactRows.map(c => ({ k: c[0], v: c[1], icon: c[2] })),
+      contactHours: L.contactHours.map(h => ({ k: h[0], v: h[1] })),
+      socials: L.socials.map(label => ({ label })),
+
+      blogPosts: L.blogPosts.map(p => ({ title: p[0], sub: p[1], read: p[2], img: I[p[3]] })),
+
+      confirm: { title: cf.title, body: cf.body },
+      confirmRows: cf.rows.map(r => ({ k: r[0], v: r[1] }))
+    };
+  }
+}
+</script>
+</body>
+</html>

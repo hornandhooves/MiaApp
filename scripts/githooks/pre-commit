@@ -1,0 +1,7 @@
+#!/bin/sh
+# Único revisor del proyecto: si esto falla, el commit no entra.
+set -e
+echo "pre-commit: typecheck"
+pnpm typecheck
+echo "pre-commit: lint"
+pnpm lint

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+<style>
+body{margin:0;background:#DAD3C7;font-family:Jost,system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#0B0B0C}
+a{color:#0B0B0C;text-decoration:underline;text-underline-offset:2px}
+a:hover{color:#E2593F}
+.sc{scrollbar-width:none;-ms-overflow-style:none}
+.sc::-webkit-scrollbar{display:none;width:0;height:0}
+pre{margin:0;font:400 13.5px/1.7 ui-monospace,Menlo,monospace;white-space:pre;overflow-x:auto}
+code{font:400 13px/1.5 ui-monospace,Menlo,monospace;background:rgba(11,11,12,.07);padding:1.5px 5px;border-radius:4px}
+</style>
+</helmet>
+<div style="min-height:100vh;padding:40px 44px 80px;box-sizing:border-box;max-width:1180px">
+
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:40px;flex-wrap:wrap">
+<div>
+<div style="font:500 12px/1 Jost,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#E2593F">Mía Tulum · app móvil</div>
+<h1 style="margin:16px 0 0;font:400 42px/1.04 'Bodoni Moda',serif;letter-spacing:-.005em">Ruta de implementación</h1>
+<p style="margin:14px 0 0;max-width:44em;font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.68);text-wrap:pretty">Arquitectura y plan en un solo lugar, para trabajar desde aquí. Marca las tareas conforme avances — se guardan en este navegador. Las pestañas de referencia son lo que necesitas abierto mientras Claude Code escribe.</p>
+</div>
+<div style="flex:none;min-width:230px">
+<div style="display:flex;align-items:baseline;gap:10px">
+<span style="font:400 46px/1 'Bodoni Moda',serif">{{ pct }}</span>
+<span style="font:400 15px/1 Jost,sans-serif;color:rgba(11,11,12,.5)">% completado</span>
+</div>
+<div style="margin-top:14px;height:4px;background:rgba(11,11,12,.13);border-radius:3px;overflow:hidden">
+<div style="height:100%;width:{{ pctW }};background:#E2593F;border-radius:3px;transition:width 180ms ease"></div>
+</div>
+<div style="margin-top:11px;display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+<span style="font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.55)">{{ doneLabel }}</span>
+<button onClick="{{ reset }}" style="border:0;background:transparent;padding:0;font:300 12.5px/1 Jost,sans-serif;color:rgba(11,11,12,.42);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Reiniciar</button>
+</div>
+</div>
+</div>
+
+<div class="sc" style="display:flex;gap:26px;margin:36px 0 0;border-bottom:1px solid rgba(11,11,12,.15);overflow-x:auto">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ t.onClick }}" style="flex:none;background:transparent;border:0;border-bottom:2px solid {{ t.bd }};color:{{ t.fg }};padding:0 0 13px;font:400 15px/1 Jost,sans-serif;cursor:pointer;white-space:nowrap">{{ t.label }}</button>
+</sc-for>
+</div>
+
+<sc-if value="{{ isRuta }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:32px">
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ weeks }}" as="w" hint-placeholder-count="7">
+<div style="background:#F4EFE7;border:1px solid {{ w.bd }};border-radius:18px;overflow:hidden">
+<div onClick="{{ w.onToggle }}" style="padding:20px 22px;cursor:pointer;display:flex;align-items:center;gap:18px">
+<div style="width:44px;height:44px;flex:none;border-radius:50%;background:{{ w.numBg }};color:{{ w.numFg }};display:flex;align-items:center;justify-content:center;font:400 19px/1 'Bodoni Moda',serif">{{ w.mark }}</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;gap:11px;flex-wrap:wrap">
+<span style="font:400 23px/1.1 'Bodoni Moda',serif">{{ w.name }}</span>
+<span style="font:400 11.5px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(11,11,12,.45)">{{ w.when }}</span>
+</div>
+<div style="margin-top:8px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.55)">{{ w.count }}</div>
+</div>
+<div style="flex:none;width:78px">
+<div style="height:3px;background:rgba(11,11,12,.13);border-radius:2px;overflow:hidden"><div style="height:100%;width:{{ w.pctW }};background:{{ w.barBg }};border-radius:2px"></div></div>
+</div>
+<div style="flex:none;font:300 17px/1 Jost,sans-serif;color:rgba(11,11,12,.3);transform:{{ w.caret }}">›</div>
+</div>
+<sc-if value="{{ w.open }}" hint-placeholder-val="{{ true }}">
+<div style="padding:0 22px 22px">
+<div style="display:flex;flex-direction:column;gap:1px;border-top:1px solid rgba(11,11,12,.1);padding-top:6px">
+<sc-for list="{{ w.tasks }}" as="k" hint-placeholder-count="10">
+<div onClick="{{ k.onClick }}" style="display:flex;gap:14px;align-items:flex-start;padding:11px 4px;cursor:pointer;border-radius:8px;background:{{ k.rowBg }}">
+<span style="width:19px;height:19px;flex:none;margin-top:1px;border-radius:5px;border:1.5px solid {{ k.boxBd }};background:{{ k.boxBg }};color:#fff;display:flex;align-items:center;justify-content:center;font:400 11px/1 Jost,sans-serif">{{ k.mark }}</span>
+<div style="flex:1;min-width:0">
+<div style="font:400 15px/1.4 Jost,sans-serif;color:{{ k.fg }};text-decoration:{{ k.deco }};text-wrap:pretty">{{ k.title }}</div>
+<div style="margin-top:5px;font:300 12.5px/1.45 Jost,sans-serif;color:{{ k.metaFg }};text-wrap:pretty">{{ k.meta }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:16px;background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:13px;padding:15px 17px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Termina cuando</div>
+<div style="margin-top:10px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.75);text-wrap:pretty">{{ w.done }}</div>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:22px;background:#0B0B0C;border-radius:18px;padding:22px 24px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Si el calendario aprieta</div>
+<div style="margin-top:12px;font:300 15px/1.6 Jost,sans-serif;color:rgba(255,255,255,.78);max-width:52em;text-wrap:pretty">El orden de corte es Diario, luego Bodas, luego Círculo. Lo que nunca se corta es la cadena que cuenta la historia: escanear, pedir, apartar, reservar. Sin esos cuatro el demo no demuestra nada, y con esos cuatro se sostiene solo aunque falte todo lo demás.</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ isArq }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:32px;max-width:900px">
+<p style="font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Tres capas y un principio: la app nunca habla con un tercero. Todo pasa por Cloud Functions, que es lo único que guarda credenciales y lo único que decide un precio. En el demo no hay terceros todavía, pero la forma ya queda puesta para cuando los haya.</p>
+
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:26px">
+<div style="background:#0B0B0C;border-radius:15px;padding:18px 20px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5)">Cliente</div>
+<div style="display:flex;gap:9px;margin-top:13px;flex-wrap:wrap">
+<div style="flex:1;min-width:150px;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:13px 15px">
+<div style="font:400 15.5px/1.3 Jost,sans-serif;color:#fff">App iOS</div>
+<div style="margin-top:5px;font:300 13px/1.4 Jost,sans-serif;color:rgba(255,255,255,.5)">Expo · TestFlight</div>
+</div>
+<div style="flex:1;min-width:150px;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:13px 15px">
+<div style="font:400 15.5px/1.3 Jost,sans-serif;color:#fff">App Android</div>
+<div style="margin-top:5px;font:300 13px/1.4 Jost,sans-serif;color:rgba(255,255,255,.5)">mismo código · APK por enlace</div>
+</div>
+<div style="flex:1;min-width:150px;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:13px 15px">
+<div style="font:400 15.5px/1.3 Jost,sans-serif;color:#fff">Cocina</div>
+<div style="margin-top:5px;font:300 13px/1.4 Jost,sans-serif;color:rgba(255,255,255,.5)">ruta en la misma app · tras bandera</div>
+</div>
+</div>
+</div>
+
+<div style="text-align:center;font:300 18px/1 Jost,sans-serif;color:rgba(11,11,12,.32)">↓</div>
+
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:15px;padding:18px 20px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Confianza · Cloud Functions gen2</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px">
+<div style="background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:10px;padding:12px 14px">
+<div style="font:400 14.5px/1.3 Jost,sans-serif">validarQR</div>
+<div style="margin-top:4px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">HMAC, rotación diaria, emite claims</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:10px;padding:12px 14px">
+<div style="font:400 14.5px/1.3 Jost,sans-serif">buscarEstancia</div>
+<div style="margin-top:4px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">habitación y apellido, con bloqueo</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:10px;padding:12px 14px">
+<div style="font:400 14.5px/1.3 Jost,sans-serif">crearPago</div>
+<div style="margin-top:4px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">PaymentIntent con clave de idempotencia</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:10px;padding:12px 14px">
+<div style="font:400 14.5px/1.3 Jost,sans-serif">cerrarFolio</div>
+<div style="margin-top:4px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">liquida y acredita Olas</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:10px;padding:12px 14px">
+<div style="font:400 14.5px/1.3 Jost,sans-serif">liberarHold</div>
+<div style="margin-top:4px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">disparada por Cloud Task programada</div>
+</div>
+<div style="background:#fff;border:1px solid rgba(11,11,12,.1);border-radius:10px;padding:12px 14px">
+<div style="font:400 14.5px/1.3 Jost,sans-serif">acreditarOlas</div>
+<div style="margin-top:4px;font:300 12.5px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">único escritor del ledger</div>
+</div>
+</div>
+<div style="margin-top:13px;font:300 13px/1.5 Jost,sans-serif;color:rgba(11,11,12,.55);text-wrap:pretty">Todo lo demás la app lo lee directo de Firestore con reglas. Una function existe solo cuando hay un secreto que guardar o una decisión en la que no se puede confiar al cliente.</div>
+</div>
+
+<div style="text-align:center;font:300 18px/1 Jost,sans-serif;color:rgba(11,11,12,.32)">↓</div>
+
+<div style="display:flex;gap:9px;flex-wrap:wrap">
+<div style="flex:1;min-width:230px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:15px;padding:18px 20px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Datos</div>
+<div style="margin-top:11px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.75)">Firestore sembrado desde el repo · Cloud Tasks para liberar holds · Cloud Storage para imágenes</div>
+</div>
+<div style="flex:1;min-width:230px;background:#F4EFE7;border:1px dashed rgba(11,11,12,.28);border-radius:15px;padding:18px 20px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:rgba(11,11,12,.42)">Adaptadores · vacíos en el demo</div>
+<div style="margin-top:11px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.6)">PMS · punto de venta · WhatsApp · cerraduras. Las carpetas existen con su README desde el día uno</div>
+</div>
+</div>
+</div>
+
+<h3 style="margin:38px 0 0;font:400 25px/1.1 'Bodoni Moda',serif">Cómo funciona la sesión de invitado</h3>
+<p style="margin-top:12px;font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Es la pieza que sostiene la promesa del producto: nadie crea cuenta para pedir un mezcal, y quien la cree después no pierde lo que ya gastó.</p>
+<div style="display:flex;flex-direction:column;gap:2px;margin-top:20px;max-width:780px">
+<div style="display:flex;gap:16px;padding:15px 0;border-bottom:1px solid rgba(11,11,12,.1)">
+<div style="width:26px;flex:none;font:400 20px/1 'Bodoni Moda',serif;color:#E2593F">1</div>
+<div style="flex:1;font:300 15px/1.55 Jost,sans-serif;color:rgba(11,11,12,.78)">El sticker del camastro lleva un QR con un token firmado que incluye el <code>spotId</code> y un secreto que rota cada día.</div>
+</div>
+<div style="display:flex;gap:16px;padding:15px 0;border-bottom:1px solid rgba(11,11,12,.1)">
+<div style="width:26px;flex:none;font:400 20px/1 'Bodoni Moda',serif;color:#E2593F">2</div>
+<div style="flex:1;font:300 15px/1.55 Jost,sans-serif;color:rgba(11,11,12,.78)">La app hace <code>signInAnonymously()</code>. Firebase entrega un UID real sin un solo dato personal.</div>
+</div>
+<div style="display:flex;gap:16px;padding:15px 0;border-bottom:1px solid rgba(11,11,12,.1)">
+<div style="width:26px;flex:none;font:400 20px/1 'Bodoni Moda',serif;color:#E2593F">3</div>
+<div style="flex:1;font:300 15px/1.55 Jost,sans-serif;color:rgba(11,11,12,.78)"><code>validarQR</code> comprueba el token y escribe custom claims en ese UID: <code>spotId</code>, <code>scope</code> y vencimiento al cierre del día.</div>
+</div>
+<div style="display:flex;gap:16px;padding:15px 0;border-bottom:1px solid rgba(11,11,12,.1)">
+<div style="width:26px;flex:none;font:400 20px/1 'Bodoni Moda',serif;color:#E2593F">4</div>
+<div style="flex:1;font:300 15px/1.55 Jost,sans-serif;color:rgba(11,11,12,.78)">Las reglas de Firestore leen esos claims. Sin <code>scope</code> no hay escritura, y el <code>scope</code> del invitado nunca incluye abrir una puerta ni escribir en el ledger.</div>
+</div>
+<div style="display:flex;gap:16px;padding:15px 0">
+<div style="width:26px;flex:none;font:400 20px/1 'Bodoni Moda',serif;color:#E2593F">5</div>
+<div style="flex:1;font:300 15px/1.55 Jost,sans-serif;color:rgba(11,11,12,.78)">Si decide crear cuenta, <code>linkWithCredential()</code> enlaza la credencial al mismo UID. Sus pedidos y su folio siguen apuntando al mismo usuario, así que no hay nada que migrar. Por eso el anónimo es la primitiva correcta y no un atajo.</div>
+</div>
+</div>
+
+<h3 style="margin:38px 0 0;font:400 25px/1.1 'Bodoni Moda',serif">Colecciones</h3>
+<div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:900px">
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>guests</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">tipo, idioma, pushToken, memberId</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>sessions</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">uid, spotId, scope, expiresAt</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>spots</code> · <code>spotHolds</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">fila, número, estado, qrSecret · arrivalAt, expiresAt</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>orders</code> · <code>folios</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">líneas con precio congelado, estado, saldo</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>reservations</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">fechas, huéspedes, plan, total, paymentIntentId</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>roomTypes</code> · <code>ratePlans</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">solo lectura. Espejo de lo que después dará el PMS</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>dayPasses</code> · <code>wellnessSlots</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">admisión, saldo consumible, qrCode · capacidad, tomados</div></div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.11);border-radius:12px;padding:14px 16px"><code>members</code> · <code>ledger</code><div style="margin-top:7px;font:300 13.5px/1.5 Jost,sans-serif;color:rgba(11,11,12,.62)">nivel y noches · asientos append-only</div></div>
+</div>
+<div style="margin-top:20px;background:#0B0B0C;border-radius:15px;padding:20px 22px;max-width:900px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Las dos reglas que evitan los errores caros</div>
+<div style="margin-top:13px;font:300 15px/1.6 Jost,sans-serif;color:rgba(255,255,255,.8);max-width:52em;text-wrap:pretty">El precio se congela en la línea del pedido al agregarlo, nunca se relee del catálogo al cobrar. Y el saldo de Olas es la suma del ledger, no un contador editable — así una promoción mal aplicada se revierte con un asiento en contra y queda auditada, en lugar de sobrescribirse.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCon }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:32px;max-width:900px">
+<p style="font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Los contratos que hay que escribir en la semana 1 y no volver a discutir. Son lo que hace que el demo no se tire a la basura cuando llegue el PMS real: las pantallas solo conocen estas interfaces, nunca Firestore ni un proveedor.</p>
+
+<h3 style="margin:30px 0 0;font:400 25px/1.1 'Bodoni Moda',serif">Los ports</h3>
+<div style="margin-top:16px;background:#0B0B0C;border-radius:15px;padding:22px 24px;overflow-x:auto">
+<pre style="color:rgba(255,255,255,.86)">// packages/domain/ports/InventoryPort.ts
+
+export interface InventoryPort {
+  buscarDisponibilidad(q: {
+    desde: ISODate; hasta: ISODate; huespedes: number;
+  }): Promise&lt;Disponibilidad[]&gt;;
+
+  obtenerTarifa(q: {
+    roomTypeId: string; desde: ISODate; hasta: ISODate;
+    plan: "bb" | "fbe";
+  }): Promise&lt;Tarifa&gt;;
+}
+
+// packages/domain/ports/FolioPort.ts
+
+export interface FolioPort {
+  abrir(ref: { uid: string; spotId?: string; roomId?: string }): Promise&lt;Folio&gt;;
+  agregarCargo(folioId: string, linea: LineaCargo): Promise&lt;Folio&gt;;
+  cerrar(folioId: string, pago: ReferenciaPago): Promise&lt;Folio&gt;;
+}
+
+// packages/domain/ports/GuestPort.ts
+
+export interface GuestPort {
+  buscarPorHabitacionYApellido(
+    habitacion: string, apellido: string
+  ): Promise&lt;Estancia | null&gt;;
+}</pre>
+</div>
+<div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap">
+<div style="flex:1;min-width:250px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:13px;padding:16px 18px">
+<div style="font:400 15.5px/1.3 Jost,sans-serif">adapters/mock/</div>
+<div style="margin-top:8px;font:300 13.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.62)">Lo que corre en el demo. Lee del seed y aplica reglas deterministas para que la disponibilidad no sea trivial.</div>
+</div>
+<div style="flex:1;min-width:250px;background:#F4EFE7;border:1px dashed rgba(11,11,12,.28);border-radius:13px;padding:16px 18px">
+<div style="font:400 15.5px/1.3 Jost,sans-serif;color:rgba(11,11,12,.6)">adapters/pms/</div>
+<div style="margin-top:8px;font:300 13.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.55)">Carpeta vacía con un README que dice qué va aquí. Existe desde el día uno para que nadie se acostumbre a leer Firestore directo.</div>
+</div>
+</div>
+
+<h3 style="margin:34px 0 0;font:400 25px/1.1 'Bodoni Moda',serif">Reglas deterministas del mock</h3>
+<p style="margin-top:12px;font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Un demo donde todo siempre está disponible no convence a nadie. Estas reglas van en el adaptador mock, no en el seed, para que cualquier fecha que alguien pruebe dé un resultado creíble.</p>
+<div style="margin-top:18px;display:flex;flex-direction:column;gap:2px">
+<div style="display:flex;gap:14px;padding:13px 0;border-bottom:1px solid rgba(11,11,12,.1);font:300 15px/1.5 Jost,sans-serif;color:rgba(11,11,12,.78)"><span style="width:7px;height:7px;border-radius:50%;background:#E2593F;flex:none;margin-top:8px"></span>La Suite Premium no está disponible viernes ni sábado.</div>
+<div style="display:flex;gap:14px;padding:13px 0;border-bottom:1px solid rgba(11,11,12,.1);font:300 15px/1.5 Jost,sans-serif;color:rgba(11,11,12,.78)"><span style="width:7px;height:7px;border-radius:50%;background:#E2593F;flex:none;margin-top:8px"></span>Dos categorías quedan con una sola unidad, para que aparezca el aviso de escasez.</div>
+<div style="display:flex;gap:14px;padding:13px 0;border-bottom:1px solid rgba(11,11,12,.1);font:300 15px/1.5 Jost,sans-serif;color:rgba(11,11,12,.78)"><span style="width:7px;height:7px;border-radius:50%;background:#E2593F;flex:none;margin-top:8px"></span>Primera fila de camastros casi llena; la sombra de palapa libre.</div>
+<div style="display:flex;gap:14px;padding:13px 0;border-bottom:1px solid rgba(11,11,12,.1);font:300 15px/1.5 Jost,sans-serif;color:rgba(11,11,12,.78)"><span style="width:7px;height:7px;border-radius:50%;background:#E2593F;flex:none;margin-top:8px"></span>El temazcal solo existe jueves y domingo. El yoga de las 9:00 con dos lugares.</div>
+<div style="display:flex;gap:14px;padding:13px 0;font:300 15px/1.5 Jost,sans-serif;color:rgba(11,11,12,.78)"><span style="width:7px;height:7px;border-radius:50%;background:#E2593F;flex:none;margin-top:8px"></span>Fechas a más de noventa días devuelven todo disponible, que es como se comporta un PMS real.</div>
+</div>
+
+<h3 style="margin:34px 0 0;font:400 25px/1.1 'Bodoni Moda',serif">La forma de las reglas de Firestore</h3>
+<p style="margin-top:12px;font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">El archivo que hay que leer completo a mano. Esta es la forma; los tests de la semana 2 son uno por cada prohibición.</p>
+<div style="margin-top:16px;background:#0B0B0C;border-radius:15px;padding:22px 24px;overflow-x:auto">
+<pre style="color:rgba(255,255,255,.86)">function tieneScope(s) {
+  return request.auth != null
+    &amp;&amp; s in request.auth.token.scope
+    &amp;&amp; request.auth.token.exp &gt; request.time.toMillis();
+}
+
+match /orders/{id} {
+  allow create: if tieneScope('order')
+    &amp;&amp; request.resource.data.spotId == request.auth.token.spotId;
+  allow read: if resource.data.uid == request.auth.uid;
+  allow update, delete: if false;   // solo functions
+}
+
+match /ledger/{id} {
+  allow read: if resource.data.uid == request.auth.uid;
+  allow write: if false;            // solo acreditarOlas
+}
+
+match /roomTypes/{id} { allow read: if true; allow write: if false; }</pre>
+</div>
+<div style="margin-top:14px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:13px;padding:16px 18px">
+<div style="font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.7);text-wrap:pretty"><b style="font-weight:500">Nota para las sesiones con Claude Code:</b> este archivo y <code>PLACEHOLDER_PRICES.ts</code> son los dos que no se editan sin que tú los leas después. Son los únicos lugares donde un cambio silencioso cuesta confianza real en lugar de un bug visible.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isClaude }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:32px;max-width:900px">
+<p style="font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Copia esto a <code>CLAUDE.md</code> en la raíz del repo antes de la primera sesión. Se lee en cada arranque, así que es donde viven las decisiones que no se deben volver a discutir. Corto y prohibitivo, no descriptivo — una lista larga se ignora.</p>
+<div style="margin-top:22px;background:#0B0B0C;border-radius:16px;padding:24px 26px;overflow-x:auto">
+<pre style="color:rgba(255,255,255,.88)"># Mía Tulum · app móvil
+
+Resort y beach club en Tulum. La app sirve a tres personas: el
+huésped durante su estancia, el visitante de day pass, y el
+viajero que todavía decide.
+
+El diseño está definido en docs/prototipo.dc.html — veinte
+pantallas, bilingüe. Es la especificación, no una referencia.
+No inventes pantallas ni componentes que no estén ahí.
+
+## Prohibido
+
+- Un color, tipo, radio o espaciado que no esté en
+  packages/ui/tokens.ts
+- Un número de precio fuera de PLACEHOLDER_PRICES.ts
+- Texto literal en JSX. Todo pasa por t('clave'), con entrada
+  en es.json Y en en.json
+- Leer Firestore desde una pantalla. Solo a través de los ports
+  de packages/domain
+- Editar firestore.rules o PLACEHOLDER_PRICES.ts sin decírmelo
+  explícitamente en tu respuesta
+- any, @ts-ignore, y console.log en código que se commitea
+
+## Siempre
+
+- TypeScript estricto
+- Una tarea = una pantalla que corre en el simulador y se puede
+  probar. No entregues capas a medias
+- Objetivos táctiles de 44 pt mínimo
+- Estados de vacío, carga y error en toda lista
+- El precio se congela en la línea del pedido al agregarlo,
+  nunca se relee del catálogo al cobrar
+- El saldo de Olas se deriva del ledger. Nunca escribas un
+  contador de saldo
+- Toda escritura que cueste dinero lleva clave de idempotencia
+
+## Estructura
+
+app/(guest)/     las veinte pantallas
+app/(staff)/     cocina y mapa, detrás de bandera
+packages/domain/ ports, adaptadores, precios, reglas puras
+packages/ui/     tokens y primitivas
+packages/i18n/   es.json · en.json
+functions/       Cloud Functions gen2
+seed/            contenido del demo
+
+## Contexto del demo
+
+No hay PMS ni punto de venta. Todo corre contra el adaptador
+mock. Stripe en modo test. Sin WhatsApp, sin llave digital.
+Mía Círculo va detrás de una bandera y rotulado como concepto.
+
+## Cómo trabajar conmigo
+
+Antes de escribir código en una pantalla nueva, dime en dos
+líneas qué vas a hacer y espera. Si algo del prototipo no se
+puede implementar como está diseñado, dilo en lugar de
+aproximarlo.</pre>
+</div>
+<div style="margin-top:18px;display:flex;gap:9px;flex-wrap:wrap">
+<div style="flex:1;min-width:260px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:14px;padding:17px 19px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Por qué las dos últimas secciones</div>
+<div style="margin-top:11px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.7);text-wrap:pretty">El contexto del demo evita que construya integraciones que no existen. Y pedirle que avise antes de escribir convierte cada pantalla en una decisión tuya de treinta segundos, en lugar de una revisión de cien líneas después.</div>
+</div>
+<div style="flex:1;min-width:260px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:14px;padding:17px 19px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Reparto del trabajo</div>
+<div style="margin-top:11px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.7);text-wrap:pretty">A Claude: capa de datos, ports, formularios, navegación, i18n, functions, tests, configuración de EAS. A ti: el juicio visual, el copy en los dos idiomas, leer las reglas, y decidir cuándo una pantalla ya está lista.</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPrompt }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:32px;max-width:900px">
+<p style="font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Tres prompts, no uno. El de arranque se usa una sola vez con el repo vacío; el de sesión se reusa cada vez que retomas; y el de revisión convierte al propio agente en el revisor que no tienes. Ninguno repite lo que ya está en <code>CLAUDE.md</code> — duplicarlo desperdicia contexto y hace que las dos versiones se contradigan a la tercera semana.</p>
+
+<div style="margin-top:30px;display:flex;align-items:baseline;gap:12px">
+<span style="width:26px;height:26px;flex:none;border-radius:50%;background:#0B0B0C;color:#fff;display:flex;align-items:center;justify-content:center;font:400 14px/1 Jost,sans-serif">1</span>
+<h3 style="font:400 25px/1.1 'Bodoni Moda',serif">Prompt de arranque</h3>
+<span style="font:400 11px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(11,11,12,.42)">una vez · repo vacío</span>
+</div>
+<div style="margin-top:16px;background:#0B0B0C;border-radius:16px;padding:24px 26px;overflow-x:auto">
+<pre style="color:rgba(255,255,255,.88)">Vas a construir la app móvil de Mía Tulum, un resort y beach club
+frente al mar en Tulum, México. Soy la única persona en el proyecto:
+tú escribes el código, yo decido el diseño y reviso.
+
+Antes de escribir nada, lee estos tres archivos del repo:
+
+- docs/prototipo.dc.html — las veinte pantallas ya diseñadas, en
+  español e inglés. Es la especificación, no una referencia.
+  Recórrelo completo antes de proponer nada.
+- docs/plan-v2.md — el alcance del demo: qué entra y qué no.
+- CLAUDE.md — las reglas que no se discuten.
+
+Contexto que importa:
+
+Es un demo para TestFlight, no producción. No hay PMS ni punto de
+venta identificados, así que todo corre contra un adaptador mock
+sobre Firestore sembrado. Stripe en modo test. Sin WhatsApp, sin
+llave digital. Mía Círculo va detrás de una bandera.
+
+Stack: Expo, React Native, TypeScript, Expo Router, Firebase (Auth,
+Firestore, Functions gen2) y EAS para las builds.
+
+Lo que hace especial a este producto, y que no debes romper: el
+visitante puede pedir, apartar un camastro y pagar SIN crear cuenta.
+Escanea el QR de su camastro y eso liga la sesión a ese lugar
+físico. Se implementa con Firebase Auth anónimo; si después crea
+cuenta se usa linkWithCredential para conservar el mismo UID, y así
+no pierde el consumo del día. Si algo que propongas rompe eso,
+detente y dímelo antes de escribirlo.
+
+Tu primera tarea es únicamente la semana 1 de docs/ruta.md: crear el
+proyecto, pasar los tokens del prototipo a código, definir los
+ports, escribir el seed y dejar la navegación vacía funcionando.
+Nada de lógica de pantallas todavía.
+
+Cómo quiero trabajar:
+
+1. Dime en tres a cinco líneas qué vas a hacer y en qué orden.
+   Espera mi ok antes de escribir código.
+2. Una cosa a la vez, hasta que corra en el simulador.
+3. Al terminar, dime qué probaste y qué NO probaste.
+4. Si el prototipo pide algo que no se puede implementar como está
+   diseñado, dilo en lugar de aproximarlo en silencio.
+5. No toques firestore.rules ni PLACEHOLDER_PRICES.ts sin
+   decírmelo explícitamente en tu respuesta.
+
+Empieza leyendo los tres archivos y proponiendo el plan de la
+semana 1.</pre>
+</div>
+
+<div style="margin-top:34px;display:flex;align-items:baseline;gap:12px">
+<span style="width:26px;height:26px;flex:none;border-radius:50%;background:#0B0B0C;color:#fff;display:flex;align-items:center;justify-content:center;font:400 14px/1 Jost,sans-serif">2</span>
+<h3 style="font:400 25px/1.1 'Bodoni Moda',serif">Prompt de sesión</h3>
+<span style="font:400 11px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(11,11,12,.42)">cada vez que retomas</span>
+</div>
+<div style="margin-top:16px;background:#0B0B0C;border-radius:16px;padding:24px 26px;overflow-x:auto">
+<pre style="color:rgba(255,255,255,.88)">Retomamos la app de Mía Tulum. Las reglas están en CLAUDE.md y el
+diseño en docs/prototipo.dc.html — léelos antes de proponer.
+
+Hoy: [una sola pantalla o tarea]
+Semana de la ruta: [n]
+Estado: [qué ya funciona · qué está a medias · dónde quedamos]
+
+Dime en tres líneas cómo lo vas a hacer, espera mi ok, y al
+terminar dime qué probaste y qué no.</pre>
+</div>
+<div style="margin-top:14px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:13px;padding:16px 18px">
+<div style="font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.7);text-wrap:pretty">La línea de <b style="font-weight:500">Estado</b> es la que más rinde. El agente no recuerda la sesión de ayer, y dos frases sobre lo que ya funciona evitan que reescriba algo que ya estaba bien o que asuma terminado algo que dejaste a medias.</div>
+</div>
+
+<div style="margin-top:34px;display:flex;align-items:baseline;gap:12px">
+<span style="width:26px;height:26px;flex:none;border-radius:50%;background:#E2593F;color:#fff;display:flex;align-items:center;justify-content:center;font:400 14px/1 Jost,sans-serif">3</span>
+<h3 style="font:400 25px/1.1 'Bodoni Moda',serif">Prompt de revisión</h3>
+<span style="font:400 11px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(11,11,12,.42)">al cerrar cada pantalla</span>
+</div>
+<div style="margin-top:16px;background:#0B0B0C;border-radius:16px;padding:24px 26px;overflow-x:auto">
+<pre style="color:rgba(255,255,255,.88)">Revisa [pantalla] contra docs/prototipo.dc.html y CLAUDE.md.
+
+No cambies nada todavía. Hazme una lista de lo que no coincide,
+ordenada por gravedad, separando tres cosas:
+
+- errores claros (algo que no funciona o contradice las reglas)
+- desviaciones del diseño que tomaste a propósito, con tu razón
+- cosas que el prototipo no define y tuviste que decidir tú
+
+Incluye también qué caso NO cubriste: sesión de invitado sin
+scope, lista vacía, pérdida de red a media escritura, texto en
+inglés más largo que en español.</pre>
+</div>
+<div style="margin-top:14px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:13px;padding:16px 18px">
+<div style="font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.7);text-wrap:pretty">Este es el que sustituye al revisor humano. La tercera categoría — lo que el prototipo no define — es la más valiosa: son las decisiones que se tomaron sin que nadie las viera, y las que después nadie recuerda por qué están así.</div>
+</div>
+
+<div style="margin-top:34px;background:#0B0B0C;border-radius:16px;padding:22px 24px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Qué no poner en un prompt</div>
+<div style="display:flex;flex-direction:column;gap:11px;margin-top:15px">
+<div style="display:flex;gap:13px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(255,255,255,.78)"><span style="color:#E2593F;flex:none">·</span><span>Las reglas que ya están en <code style="background:rgba(255,255,255,.14);color:#fff">CLAUDE.md</code>. Repetirlas gasta contexto y garantiza que las dos versiones se contradigan en tres semanas.</span></div>
+<div style="display:flex;gap:13px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(255,255,255,.78)"><span style="color:#E2593F;flex:none">·</span><span>El plan completo pegado. Dale la ruta como archivo y dile qué semana, no las siete.</span></div>
+<div style="display:flex;gap:13px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(255,255,255,.78)"><span style="color:#E2593F;flex:none">·</span><span>"Construye la app". Una sesión, una pantalla. Un alcance vago produce quince archivos a medias y ningún commit que puedas revertir.</span></div>
+<div style="display:flex;gap:13px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(255,255,255,.78)"><span style="color:#E2593F;flex:none">·</span><span>Capturas del prototipo. Tiene el código; leerlo le da los valores exactos, y una imagen solo le da una aproximación.</span></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDeuda }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:32px;max-width:900px">
+<p style="font:300 15.5px/1.6 Jost,sans-serif;color:rgba(11,11,12,.72);max-width:46em;text-wrap:pretty">Un demo honesto sabe qué está fingiendo. Mantén esta lista viva en <code>docs/</code> conforme construyas: es el puente entre este trabajo y la versión de producción, y es lo que va a pedir cualquiera que pregunte cuánto falta de verdad.</p>
+<div style="margin-top:24px;display:flex;flex-direction:column;gap:10px">
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">Disponibilidad y tarifas</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">El demo lee del seed</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Contratar el PMS, escribir el adaptador real y aceptar que la disponibilidad deja de ser instantánea. Dos a cuatro semanas una vez que existan credenciales.</div>
+</div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">El pedido</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">Llega a una pantalla, no a la cocina</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Integrar el punto de venta, o comprar una tablet dedicada y aceptar la pantalla como sistema real. Depende del proveedor, que todavía no se sabe cuál es.</div>
+</div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">Concierge</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">Chat interno en lugar de WhatsApp</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Verificación de negocio con Meta y cuenta de Twilio: de una a tres semanas de trámite, días de código. La interfaz no cambia el día que se conecte.</div>
+</div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">Cobros</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">Stripe en modo test</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Cuenta de Stripe México con verificación fiscal, y decidir si hace falta CFDI. El código casi no cambia; el trámite sí toma tiempo.</div>
+</div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">Los precios</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">Inventados, centralizados</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Un archivo. Pero requiere que alguien en Mía se haga responsable de mantenerlo, y esa persona todavía no existe.</div>
+</div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">Mía Círculo</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">Hipótesis, sin valor contable</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Definir el pasivo, la caducidad y quién autoriza canjes, antes de emitir la primera Ola con valor real. Es una decisión de dirección, no de producto.</div>
+</div>
+<div style="background:#F4EFE7;border:1px solid rgba(11,11,12,.12);border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif">Cuenta de Apple</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(11,11,12,.5)">Personal</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(11,11,12,.72);text-wrap:pretty">Inscripción de Mía como organización con D-U-N-S, y un registro de app nuevo: la transferencia exige una versión publicada en App Store, y un demo de TestFlight no califica.</div>
+</div>
+<div style="background:#0B0B0C;border-radius:14px;padding:17px 19px;display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font:400 17px/1.25 'Bodoni Moda',serif;color:#fff">Llave digital</div><div style="margin-top:6px;font:300 13px/1.4 Jost,sans-serif;color:rgba(255,255,255,.45)">Fuera del demo</div></div>
+<div style="flex:1.4;min-width:250px;font:300 14.5px/1.55 Jost,sans-serif;color:rgba(255,255,255,.78);text-wrap:pretty">Proyecto aparte: SDK del fabricante de cerraduras bajo contrato, módulo nativo con config plugin, y un piloto en puertas reales. Es lo más caro de la lista y lo único que no se resuelve escribiendo código.</div>
+</div>
+</div>
+<div style="margin-top:26px;background:#F4EFE7;border:1px solid rgba(11,11,12,.13);border-radius:15px;padding:20px 22px">
+<div style="font:500 11px/1 Jost,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#E2593F">Primer movimiento, hoy</div>
+<div style="margin-top:12px;font:300 15px/1.6 Jost,sans-serif;color:rgba(11,11,12,.75);max-width:50em;text-wrap:pretty">Inscribirse en el Apple Developer Program — son quince minutos y luego hay que esperar. Mientras se aprueba: crear el repo, pegar el <code>CLAUDE.md</code> de la pestaña anterior, y meter el prototipo en <code>docs/</code>. Con eso la primera sesión de Claude Code arranca con el contrato puesto en lugar de improvisando convenciones, que es la diferencia entre siete semanas y catorce.</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showDone&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Ruta&quot;},&quot;fechaInicio&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Ruta&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 0, open: 0, done: {} };
+  KEY = "mia-ruta-impl-v1";
+
+  componentDidMount() {
+    try {
+      const raw = window.localStorage.getItem(this.KEY);
+      if (raw) this.setState({ done: JSON.parse(raw) || {} });
+    } catch (e) {}
+  }
+
+  save(done) {
+    try { window.localStorage.setItem(this.KEY, JSON.stringify(done)); } catch (e) {}
+  }
+
+  W = [
+    ["Cimientos", "Semana 1",
+     "Hay una build tuya instalada desde TestFlight, el repo tiene el contrato puesto y el seed llena Firestore. Todavía no hace nada — y eso está bien.",
+     [["Inscribirse en el Apple Developer Program", "Individual, 99 USD al año, sin D-U-N-S. Quince minutos y luego se espera. Bloquea la primera build, así que va primero."],
+      ["Crear el repo mia-tulum-app en GitHub", "main protegido, ramas cortas feat/MIA-000-descripcion."],
+      ["Escribir CLAUDE.md en la raíz", "El texto está en la pestaña CLAUDE.md. Cópialo antes de la primera sesión de Claude Code."],
+      ["Copiar el prototipo a docs/prototipo.dc.html", "Es la especificación visual. Sin él en el repo, Claude inventa pantallas."],
+      ["Crear el proyecto Expo con TypeScript y Expo Router", "npx create-expo-app -t. TypeScript estricto desde el primer commit."],
+      ["Pasar los tokens del prototipo a packages/ui/tokens.ts", "Bodoni Moda y Jost, la paleta, radios y la escala de espaciado. Nada de valores sueltos después."],
+      ["Configurar ESLint con las dos reglas propias", "Falla ante un hex literal en app/ y ante texto literal en JSX. Veinte líneas que evitan la deriva más común."],
+      ["Hook de pre-commit con typecheck y lint", "Con una sola persona no es negociable: es el único revisor que vas a tener."],
+      ["Crear los proyectos Firebase mia-demo y mia-dev", "Dos, no tres. Un staging para una persona es ceremonia."],
+      ["Definir los ports en packages/domain/ports", "InventoryPort, FolioPort, GuestPort. Están en la pestaña Contratos."],
+      ["Escribir el seed con el contenido del demo", "Cuartos, tarifas, camastros, menú, sesiones, line-up, horarios de cocina."],
+      ["Script pnpm seed contra el emulador y contra mia-demo", "Idempotente: correrlo dos veces no duplica nada."],
+      ["Armar la navegación vacía", "Tab bar de cinco y el nav sheet con las ocho secciones del sitio. Pantallas en blanco."],
+      ["eas init y perfiles development, preview y apk", "El de apk lleva buildType apk y distribución interna."],
+      ["Instalar el development build en tu teléfono", "No Expo Go. Cámara, push y Stripe no funcionan ahí, y descubrirlo en la semana 4 cuesta un día."],
+      ["Subir la build 1 a TestFlight interno", "Casi vacía, a propósito. Los problemas de certificados cuestan poco cuando no hay nada que perder."]]],
+
+    ["Identidad", "Semana 2",
+     "Puedes entrar de las tres formas, el invitado que crea cuenta conserva su UID, y leíste firestore.rules completo de arriba a abajo.",
+     [["Auth anónimo al abrir la app", "signInAnonymously en el arranque. Todo usuario tiene UID desde el primer segundo."],
+      ["Pantalla de inicio de sesión", "Apple, Google y correo, más la salida a continuar sin cuenta."],
+      ["Sign in with Apple funcionando", "Obligatorio si hay login social. Requisito de App Store, no opcional."],
+      ["Pantalla de acceso sin cuenta con las tres rutas", "Escanear el código, habitación y apellido, código de reserva."],
+      ["Function validarQR con HMAC y rotación diaria", "El secreto de cada spot rota cada día. Un QR de ayer se rechaza con mensaje útil."],
+      ["Emitir custom claims: spotId, scope, exp", "El scope es la lista de lo que el invitado puede hacer. No incluye door.unlock ni ledger."],
+      ["Escáner con expo-camera y universal link", "mia://spot/bed-14?t=token. El deep link también debe funcionar desde Notas."],
+      ["Imprimir un QR de prueba y escanearlo de verdad", "En papel, con luz de sol si se puede. El escáner que funciona en el simulador no prueba nada."],
+      ["GuestPort.buscarPorHabitacionYApellido en mock", "Verificación en servidor. La app nunca recibe la lista de huéspedes."],
+      ["Bloqueo tras tres intentos fallidos", "Diez minutos, con salida al concierge."],
+      ["linkWithCredential conservando el UID", "Es la pieza que hace que el consumo del día sobreviva al alta de cuenta. Pruébalo con un pedido ya hecho."],
+      ["Escribir firestore.rules", "Escritura en orders solo si el spotId coincide con el del claim. Sin excepciones cómodas."],
+      ["Tests de reglas: uno por cada prohibición", "Con el emulador. Este archivo es el que evita el incidente serio."],
+      ["Leer firestore.rules línea por línea", "A mano, tú. Es el único archivo del proyecto donde no conviene confiar en una revisión rápida."]]],
+
+    ["Home y contenido", "Semana 3",
+     "Home cuenta el día con datos del seed, los tres modos la reconfiguran, y las pantallas de contenido están completas en los dos idiomas.",
+     [["Línea de tiempo del día en Home", "Une reservas, holds, sesiones y eventos en un eje por hora. Lo pasado se atenúa."],
+      ["Chips de modo que reconfiguran Home", "Hospedaje, Beach Club y Explorar. El modo inicial se deduce del tipo de sesión."],
+      ["Banner de sesión según estado", "Invitado ve las Olas que dejaría; socio ve lo que le falta para el siguiente nivel."],
+      ["Beach Club con sus tres pestañas", "Cocina con horarios, las tres admisiones con inclusiones, y la entrada al mapa."],
+      ["Hoy en Mía: line-up del día y de la semana", "Con la cuenta regresiva del set de atardecer en hora local de Tulum."],
+      ["Diario y Contacto", "Contenido desde el seed. Contacto con teléfono, WhatsApp, dirección y horarios."],
+      ["Catálogos i18n completos de estas pantallas", "es.json y en.json. Nada de texto en JSX."],
+      ["Cambio de idioma persistente", "Inicial por locale del sistema, manual guardado en el perfil."],
+      ["Fechas, horas y moneda por locale", "Con Intl, no con cadenas armadas a mano."],
+      ["Estados de vacío, carga y error en toda lista", "Son los que nunca se revisan a mano y los primeros que ve un tester con mala señal."]]],
+
+    ["Playa", "Semana 4",
+     "El mapa dice la verdad, dos apartados no pueden ganar el mismo camastro, el hold se libera solo y un day pass se cobra en modo test.",
+     [["Mapa de camastros con listener en tiempo real", "Un cambio hecho desde la pantalla de staff aparece en menos de dos segundos."],
+      ["Ocupación sembrada creíble", "Primera fila casi llena, sombra libre. Un mapa donde todo está libre no convence."],
+      ["Crear el hold en una transacción", "Dos personas no pueden ganar el mismo lugar. Pruébalo con dos teléfonos a la vez."],
+      ["Cloud Task que libera el hold a los 45 minutos", "Programada al crear el hold, cancelada si el huésped llega."],
+      ["Push de aviso antes de liberar", "Diez minutos antes, con opción de extender."],
+      ["Selector de hora de llegada", "Las opciones del prototipo, con el resumen del pie actualizándose."],
+      ["Stripe en modo test con PaymentSheet", "Tarjetas de prueba de Stripe. Guarda la lista en las notas para el revisor."],
+      ["Emitir el QR de entrada del day pass", "De un solo uso, con el tipo de admisión y la fecha."],
+      ["Saldo consumible visible", "Lo pagado en la admisión aparece como saldo, que es la promesa del modelo."],
+      ["Pantalla de staff tras bandera: ocupar y liberar", "Un toque por lugar. Es lo que hace demostrable el tiempo real."]]],
+
+    ["Pedidos", "Semana 5",
+     "Un pedido sale del camastro, llega a la cocina, sobrevive perder señal a media orden y aparece en la cuenta con el precio congelado.",
+     [["Menú por categorías desde el seed", "Las cinco categorías del prototipo, con etiquetas de incluido según el plan real."],
+      ["Carrito con el precio congelado en la línea", "Se guarda el precio al agregar, nunca se relee del catálogo al cobrar."],
+      ["Destino visible antes de confirmar", "Del spotId o roomId de la sesión. Es el error más caro si se equivoca."],
+      ["Activar persistencia offline de Firestore", "Y probar la app con el modo avión encendido de entrada."],
+      ["Cola de escrituras con clave de idempotencia", "Un pedido enviado dos veces por mala señal no se cobra dos veces."],
+      ["Probar con avión activado a media orden", "Prender avión después de agregar y antes de confirmar. Es el caso real de la playa."],
+      ["Estados del pedido con push por cambio", "Recibido, en preparación, en camino, entregado."],
+      ["Pantalla de cocina con antigüedad por pedido", "Alerta visual a los doce minutos sin avanzar."],
+      ["FolioPort mock: agregar cargo", "Cada pedido entregado escribe su línea en el folio."],
+      ["Cuenta del día con total y desglose", "Lo que el huésped ve en Tu estancia. Debe cuadrar al centavo con las líneas."]]],
+
+    ["Resort", "Semana 6",
+     "Buscar fechas devuelve disponibilidad que no es trivial, el plan de comidas recalcula el total, el cobro es idempotente y la reserva aparece en Tu estancia.",
+     [["InventoryPort.buscarDisponibilidad con reglas deterministas", "La Suite Premium ocupada en fin de semana, dos categorías con una unidad. Que se sienta real."],
+      ["Resort con las trece categorías y su tarifa", "Mismo orden y mismo lenguaje que el sitio."],
+      ["Detalle de habitación", "Descripción, características, galería."],
+      ["Plan de comidas que recalcula el total", "Bed & Breakfast contra Full Board, con el número del pie cambiando en vivo."],
+      ["Checkout con desglose, impuestos y método de pago", "Nada de totales que aparecen sin explicación."],
+      ["Cobro con Stripe test e idempotencia", "Doble toque en pagar no genera dos reservas. Pruébalo a propósito."],
+      ["PLACEHOLDER_PRICES.ts con encabezado de advertencia", "Todo número inventado en un archivo, rotulado, con quién debe confirmarlo."],
+      ["Pantalla de confirmación", "Con lo que reservó, el total y las Olas que dejó."],
+      ["Tu estancia: folio, plan y saldo abierto", "Línea por línea, con concepto, momento y monto."],
+      ["Liquidar folio", "Cierra el folio en el mock y acredita las Olas del consumo."],
+      ["Cambio de plan a media estancia con prorrateo", "Calculado en servidor por noches restantes."]]],
+
+    ["Cierre", "Semana 7",
+     "Las veinte pantallas están completas en dos idiomas, la accesibilidad está revisada, existe el APK, y la beta externa está abierta con testers reales dentro.",
+     [["Bienestar con cupo transaccional", "Yoga, masaje y temazcal. El temazcal solo jueves y domingo."],
+      ["Cenote y reserva de shuttle", "Acceso incluido, solo se aparta el asiento. Push veinte minutos antes."],
+      ["Experiencias con las nueve del sitio", "Cada una abre concierge con el contexto cargado."],
+      ["Bodas: solicitud que abre conversación", "Fecha estimada, invitados y tipo de ceremonia. Sin CRM en el demo."],
+      ["Concierge como chat en Firestore con push", "Con respuestas rápidas generadas del estado real, no fijas."],
+      ["Círculo detrás de bandera y rotulado como concepto", "Ledger append-only. El saldo se deriva, nunca se sobrescribe."],
+      ["Accesibilidad: 44 pt, etiquetas y contraste AA", "En todo control. Es lo primero que un tester con lentes va a notar."],
+      ["Probar con Dynamic Type al 200%", "Los layouts deben sobrevivir sin texto cortado ni botones fuera de pantalla."],
+      ["QA bilingüe de las veinte pantallas", "Las mismas pantallas en español y en inglés, con texto grande activado."],
+      ["Conectar Sentry", "Sin QA dedicado, los crashes de los testers son el único reporte que vas a tener."],
+      ["Generar el APK de Android", "Perfil con buildType apk. Advierte a los testers del permiso de orígenes desconocidos."],
+      ["Notas de prueba y tarjetas de Stripe para el revisor", "Más una sesión de invitado que funcione sin credenciales."],
+      ["Publicar la política de privacidad", "Una página simple basta mientras el demo sea demo, pero tiene que existir en un URL."],
+      ["Privacy manifest y etiquetas de privacidad", "De la app y de cada SDK. Apple lo revisa."],
+      ["Enviar a Beta App Review y abrir la beta externa", "Uno o dos días. Con eso hay testers reales usando el demo en su teléfono."]]]
+  ];
+
+  TABS = ["Ruta", "Arquitectura", "Contratos", "CLAUDE.md", "Prompts", "Deuda"];
+
+  renderVals() {
+    const st = this.state, acc = "#E2593F";
+    const showDone = this.props.showDone !== false;
+    const on = (b, y, n) => (b ? y : n);
+
+    const raw = (this.props.fechaInicio || "").trim();
+    const d0 = raw ? new Date(raw + "T12:00:00") : null;
+    const hasDates = !!(d0 && !isNaN(d0.getTime()));
+    const fmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short" });
+    const weekStart = wi => {
+      const d = new Date(d0.getTime());
+      d.setDate(d.getDate() + wi * 7);
+      return fmt.format(d).replace(".", "");
+    };
+
+    let total = 0, done = 0;
+    this.W.forEach((w, wi) => w[3].forEach((t, ti) => {
+      total++; if (st.done[wi + "." + ti]) done++;
+    }));
+    const pct = total ? Math.round((done / total) * 100) : 0;
+
+    const toggle = key => {
+      const next = Object.assign({}, st.done);
+      if (next[key]) delete next[key]; else next[key] = 1;
+      this.save(next); this.setState({ done: next });
+    };
+
+    return {
+      accent: acc, pct, pctW: pct + "%",
+      doneLabel: done + " de " + total + " tareas",
+      reset: () => { this.save({}); this.setState({ done: {} }); },
+      tabs: this.TABS.map((label, i) => ({ label, onClick: () => this.setState({ tab: i }),
+        bd: on(i === st.tab, acc, "transparent"), fg: on(i === st.tab, "#0B0B0C", "rgba(11,11,12,.5)") })),
+      isRuta: st.tab === 0, isArq: st.tab === 1, isCon: st.tab === 2,
+      isClaude: st.tab === 3, isPrompt: st.tab === 4, isDeuda: st.tab === 5,
+
+      weeks: this.W.map((w, wi) => {
+        const tasks = w[3];
+        const d = tasks.filter((t, ti) => st.done[wi + "." + ti]).length;
+        const all = d === tasks.length;
+        const open = st.open === wi;
+        return {
+          name: w[0], done: w[2], open,
+          when: hasDates ? w[1] + " · desde el " + weekStart(wi) : w[1],
+          mark: on(all, "✓", String(wi + 1)),
+          numBg: all ? acc : open ? "#0B0B0C" : "rgba(11,11,12,.08)",
+          numFg: on(all || open, "#fff", "rgba(11,11,12,.6)"),
+          bd: on(open, "rgba(11,11,12,.2)", "rgba(11,11,12,.1)"),
+          count: d + " de " + tasks.length,
+          pctW: Math.round((d / tasks.length) * 100) + "%",
+          barBg: on(all, acc, "#0B0B0C"),
+          caret: on(open, "rotate(90deg)", "none"),
+          onToggle: () => this.setState({ open: open ? -1 : wi }),
+          tasks: tasks.map((t, ti) => {
+            const key = wi + "." + ti, isDone = !!st.done[key];
+            if (isDone && !showDone) return null;
+            return { title: t[0], meta: t[1], mark: on(isDone, "✓", ""),
+              onClick: () => toggle(key),
+              boxBd: on(isDone, acc, "rgba(11,11,12,.28)"),
+              boxBg: on(isDone, acc, "transparent"),
+              rowBg: on(isDone, "rgba(11,11,12,.03)", "transparent"),
+              fg: on(isDone, "rgba(11,11,12,.4)", "#0B0B0C"),
+              metaFg: on(isDone, "rgba(11,11,12,.3)", "rgba(11,11,12,.55)"),
+              deco: on(isDone, "line-through", "none") };
+          }).filter(Boolean)
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
