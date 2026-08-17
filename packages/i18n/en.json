@@ -659,5 +659,14 @@
     "General",
     "Address"
   ],
-  "dayOfTpl": "Day {{d}} of {{n}}"
+  "dayOfTpl": "Day {{d}} of {{n}}",
+  "holdTaken": "Someone got that one first — pick another spot.",
+  "holdWarnTitle": "Your spot frees up soon",
+  "holdWarnBody": "Bed {{n}} is released in 10 minutes. Extend from the app or check in with the beach host.",
+  "bedFromTpl": "Front row · {{price}} · comes back as food and drinks",
+  "payDemoNote": "Test mode — no real charge",
+  "passQrHint": "Show this at the entrance",
+  "staffFree": "Free",
+  "staffTaken": "Taken",
+  "staffHint": "One tap per spot: free ↔ taken"
 }

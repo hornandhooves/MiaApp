@@ -659,5 +659,14 @@
     "General",
     "Dirección"
   ],
-  "dayOfTpl": "Día {{d}} de {{n}}"
+  "dayOfTpl": "Día {{d}} de {{n}}",
+  "holdTaken": "Alguien lo ganó primero — elige otro lugar.",
+  "holdWarnTitle": "Tu lugar se libera pronto",
+  "holdWarnBody": "El camastro {{n}} se libera en 10 minutos. Extiende desde la app o avisa al anfitrión de playa.",
+  "bedFromTpl": "Primera fila · {{price}} · regresa en consumo",
+  "payDemoNote": "Modo de prueba — sin cargo real",
+  "passQrHint": "Muéstralo en la entrada",
+  "staffFree": "Libre",
+  "staffTaken": "Ocupado",
+  "staffHint": "Un toque por lugar: libre ↔ ocupado"
 }

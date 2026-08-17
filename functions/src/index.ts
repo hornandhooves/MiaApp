@@ -12,6 +12,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { defineSecret } from "firebase-functions/params";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
+import Stripe from "stripe";
 import { cierreDelDiaMs, validarToken } from "./qr.js";
 
 initializeApp();
@@ -91,15 +92,41 @@ export const buscarEstancia = onCall(async (req) => {
 
 /**
  * crearPago — PaymentIntent de Stripe (modo test) con clave de
- * idempotencia. TODO(semana 4): implementación con STRIPE_TEST_KEY.
+ * idempotencia. La idempotencia vive en Stripe: la misma clave nunca
+ * produce dos intents, así que un doble toque no cobra dos veces.
  */
 export const crearPago = onCall({ secrets: [STRIPE_TEST_KEY] }, async (req) => {
   if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
   const idempotencyKey = String(req.data?.idempotencyKey ?? "");
+  const montoCents = Number(req.data?.montoCents ?? 0);
+  const currency = String(req.data?.currency ?? "");
+  const concepto = String(req.data?.concepto ?? "");
   if (!idempotencyKey) {
     throw new HttpsError("invalid-argument", "Falta clave de idempotencia");
   }
-  throw new HttpsError("unimplemented", "semana-4");
+  if (!Number.isInteger(montoCents) || montoCents <= 0) {
+    throw new HttpsError("invalid-argument", "Monto inválido");
+  }
+  if (currency !== "usd" && currency !== "mxn") {
+    throw new HttpsError("invalid-argument", "Moneda inválida");
+  }
+
+  const stripe = new Stripe(STRIPE_TEST_KEY.value());
+  const intent = await stripe.paymentIntents.create(
+    {
+      amount: montoCents,
+      currency,
+      description: concepto,
+      automatic_payment_methods: { enabled: true },
+      metadata: { uid: req.auth.uid },
+    },
+    { idempotencyKey },
+  );
+
+  return {
+    paymentIntentId: intent.id,
+    clientSecret: intent.client_secret,
+  };
 });
 
 /**
@@ -112,11 +139,33 @@ export const cerrarFolio = onCall(async (req) => {
 });
 
 /**
- * liberarHold — disparada por Cloud Task programada al crear el hold.
- * TODO(semana 4): handler HTTP de tareas + push de aviso previo.
+ * liberarHold — libera un hold vencido y devuelve el lugar a libre,
+ * en transacción. En producción la dispara una Cloud Task programada
+ * al crear el hold; también sirve para liberar a mano.
  */
-export const liberarHold = onCall(async () => {
-  throw new HttpsError("unimplemented", "semana-4");
+export const liberarHold = onCall(async (req) => {
+  const holdId = String(req.data?.holdId ?? "");
+  if (!holdId) throw new HttpsError("invalid-argument", "Falta holdId");
+  const db = getFirestore();
+  await db.runTransaction(async (tx) => {
+    // Todas las lecturas ANTES de cualquier escritura (regla de
+    // transacciones de Firestore)
+    const holdRef = db.collection("spotHolds").doc(holdId);
+    const holdSnap = await tx.get(holdRef);
+    if (!holdSnap.exists) {
+      throw new HttpsError("not-found", "Hold inexistente");
+    }
+    const hold = holdSnap.data() as { spotId: string; state: string };
+    if (hold.state !== "active") return; // idempotente
+    const spotRef = db.collection("spots").doc(hold.spotId);
+    const spotSnap = await tx.get(spotRef);
+
+    tx.update(holdRef, { state: "released" });
+    if (spotSnap.exists && spotSnap.get("state") === "held") {
+      tx.update(spotRef, { state: "free" });
+    }
+  });
+  return { ok: true };
 });
 
 /**

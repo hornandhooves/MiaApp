@@ -7,12 +7,20 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Alert, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import * as Crypto from "expo-crypto";
+import { getPorts } from "../../../packages/domain/di";
 import { lx, useAdmissions, useKitchen } from "../../../packages/lib/content";
+import { useConfirmStore } from "../../../packages/lib/confirmStore";
+import { useSession } from "../../../packages/lib/session";
 import { SCREEN_ROUTES } from "../../../packages/lib/routes";
-import { moneyMxn } from "../../../packages/lib/tulum";
+import {
+  hoyISOTulum,
+  moneyMxn,
+  todayLabel,
+} from "../../../packages/lib/tulum";
 import { useUiStore } from "../../../packages/lib/uiStore";
 import { Button } from "../../../packages/ui/Button";
 import { IMG } from "../../../packages/ui/images";
@@ -78,6 +86,9 @@ export default function Beach() {
   const openSheet = useUiStore((s) => s.openSheet);
   const [tab, setTab] = useState(0);
   const [admission, setAdmission] = useState(1);
+  const [buying, setBuying] = useState(false);
+  const uid = useSession((s) => s.uid);
+  const setConfirm = useConfirmStore((s) => s.setConfirm);
 
   const kitchen = useKitchen();
   const admissions = useAdmissions();
@@ -85,6 +96,51 @@ export default function Beach() {
   const tabs = t("bcTabs", { returnObjects: true }) as string[];
   const included = t("bcIncluded", { returnObjects: true }) as string[];
   const selected = admissions.data?.[admission];
+
+  const buyPass = async () => {
+    if (!selected || !uid) return;
+    setBuying(true);
+    try {
+      const idempotencyKey = Crypto.randomUUID();
+      const personas = 2; // el prototipo confirma 2 personas
+      const monto = selected.precioMxnCents * personas;
+      const pago = await getPorts().payment.pagar({
+        montoCents: monto,
+        currency: "mxn",
+        concepto: lx(selected.nombre),
+        idempotencyKey,
+        uid,
+      });
+      const pass = await getPorts().pass.emitir({
+        uid,
+        admission: selected.id,
+        fecha: hoyISOTulum(),
+        personas,
+        montoCents: monto,
+        paymentIntentId: pago.paymentIntentId,
+        idempotencyKey,
+      });
+      setConfirm({
+        kind: "pass",
+        rows: [
+          { k: t("kAdmission"), v: lx(selected.nombre) },
+          { k: t("kWhen"), v: todayLabel() },
+          { k: t("kGuests"), v: String(personas) },
+          {
+            k: t("kTotal"),
+            v: `${moneyMxn(monto)} ${t("bcCurrency")}`,
+          },
+        ],
+        qr: pass.qrCode,
+        note: pago.simulado ? t("payDemoNote") : undefined,
+      });
+      router.push(SCREEN_ROUTES.confirm);
+    } catch {
+      Alert.alert(t("errAuth"));
+    } finally {
+      setBuying(false);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: color.canvas }}>
@@ -437,8 +493,9 @@ export default function Beach() {
                 </T>
                 <Button
                   label={t("bcCta")}
-                  onPress={() => router.push(SCREEN_ROUTES.confirm)}
+                  onPress={() => void buyPass()}
                   variant="dark"
+                  busy={buying}
                 />
               </View>
             ) : null}

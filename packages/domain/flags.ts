@@ -5,7 +5,7 @@ export const FLAGS = {
   /** Mía Círculo — hipótesis, rotulada como concepto en la UI */
   circulo: true,
   /** Rutas de staff (cocina y mapa de playa) dentro de la misma app */
-  staff: false,
+  staff: true,
   /** Llave digital — SIEMPRE false en el demo (no hay SDK de cerraduras) */
   digitalKey: false,
 } as const;

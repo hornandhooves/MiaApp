@@ -63,6 +63,16 @@ export function moneyMxn(cents: number): string {
   }).format(cents / 100);
 }
 
+/** Fecha de hoy en Tulum, YYYY-MM-DD */
+export function hoyISOTulum(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TULUM_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+}
+
 /** Día N de M de una estancia; null si hoy cae fuera del rango */
 export function stayDay(
   desde: string,
