@@ -194,5 +194,7 @@ export interface SessionClaims {
   spotId?: string;
   roomId?: string;
   scope: ("order" | "hold" | "book")[];
-  exp: number; // ms epoch, cierre del día
+  /** Vencimiento de sesión en ms epoch. Va en el claim 'sexp' porque
+   * 'exp' es claim reservado del JWT y Firebase lo rechaza. */
+  sexp: number;
 }

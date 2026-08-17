@@ -1,0 +1,38 @@
+/**
+ * Mapa de imágenes del prototipo (CDN del sitio de Mía).
+ * Mismo origen que docs/prototipo.dc.html — no inventar fotos nuevas.
+ */
+export const IMG: Record<string, string> = {
+  "aerial": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJ1_1+%281%29-640w.jpg",
+  "aerial2": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJI_20260115095150_0094_D+%281%29-640w.jpg",
+  "aerial3": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DJI_20260101173036_0029_D-640w.jpg",
+  "beach": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Mia_8+%284%29-640w.jpg",
+  "loungers": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSCF9720-ac5ae8ee-640w.jpg",
+  "bcGirls": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Mia+Beach+Club+%281%29-640w.jpg",
+  "rest": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/MiaTulum-18-640w.jpg",
+  "roomsHero": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Mia_51+%282%29-640w.jpg",
+  "suite1": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/dsc_9126--6a03a7f04fde6-640w.jpg",
+  "suite2": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/_dsc0682-hdr--6a03a70cc2a7f-640w.jpg",
+  "suite3": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/_dsc1055-hdr--6a03a90aa3dfd-640w.jpg",
+  "yoga": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSCF9662-640w.jpg",
+  "yogaPal": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSCF9450-bc277cb4-640w.jpg",
+  "yogaMats": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSCF9508-640w.jpg",
+  "palapa": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/AW5A5534-640w.jpg",
+  "backbend": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSC_2348-56bb79f1-640w.jpg",
+  "massage": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Masaje+Mia.mp4.00_32_48_21.Imagen+fija001-640w.jpg",
+  "temazcal1": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSC_1638-640w.jpg",
+  "temazcal2": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/DSC_1810-640w.jpg",
+  "palmLeaf": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/MiaTulum-3359-640w.jpg",
+  "surf": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/MiaTulum-5054-640w.jpg",
+  "gardenLight": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/MiaTulum-5346-640w.jpg",
+  "pathNice": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/aw5a5459_1--6a037315c79e8-640w.jpg",
+  "sunsetHands": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/MiaTulum-4715-640w.jpg",
+  "lying": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Alberca+Nat-57-640w.jpg",
+  "wedAisle": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/ceremonia+explanada-640w.jpeg",
+  "wedDining": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/ceremonia+de+playa-640w.webp",
+  "wedTable": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/E-I+sneakpeek-31-640w.jpg",
+  "wedWomen": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Mia+Tulum+Wedding+Photographers-49-640w.jpg",
+  "neonRoom": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/E-I+sneakpeek-30-640w.jpg",
+  "cenote": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/1781016627071-4_3-XAE-640w.png",
+  "logo": "https://irp.cdn-website.com/eba89bb1/dms3rep/multi/opt/Logo-Blanco-Sinfondo-480w.png",
+};

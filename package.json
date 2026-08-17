@@ -15,7 +15,8 @@
     "seed:demo": "tsx seed/index.ts --project miaapp-30191",
     "emulators": "firebase emulators:start --project miaapp-30191",
     "prepare": "git config core.hooksPath scripts/githooks || true",
-    "seed:check": "tsx seed/validate.ts"
+    "seed:check": "tsx seed/validate.ts",
+    "test:rules": "firebase emulators:exec --only firestore --project miaapp-30191 \"node functions/test/rules.mjs\""
   },
   "jest": {
     "preset": "jest-expo",
@@ -41,6 +42,7 @@
     "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.1",
     "expo-image": "~57.0.3",
+    "expo-linear-gradient": "~57.0.1",
     "expo-linking": "~57.0.6",
     "expo-localization": "~57.0.1",
     "expo-notifications": "~57.0.11",

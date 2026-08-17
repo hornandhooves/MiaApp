@@ -631,5 +631,19 @@
   "back": "Back",
   "menuLabel": "Menu",
   "staffKitchenTitle": "Kitchen — orders",
-  "staffBeachTitle": "Beach — spot map"
+  "staffBeachTitle": "Beach — spot map",
+  "formRoom": "Room number",
+  "formLastName": "Last name on the booking",
+  "formCode": "Confirmation code",
+  "errStayNotFound": "We couldn't find that stay. Check the room number and last name.",
+  "errBlocked": "Too many tries. This method is paused for 10 minutes — the concierge can help.",
+  "errQrInvalid": "That code didn't work. Ask the staff for help.",
+  "errQrExpired": "This code is from a previous day. Ask the staff for a fresh one.",
+  "errAuth": "We couldn't connect. Check your signal and try again.",
+  "scanPermTitle": "Camera access",
+  "scanPermBody": "The camera is only used to scan the code on your sun bed or table.",
+  "scanPermCta": "Allow camera",
+  "scanCancel": "Cancel",
+  "demoOnlyApple": "In this demo, Apple sign-in and guest access are wired. Google and email arrive with production.",
+  "loading": "One moment"
 }

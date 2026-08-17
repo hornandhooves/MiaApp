@@ -1,13 +1,33 @@
 /**
  * Inicialización de Firebase (SDK JS) — proyecto miaapp-30191.
- * La app solo escribe donde las reglas lo permiten; todo lo demás
- * pasa por Cloud Functions.
+ * Auth con persistencia en AsyncStorage para que la sesión (incluido
+ * el usuario anónimo) sobreviva reinicios de la app — sin eso, el
+ * invitado perdería su UID y su consumo al cerrar la app.
  */
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { getApps, initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import {
+  getAuth,
+  initializeAuth,
+  type Auth,
+  type Persistence,
+} from "firebase/auth";
+import * as fbAuth from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getFunctions, type Functions } from "firebase/functions";
+
+/**
+ * getReactNativePersistence existe en el entry react-native de
+ * firebase/auth (Metro lo resuelve por la condición "react-native"),
+ * pero los tipos publicados son los del entry web y no lo declaran.
+ * Se accede vía cast estructural — sin any ni @ts-ignore.
+ */
+const getRNPersistence = (
+  fbAuth as unknown as {
+    getReactNativePersistence?: (storage: unknown) => Persistence;
+  }
+).getReactNativePersistence;
 
 interface FirebaseExtra {
   apiKey: string;
@@ -29,6 +49,7 @@ function config(): FirebaseExtra {
 }
 
 let app: FirebaseApp | undefined;
+let authInstance: Auth | undefined;
 
 export function firebaseApp(): FirebaseApp {
   if (!app) {
@@ -37,7 +58,22 @@ export function firebaseApp(): FirebaseApp {
   return app;
 }
 
-export const auth = (): Auth => getAuth(firebaseApp());
+export function auth(): Auth {
+  if (!authInstance) {
+    try {
+      authInstance = getRNPersistence
+        ? initializeAuth(firebaseApp(), {
+            persistence: getRNPersistence(AsyncStorage),
+          })
+        : getAuth(firebaseApp());
+    } catch {
+      // Ya inicializado (fast refresh) — recuperar la instancia
+      authInstance = getAuth(firebaseApp());
+    }
+  }
+  return authInstance;
+}
+
 export const db = (): Firestore => getFirestore(firebaseApp());
 export const functions = (): Functions =>
   getFunctions(firebaseApp(), "us-central1");

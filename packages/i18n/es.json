@@ -631,5 +631,19 @@
   "back": "Volver",
   "menuLabel": "Menú",
   "staffKitchenTitle": "Cocina — pedidos",
-  "staffBeachTitle": "Playa — mapa de lugares"
+  "staffBeachTitle": "Playa — mapa de lugares",
+  "formRoom": "Número de habitación",
+  "formLastName": "Apellido de la reserva",
+  "formCode": "Código de confirmación",
+  "errStayNotFound": "No encontramos esa estancia. Revisa el número de habitación y el apellido.",
+  "errBlocked": "Demasiados intentos. Este método se pausa 10 minutos — el concierge puede ayudarte.",
+  "errQrInvalid": "Ese código no funcionó. Pide ayuda al staff.",
+  "errQrExpired": "Este código es de un día anterior. Pide al staff uno nuevo.",
+  "errAuth": "No pudimos conectar. Revisa tu señal e intenta de nuevo.",
+  "scanPermTitle": "Acceso a la cámara",
+  "scanPermBody": "La cámara solo se usa para escanear el código de tu camastro o mesa.",
+  "scanPermCta": "Permitir cámara",
+  "scanCancel": "Cancelar",
+  "demoOnlyApple": "En este demo funcionan Apple y el acceso sin cuenta. Google y correo llegan con producción.",
+  "loading": "Un momento"
 }

@@ -49,11 +49,13 @@ export const validarQR = onCall(
       );
     }
 
-    const exp = cierreDelDiaMs();
+    // 'exp' es claim reservado del JWT: el vencimiento de la sesión
+    // viaja como 'sexp' (ms epoch) — ver decisión en claude/estado.md
+    const sexp = cierreDelDiaMs();
     await getAuth().setCustomUserClaims(req.auth.uid, {
       spotId,
       scope: [...SCOPE_INVITADO],
-      exp,
+      sexp,
     });
 
     const db = getFirestore();
@@ -62,12 +64,12 @@ export const validarQR = onCall(
         uid: req.auth.uid,
         spotId,
         scope: [...SCOPE_INVITADO],
-        expiresAt: new Date(exp).toISOString(),
+        expiresAt: new Date(sexp).toISOString(),
       },
       { merge: true },
     );
 
-    return { spotId, scope: SCOPE_INVITADO, exp };
+    return { spotId, scope: SCOPE_INVITADO, sexp };
   },
 );
 

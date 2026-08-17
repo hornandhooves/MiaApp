@@ -9,12 +9,15 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ¿El token trae el scope pedido y no ha vencido?
+    // Nota: la ruta especificaba el vencimiento en el claim 'exp',
+    // pero 'exp' es claim reservado del JWT (Firebase lo rechaza en
+    // setCustomUserClaims). Se usa 'sexp' (ms epoch) — decision log.
     function tieneScope(s) {
       return request.auth != null
         && ('scope' in request.auth.token)
         && (s in request.auth.token.scope)
-        && ('exp' in request.auth.token)
-        && (request.auth.token.exp > request.time.toMillis());
+        && ('sexp' in request.auth.token)
+        && (request.auth.token.sexp > request.time.toMillis());
     }
 
     function esDueno() {
