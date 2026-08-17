@@ -11,12 +11,14 @@ import {
   MockPassAdapter,
   MockPaymentAdapter,
 } from "./adapters/mock/MockPaymentAdapter";
+import { MockReservationAdapter } from "./adapters/mock/MockReservationAdapter";
 import { MockSpotAdapter } from "./adapters/mock/MockSpotAdapter";
 import type { FolioPort, GuestPort, InventoryPort } from "./ports";
 import type { ContentPort } from "./ports/ContentPort";
 import type { PassPort, PaymentPort } from "./ports/PaymentPort";
 import type { SpotPort } from "./ports/SpotPort";
 import type { OrderPort } from "./ports/OrderPort";
+import type { ReservationPort } from "./ports/ReservationPort";
 import type { RoomType } from "./types";
 
 // En el demo el catálogo del mock viene del seed local (el mismo
@@ -33,6 +35,7 @@ interface Ports {
   payment: PaymentPort;
   pass: PassPort;
   order: OrderPort;
+  reservation: ReservationPort;
 }
 
 let ports: Ports | undefined;
@@ -71,6 +74,7 @@ export function getPorts(): Ports {
       payment: new MockPaymentAdapter(),
       pass: new MockPassAdapter(),
       order,
+      reservation: new MockReservationAdapter(),
     };
   }
   return ports;

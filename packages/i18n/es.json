@@ -680,5 +680,16 @@
   "etaTpl": "{{a}}–{{b}} min a tu lugar",
   "staffAdvance": "Avanzar",
   "minTpl": "{{m}} min",
-  "orderNeedsSpot": "Escanea el código de tu lugar o busca tu estancia primero — el pedido necesita destino."
+  "orderNeedsSpot": "Escanea el código de tu lugar o busca tu estancia primero — el pedido necesita destino.",
+  "availAvailable": "Disponible",
+  "availLeftTpl": "Quedan {{n}} a esta tarifa",
+  "availNone": "No disponible en estas fechas",
+  "keyDemoNote": "La llave digital queda fuera de este demo — requiere el SDK del fabricante y puertas reales.",
+  "upgradeChargeTpl": "Subir a Full Board: {{price}} por las {{n}} noches restantes. ¿Se carga a tu folio?",
+  "downgradeNoteTpl": "De vuelta a Bed & Breakfast — {{price}} revertido en tu folio.",
+  "settleDoneTpl": "Folio liquidado: {{price}}. El consumo de hoy se vuelve {{olas}} Olas.",
+  "confirmLbl": "Confirmar",
+  "cancelLbl": "Cancelar",
+  "guestsN_one": "{{count}} adulto",
+  "guestsN_other": "{{count}} adultos"
 }

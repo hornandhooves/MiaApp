@@ -180,6 +180,20 @@ export interface LedgerEntry {
   createdAt: string;
 }
 
+export interface Reservation {
+  id: string;
+  uid: string;
+  roomTypeId: string;
+  desde: ISODate;
+  hasta: ISODate;
+  huespedes: number;
+  plan: MealPlanId;
+  totalCents: number;
+  paymentIntentId: string;
+  idempotencyKey: string;
+  createdAt: string;
+}
+
 export type Tier = "arena" | "marea" | "cenote" | "circulo-interior";
 
 export interface Member {

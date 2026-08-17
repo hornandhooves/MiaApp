@@ -680,5 +680,16 @@
   "etaTpl": "{{a}}–{{b}} min to your spot",
   "staffAdvance": "Advance",
   "minTpl": "{{m}} min",
-  "orderNeedsSpot": "Scan your spot's code or find your stay first — orders need a destination."
+  "orderNeedsSpot": "Scan your spot's code or find your stay first — orders need a destination.",
+  "availAvailable": "Available",
+  "availLeftTpl": "{{n}} left at this rate",
+  "availNone": "Not available on these dates",
+  "keyDemoNote": "The digital key is outside this demo — it needs the lock maker's SDK and real doors.",
+  "upgradeChargeTpl": "Upgrade to Full Board: {{price}} for the {{n}} nights left. Charge it to your folio?",
+  "downgradeNoteTpl": "Back to Bed & Breakfast — {{price}} reversed to your folio.",
+  "settleDoneTpl": "Folio settled: {{price}}. Today's spend becomes {{olas}} Olas.",
+  "confirmLbl": "Confirm",
+  "cancelLbl": "Cancel",
+  "guestsN_one": "{{count}} adult",
+  "guestsN_other": "{{count}} adults"
 }
