@@ -38,3 +38,6 @@ ui-debug.log
 
 # Tests
 coverage/
+
+# Duplicados que crea macOS al copiar sobre un archivo existente
+* 2.*
