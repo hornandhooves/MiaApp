@@ -46,6 +46,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-notifications",
     "expo-apple-authentication",
     [
+      "@stripe/stripe-react-native",
+      { merchantIdentifier: "merchant.com.mia.app", enableGooglePay: false },
+    ],
+    [
       "expo-splash-screen",
       {
         backgroundColor: "#DAD3C7",

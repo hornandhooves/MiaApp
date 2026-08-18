@@ -182,7 +182,7 @@ export default function Contact() {
                     {lx(h.k)}
                   </T>
                   <T v="body" style={{ fontSize: 13.5 }}>
-                    {h.v}
+                    {lx(h.v)}
                   </T>
                 </View>
               ))}

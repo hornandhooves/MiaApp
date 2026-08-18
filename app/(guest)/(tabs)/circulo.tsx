@@ -13,9 +13,11 @@ import { useTranslation } from "react-i18next";
 import { getPorts } from "../../../packages/domain/di";
 import { FLAGS } from "../../../packages/domain/flags";
 import { OLAS } from "../../../packages/domain/PLACEHOLDER_PRICES";
+import type { Folio } from "../../../packages/domain/types";
 import { currentLang } from "../../../packages/i18n";
 import { useConfirmStore } from "../../../packages/lib/confirmStore";
 import { useSession } from "../../../packages/lib/session";
+import { spotOrRoomLabel } from "../../../packages/lib/spotLink";
 import { useUiStore } from "../../../packages/lib/uiStore";
 import { Button } from "../../../packages/ui/Button";
 import { SheetButton } from "../../../packages/ui/SheetButton";
@@ -42,14 +44,24 @@ export default function Circulo() {
   const openSheet = useUiStore((s) => s.openSheet);
   const uid = useSession((s) => s.uid);
   const status = useSession((s) => s.status);
+  const spotId = useSession((s) => s.spotId);
+  const roomId = useSession((s) => s.roomId);
   const signInWithApple = useSession((s) => s.signInWithApple);
   const setConfirm = useConfirmStore((s) => s.setConfirm);
   const [saldo, setSaldo] = useState(0);
+  const [folio, setFolio] = useState<Folio | null>(null);
   const [joining, setJoining] = useState(false);
 
   useEffect(() => {
     if (!uid) return;
     return getPorts().ledger.suscribirSaldo(uid, setSaldo);
+  }, [uid]);
+
+  // Folio vivo: la tarjeta de unirse promete el número real que join()
+  // va a acreditar, no el literal del prototipo.
+  useEffect(() => {
+    if (!uid) return;
+    return getPorts().folio.suscribir(uid, setFolio);
   }, [uid]);
 
   const locale = currentLang() === "es" ? "es-MX" : "en-US";
@@ -63,6 +75,26 @@ export default function Circulo() {
   ][];
 
   if (!FLAGS.circulo) return null;
+
+  // Copy dinámico de la tarjeta de unirse: lugar real de la sesión y
+  // el mismo número que join() acreditará (saldo abierto × tasa arena).
+  const joinSpot = spotOrRoomLabel(
+    spotId,
+    roomId,
+    t("bedPick"),
+    t("tablePick"),
+    t("roomKey"),
+  );
+  const joinOlas = Math.round(
+    ((folio?.saldoCents ?? 0) / 100) * OLAS.ratePerUsd.arena,
+  );
+  const joinSub =
+    joinOlas > 0 && joinSpot
+      ? t("cirJoinSubTpl", {
+          spot: joinSpot,
+          olas: joinOlas.toLocaleString(locale),
+        })
+      : t("cirJoinSubZero");
 
   const join = () => {
     if (!uid) return;
@@ -220,7 +252,7 @@ export default function Circulo() {
                 c={whiteAlpha(0.55)}
                 style={{ marginTop: 10 }}
               >
-                {t("cirJoinSub")}
+                {joinSub}
               </T>
               <View style={{ marginTop: space.l }}>
                 <Button

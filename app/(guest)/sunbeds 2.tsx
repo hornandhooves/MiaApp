@@ -77,26 +77,12 @@ export default function Sunbeds() {
   const summary = sel
     ? `${t(sel.kind === "bed" ? "bedPick" : "tablePick")} ${sel.number} · ${bedTimes[timeIdx] ?? ""}`
     : t("bedNone");
-  // El prototipo solo define precio para primera fila. Para las demás
-  // filas el pie muestra la fila elegida, sin inventar un precio.
-  const isFront = sel?.row === "front";
-  const selRowLabel = sel
-    ? (rowLabels[rows.find((r) => r.row === sel.row)?.labelIdx ?? 0] ?? "")
-    : "";
   const summarySub = sel
-    ? isFront
-      ? t("bedFromTpl", { price: moneyUsd(SUNBED_FRONT_ROW_CENTS) })
-      : selRowLabel
+    ? t("bedFromTpl", { price: moneyUsd(SUNBED_FRONT_ROW_CENTS) })
     : t("bedTap");
 
   const onHold = async () => {
-    if (!sel) return;
-    if (!uid) {
-      // Sin sesión anónima (Auth deshabilitado o sin red): decirlo en vez
-      // de fallar en silencio.
-      Alert.alert(t("errAuth"));
-      return;
-    }
+    if (!sel || !uid) return;
     setBusy(true);
     try {
       await crearHoldConAviso({
@@ -111,10 +97,7 @@ export default function Sunbeds() {
         rows: [
           { k: t("kBed"), v: `#${sel.number}` },
           { k: t("kWhen"), v: bedTimes[timeIdx] ?? "" },
-          // Solo primera fila tiene precio definido en el prototipo.
-          ...(isFront
-            ? [{ k: t("kTotal"), v: moneyUsd(SUNBED_FRONT_ROW_CENTS) }]
-            : []),
+          { k: t("kTotal"), v: moneyUsd(SUNBED_FRONT_ROW_CENTS) },
         ],
       });
       router.push("/confirm");

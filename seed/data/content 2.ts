@@ -10,7 +10,7 @@ import type { LText } from "../../packages/domain/types";
 export interface KitchenService {
   id: string;
   nombre: LText;
-  horario: LText;
+  horario: string;
   descripcion: LText;
   image: string;
 }
@@ -19,7 +19,7 @@ export const kitchen: KitchenService[] = [
   {
     id: "breakfast",
     nombre: { en: "Breakfast", es: "Desayuno" },
-    horario: { en: "8:00 – 11:00", es: "8:00 – 11:00" },
+    horario: "8:00 – 11:00",
     descripcion: {
       en: "Fresh fruit, local ingredients, real coffee. Served steps from the sea, included in every stay.",
       es: "Fruta fresca, ingredientes locales, café de verdad. Servido a pasos del mar, incluido en toda estancia.",
@@ -29,7 +29,7 @@ export const kitchen: KitchenService[] = [
   {
     id: "lunch",
     nombre: { en: "Lunch", es: "Comida" },
-    horario: { en: "11:30 – 18:00", es: "11:30 – 18:00" },
+    horario: "11:30 – 18:00",
     descripcion: {
       en: "Ceviche, catch of the day off the grill and the beach club classics, brought to your bed.",
       es: "Ceviche, pesca del día a la parrilla y los clásicos del beach club, llevados a tu camastro.",
@@ -39,7 +39,7 @@ export const kitchen: KitchenService[] = [
   {
     id: "dinner",
     nombre: { en: "Dinner", es: "Cena" },
-    horario: { en: "18:00 – late", es: "18:00 – tarde" },
+    horario: "18:00 – tarde",
     descripcion: {
       en: "Candlelight on the sand, a kitchen that stays serious, and music that builds as the night does.",
       es: "Velas en la arena, una cocina que se mantiene seria, y música que crece con la noche.",
@@ -49,7 +49,7 @@ export const kitchen: KitchenService[] = [
   {
     id: "cellar",
     nombre: { en: "Wine cellar", es: "Cava" },
-    horario: { en: "All day", es: "Todo el día" },
+    horario: "Todo el día",
     descripcion: {
       en: "Labels from Mexico, France and further afield, plus mezcal chosen by the house.",
       es: "Etiquetas de México, Francia y más allá, y mezcal elegido por la casa.",
@@ -354,10 +354,10 @@ export const contact = {
   direccion:
     "Carretera Tulum Boca-Paila km 7.5, Zona Hotelera, 77760 Tulum, Q.R.",
   horarios: [
-    { k: { en: "Breakfast", es: "Desayuno" }, v: { en: "from 8:00 AM", es: "desde 8:00 AM" } },
-    { k: { en: "Check-in", es: "Check-in" }, v: { en: "3:00 PM", es: "3:00 PM" } },
-    { k: { en: "Check-out", es: "Check-out" }, v: { en: "11:00 AM", es: "11:00 AM" } },
-    { k: { en: "Beach club", es: "Beach club" }, v: { en: "8:00 AM – late", es: "8:00 AM – tarde" } },
+    { k: { en: "Breakfast", es: "Desayuno" }, v: "desde 8:00 AM" },
+    { k: { en: "Check-in", es: "Check-in" }, v: "3:00 PM" },
+    { k: { en: "Check-out", es: "Check-out" }, v: "11:00 AM" },
+    { k: { en: "Beach club", es: "Beach club" }, v: "8:00 AM – tarde" },
   ],
   redes: ["Instagram", "Facebook", "TikTok", "YouTube"],
 };

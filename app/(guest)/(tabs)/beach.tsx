@@ -315,7 +315,7 @@ export default function Beach() {
                         c={color.accent}
                         style={{ fontSize: 11.5 }}
                       >
-                        {k.horario}
+                        {lx(k.horario)}
                       </T>
                     </View>
                     <T

@@ -32,3 +32,28 @@ export function parseSpotLink(raw: string): SpotLink | null {
 
   return { spotId, token };
 }
+
+/**
+ * Etiqueta humana del lugar de la sesión: el camastro/mesa vinculado
+ * o, en su defecto, la habitación de la estancia. Las palabras llegan
+ * ya traducidas (t("bedPick")/t("tablePick")/t("roomKey")) para que la
+ * lógica quede pura y testeable.
+ */
+export function spotOrRoomLabel(
+  spotId: string | null,
+  roomId: string | null,
+  bedWord: string,
+  tableWord: string,
+  roomWord: string,
+): string | null {
+  if (spotId) {
+    const [kind, num] = spotId.split("-");
+    const word = kind === "table" ? tableWord : bedWord;
+    return `${word.toLowerCase()} ${num ?? ""}`.trim();
+  }
+  if (roomId) {
+    const num = roomId.split("-")[1] ?? roomId;
+    return `${roomWord.toLowerCase()} ${num}`;
+  }
+  return null;
+}

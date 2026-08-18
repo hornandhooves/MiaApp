@@ -168,7 +168,6 @@
     "Worth the trip"
   ],
   "guestBannerTitle": "You're on bed 14, no account",
-  "guestBannerSub": "Today's spend would be 1,840 Olas · about half a free day pass",
   "joinCta": "Join Círculo",
   "memberBannerTitle": "Marea · 12,480 Olas",
   "memberBannerSub": "1,520 to Cenote · guaranteed front row and a free temazcal",
@@ -584,7 +583,6 @@
     ]
   ],
   "cirJoinTitle": "Join Círculo",
-  "cirJoinSub": "Today's spend on bed 14 becomes 1,840 Olas the moment you do.",
   "cirJoin": "Create my account",
   "cirRes": "Residentes verified — local rate saved to your account",
   "cirRedeemCta": "Redeem",
@@ -709,5 +707,9 @@
   "wedSend": "Request a date",
   "wedDate": "Estimated date",
   "wedGuests": "Guests",
-  "wedType": "Type of ceremony"
+  "wedType": "Type of ceremony",
+  "guestBannerSubTpl": "Today's spend would be {{olas}} Olas · a free day pass is {{pass}}",
+  "guestBannerSubZero": "Your spend today comes back as Olas the moment you join",
+  "cirJoinSubTpl": "Today's spend on {{spot}} becomes {{olas}} Olas the moment you do.",
+  "cirJoinSubZero": "Everything you spend today becomes Olas the moment you do."
 }

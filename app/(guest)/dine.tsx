@@ -17,6 +17,7 @@ import type { Folio, MenuItem, OrderLine } from "../../packages/domain/types";
 import { lx, useMenu } from "../../packages/lib/content";
 import { useConfirmStore } from "../../packages/lib/confirmStore";
 import { useSession } from "../../packages/lib/session";
+import { spotOrRoomLabel } from "../../packages/lib/spotLink";
 import { moneyUsd } from "../../packages/lib/tulum";
 import { CircleButton, GLYPH } from "../../packages/ui/CircleButton";
 import { ListState } from "../../packages/ui/ListState";
@@ -33,25 +34,6 @@ import {
 
 const PLUS = "+";
 const CHECK = "✓";
-
-function spotLabel(
-  spotId: string | null,
-  roomId: string | null,
-  bedWord: string,
-  tableWord: string,
-  roomWord: string,
-): string | null {
-  if (spotId) {
-    const [kind, num] = spotId.split("-");
-    const word = kind === "table" ? tableWord : bedWord;
-    return `${word.toLowerCase()} ${num ?? ""}`.trim();
-  }
-  if (roomId) {
-    const num = roomId.split("-")[1] ?? roomId;
-    return `${roomWord.toLowerCase()} ${num}`;
-  }
-  return null;
-}
 
 export default function Dine() {
   const { t } = useTranslation();
@@ -74,7 +56,7 @@ export default function Dine() {
   }, [uid]);
 
   const cats = t("dineCats", { returnObjects: true }) as string[];
-  const destino = spotLabel(
+  const destino = spotOrRoomLabel(
     spotId,
     roomId,
     t("bedPick"),

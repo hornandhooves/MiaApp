@@ -7,14 +7,10 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { getPorts } from "../../../packages/domain/di";
-import { OLAS } from "../../../packages/domain/PLACEHOLDER_PRICES";
-import type { Folio } from "../../../packages/domain/types";
-import { currentLang } from "../../../packages/i18n";
 import {
   lx,
   useDayEvents,
@@ -22,7 +18,6 @@ import {
 } from "../../../packages/lib/content";
 import { SCREEN_ROUTES } from "../../../packages/lib/routes";
 import { useSession } from "../../../packages/lib/session";
-import { spotOrRoomLabel } from "../../../packages/lib/spotLink";
 import {
   hhmmToMinutes,
   minutesNowInTulum,
@@ -47,6 +42,15 @@ import {
 
 const HERO_BY_MODE = ["aerial", "loungers", "cenote"] as const;
 
+function spotLabel(
+  spotId: string,
+  bedWord: string,
+  tableWord: string,
+): string {
+  const [kind, num] = spotId.split("-");
+  const word = kind === "table" ? tableWord : bedWord;
+  return `${word.toLowerCase()} ${num ?? ""}`.trim();
+}
 
 export default function Home() {
   const { t } = useTranslation();
@@ -57,15 +61,6 @@ export default function Home() {
   const spotId = useSession((s) => s.spotId);
   const roomId = useSession((s) => s.roomId);
   const estancia = useSession((s) => s.estancia);
-  const uid = useSession((s) => s.uid);
-
-  // Folio vivo: alimenta el subtítulo del banner con el consumo real
-  // del día, no el literal del prototipo.
-  const [folio, setFolio] = useState<Folio | null>(null);
-  useEffect(() => {
-    if (!uid) return;
-    return getPorts().folio.suscribir(uid, setFolio);
-  }, [uid]);
 
   // El modo inicial se deduce del tipo de sesión (MIA-111)
   const initialMode = spotId ? 1 : roomId ? 0 : status === "member" ? 0 : 2;
@@ -94,34 +89,13 @@ export default function Home() {
 
   const showBanner = status === "guest" || status === "member";
   const isGuestBanner = status === "guest";
-  // Camastro/mesa vinculados o, en su defecto, la habitación de la
-  // estancia. El literal del prototipo ("bed 14") solo queda como
-  // último recurso sin vínculo alguno.
-  const guestLabel = spotOrRoomLabel(
-    spotId,
-    roomId,
-    t("bedPick"),
-    t("tablePick"),
-    t("roomKey"),
-  );
   const bannerTitle = isGuestBanner
-    ? guestLabel
-      ? t("guestBannerTitleTpl", { spot: guestLabel })
+    ? spotId
+      ? t("guestBannerTitleTpl", {
+          spot: spotLabel(spotId, t("bedPick"), t("tablePick")),
+        })
       : t("guestBannerTitle")
     : t("memberBannerTitle");
-  // Mismo cálculo que ejecuta join() en Círculo: saldo abierto × tasa
-  // de entrada (arena). La promesa del banner iguala lo que pasará.
-  const locale = currentLang() === "es" ? "es-MX" : "en-US";
-  const bannerOlas = Math.round(
-    ((folio?.saldoCents ?? 0) / 100) * OLAS.ratePerUsd.arena,
-  );
-  const guestBannerSub =
-    bannerOlas > 0
-      ? t("guestBannerSubTpl", {
-          olas: bannerOlas.toLocaleString(locale),
-          pass: OLAS.redeem.dayPassTraditional.toLocaleString(locale),
-        })
-      : t("guestBannerSubZero");
 
   return (
     <View style={{ flex: 1, backgroundColor: color.canvas }}>
@@ -273,7 +247,7 @@ export default function Home() {
                 c={isGuestBanner ? whiteAlpha(0.6) : inkAlpha(0.55)}
                 style={{ marginTop: 5 }}
               >
-                {isGuestBanner ? guestBannerSub : t("memberBannerSub")}
+                {isGuestBanner ? t("guestBannerSub") : t("memberBannerSub")}
               </T>
             </View>
             <View

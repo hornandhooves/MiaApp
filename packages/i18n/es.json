@@ -168,7 +168,6 @@
     "Vale el viaje"
   ],
   "guestBannerTitle": "Estás en el camastro 14, sin cuenta",
-  "guestBannerSub": "El consumo de hoy serían 1,840 Olas · medio day pass",
   "joinCta": "Unirme a Círculo",
   "memberBannerTitle": "Marea · 12,480 Olas",
   "memberBannerSub": "1,520 para Cenote · primera fila garantizada y un temazcal",
@@ -584,7 +583,6 @@
     ]
   ],
   "cirJoinTitle": "Unirme a Círculo",
-  "cirJoinSub": "El consumo de hoy en el camastro 14 se vuelven 1,840 Olas al hacerlo.",
   "cirJoin": "Crear mi cuenta",
   "cirRes": "Residente verificado — tarifa local guardada en tu cuenta",
   "cirRedeemCta": "Canjear",
@@ -709,5 +707,9 @@
   "wedSend": "Solicitar una fecha",
   "wedDate": "Fecha estimada",
   "wedGuests": "Invitados",
-  "wedType": "Tipo de ceremonia"
+  "wedType": "Tipo de ceremonia",
+  "guestBannerSubTpl": "El consumo de hoy serían {{olas}} Olas · un day pass gratis son {{pass}}",
+  "guestBannerSubZero": "Tu consumo de hoy regresa como Olas en cuanto te unas",
+  "cirJoinSubTpl": "El consumo de hoy en {{spot}} se vuelve {{olas}} Olas al hacerlo.",
+  "cirJoinSubZero": "Todo lo que consumas hoy se vuelve Olas al hacerlo."
 }

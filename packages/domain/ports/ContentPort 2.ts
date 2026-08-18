@@ -49,7 +49,7 @@ export interface ContactData {
   conciergeEmail: string;
   generalEmail: string;
   direccion: string;
-  horarios: { k: { es: string; en: string }; v: { es: string; en: string } }[];
+  horarios: { k: { es: string; en: string }; v: string }[];
   redes: string[];
 }
 
