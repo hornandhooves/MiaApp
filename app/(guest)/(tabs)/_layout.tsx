@@ -5,6 +5,9 @@ import {
   TAB_ICONS,
   TAB_KEYS,
 } from "../../../packages/lib/routes";
+import { useSesionDia } from "../../../packages/lib/sesionDia";
+import { moneyUsd } from "../../../packages/lib/tulum";
+import { SessionBar } from "../../../packages/ui/SessionBar";
 import { TabBar, type TabItem } from "../../../packages/ui/TabBar";
 
 const HIDDEN = [
@@ -15,6 +18,49 @@ const HIDDEN = [
   "contact",
   "blog",
 ] as const;
+
+const LUGAR_KEY = {
+  bed: "sbBed",
+  table: "sbTable",
+  room: "sbRoom",
+} as const;
+
+/**
+ * La barra de sesión vive aquí, junto a la tab bar, para que el contexto
+ * del huésped —dónde está, cuánto lleva, qué viene en camino— acompañe
+ * TODAS las pantallas en vez de existir solo dentro de Tu día.
+ */
+function BarraDeSesion() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const s = useSesionDia();
+
+  // Dentro de Tu día la información ya está en pantalla: la barra sobra.
+  if (!s.activa || pathname === SCREEN_ROUTES.stay) return null;
+
+  const lugar =
+    s.lugarTipo && s.lugarNum
+      ? t(LUGAR_KEY[s.lugarTipo], { n: s.lugarNum })
+      : null;
+
+  return (
+    <SessionBar
+      lugar={lugar}
+      cuenta={s.saldoCents > 0 ? moneyUsd(s.saldoCents) : null}
+      enCamino={
+        s.enCurso.length > 0 ? t("sbOnWay", { n: s.enCurso.length }) : null
+      }
+      aviso={
+        s.minutosHold !== null && s.minutosHold <= 15
+          ? t("sbHoldLeft", { n: s.minutosHold })
+          : null
+      }
+      label={t("sessionBarLabel")}
+      onPress={() => router.navigate(SCREEN_ROUTES.stay)}
+    />
+  );
+}
 
 export default function TabsLayout() {
   const { t } = useTranslation();
@@ -34,7 +80,12 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{ headerShown: false }}
-      tabBar={() => <TabBar items={items} />}
+      tabBar={() => (
+        <>
+          <BarraDeSesion />
+          <TabBar items={items} />
+        </>
+      )}
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="beach" />

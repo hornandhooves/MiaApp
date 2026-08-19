@@ -19,7 +19,8 @@
     },
     "types": [
       "jest"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "include": [
     "app",
@@ -27,7 +28,7 @@
     "seed",
     "app.config.ts",
     "expo-env.d.ts",
-    ".expo/types/**/*.ts"
+    "config"
   ],
   "exclude": [
     "node_modules",

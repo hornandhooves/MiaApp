@@ -8,17 +8,26 @@
 import * as Crypto from "expo-crypto";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { httpsCallable } from "firebase/functions";
 import { getPorts } from "../../../packages/domain/di";
+import { functions } from "../../../packages/lib/firebase";
 import { FLAGS } from "../../../packages/domain/flags";
 import { OLAS } from "../../../packages/domain/PLACEHOLDER_PRICES";
 import { prorrateoUpgradeFbe } from "../../../packages/domain/prorrateo";
-import type { Folio, MealPlanId } from "../../../packages/domain/types";
+import type { Folio, MealPlanId , Reservation } from "../../../packages/domain/types";
 import { lx } from "../../../packages/lib/content";
 import { currentLang } from "../../../packages/i18n";
 import { rangeLabel } from "../../../packages/lib/bookingStore";
 import { useSession } from "../../../packages/lib/session";
+import {
+  minutosDesde,
+  useSesionDia,
+} from "../../../packages/lib/sesionDia";
+import type { ReservaBienestar } from "../../../packages/domain/ports/WellnessPort";
+import { DaySection } from "../../../packages/ui/DaySection";
 import { moneyUsd } from "../../../packages/lib/tulum";
 import { ListState } from "../../../packages/ui/ListState";
 import { SheetButton } from "../../../packages/ui/SheetButton";
@@ -40,9 +49,87 @@ const DASH = "—";
 export default function Stay() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const openSheet = useUiStore((s) => s.openSheet);
   const uid = useSession((s) => s.uid);
   const status = useSession((s) => s.status);
+  const spotId = useSession((s) => s.spotId);
+  const signOutAll = useSession((s) => s.signOutAll);
+  const dia = useSesionDia();
+  const [reservas, setReservas] = useState<Reservation[]>([]);
+  const [bienestar, setBienestar] = useState<ReservaBienestar[]>([]);
+  const [ahora, setAhora] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!uid) return;
+    let vivo = true;
+    void getPorts()
+      .reservation.delUsuario(uid)
+      .then((r) => vivo && setReservas(r))
+      .catch(() => {});
+    void getPorts()
+      .wellness.misReservas(uid)
+      .then((r) => vivo && setBienestar(r))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [uid]);
+
+  useEffect(() => {
+    const id = setInterval(() => setAhora(Date.now()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
+  /** Cerrar sesión: para un invitado anónimo esto DESTRUYE el día. */
+  const cerrarSesion = () => {
+    const anonimo = status !== "member";
+    Alert.alert(
+      anonimo ? t("signOutGuestTitle") : t("signOut"),
+      anonimo ? t("signOutGuestBody") : t("signOutMemberBody"),
+      [
+        { text: t("cancelLbl"), style: "cancel" },
+        {
+          text: t("signOutConfirm"),
+          style: "destructive",
+          onPress: () => void signOutAll(),
+        },
+      ],
+    );
+  };
+
+  /**
+   * Borrado de cuenta. Apple lo exige para aprobar la app, y es la via
+   * practica del derecho de cancelacion bajo la ley mexicana de datos.
+   * Se bloquea si hay cuenta abierta: nadie desaparece debiendo.
+   */
+  const eliminarCuenta = () => {
+    if (folio && folio.estado === "open" && folio.saldoCents > 0) {
+      Alert.alert(t("deleteOpenFolio"));
+      return;
+    }
+    Alert.alert(t("deleteTitle"), t("deleteBody"), [
+      { text: t("cancelLbl"), style: "cancel" },
+      {
+        text: t("deleteConfirm"),
+        style: "destructive",
+        onPress: () => {
+          void (async () => {
+            setBusy(true);
+            try {
+              await httpsCallable(functions(), "eliminarCuenta")();
+              await signOutAll();
+              Alert.alert(t("deleteDone"));
+            } catch {
+              Alert.alert(t("deleteFailed"));
+            } finally {
+              setBusy(false);
+            }
+          })();
+        },
+      },
+    ]);
+  };
   const roomId = useSession((s) => s.roomId);
   const estancia = useSession((s) => s.estancia);
 
@@ -479,6 +566,203 @@ export default function Stay() {
             >
               <T v="bodyMedium" c={color.white}>
                 {t("settle")}
+              </T>
+            </Pressable>
+          ) : null}
+        </View>
+
+        {/* Tu lugar */}
+        <DaySection
+          title={t("dayPlace")}
+          empty={dia.lugarTipo ? null : t("dayPlaceNone")}
+        >
+          <Pressable
+            onPress={() => router.push(spotId ? "/sunbeds" : "/guest")}
+            accessibilityRole="button"
+            accessibilityLabel={t("dayPlace")}
+            style={{
+              backgroundColor: color.white,
+              borderWidth: 1,
+              borderColor: inkAlpha(0.09),
+              borderRadius: radius.card,
+              padding: 18,
+              minHeight: hit.minHeight,
+            }}
+          >
+            <T v="bodyMedium" style={{ fontSize: 16 }}>
+              {dia.lugarTipo && dia.lugarNum
+                ? t(
+                    dia.lugarTipo === "table"
+                      ? "sbTable"
+                      : dia.lugarTipo === "room"
+                        ? "sbRoom"
+                        : "sbBed",
+                    { n: dia.lugarNum },
+                  )
+                : t("dayPlaceLink")}
+            </T>
+            {dia.minutosHold !== null ? (
+              <T
+                v="caption"
+                c={dia.minutosHold > 0 ? inkAlpha(0.45) : color.accent}
+                style={{ marginTop: 4 }}
+              >
+                {dia.minutosHold > 0
+                  ? t("dayHoldLeftTpl", { n: dia.minutosHold })
+                  : t("dayHoldGone")}
+              </T>
+            ) : null}
+          </Pressable>
+        </DaySection>
+
+        {/* Tus pedidos */}
+        <DaySection
+          title={t("dayOrders")}
+          empty={dia.pedidos.length === 0 ? t("dayOrdersNone") : null}
+        >
+          <View
+            style={{
+              backgroundColor: color.white,
+              borderWidth: 1,
+              borderColor: inkAlpha(0.09),
+              borderRadius: radius.card,
+              paddingHorizontal: 18,
+              paddingVertical: 6,
+            }}
+          >
+            {dia.pedidos.map((o) => {
+              const mins = minutosDesde(o.createdAt, ahora);
+              const vivo = o.estado !== "delivered";
+              return (
+                <View
+                  key={o.id}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: space.m,
+                    paddingVertical: 13,
+                    borderBottomWidth: 1,
+                    borderBottomColor: inkAlpha(0.07),
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <T v="body" style={{ fontSize: 14 }}>
+                      {t(
+                        o.estado === "received"
+                          ? "stateReceived"
+                          : o.estado === "preparing"
+                            ? "statePreparing"
+                            : o.estado === "on-way"
+                              ? "stateOnWay"
+                              : "stateDelivered",
+                      )}
+                    </T>
+                    <T v="caption" c={inkAlpha(0.45)} style={{ marginTop: 3 }}>
+                      {mins < 1
+                        ? t("orderJustNow")
+                        : t("orderAgoTpl", { n: mins })}
+                    </T>
+                  </View>
+                  <T v="bodyMedium" c={vivo ? color.accent : inkAlpha(0.55)}>
+                    {moneyUsd(o.totalCents)}
+                  </T>
+                </View>
+              );
+            })}
+          </View>
+        </DaySection>
+
+        {/* Tus reservas */}
+        <DaySection
+          title={t("dayBookings")}
+          empty={
+            reservas.length === 0 && bienestar.length === 0
+              ? t("dayBookingsNone")
+              : null
+          }
+        >
+          <View
+            style={{
+              backgroundColor: color.white,
+              borderWidth: 1,
+              borderColor: inkAlpha(0.09),
+              borderRadius: radius.card,
+              paddingHorizontal: 18,
+              paddingVertical: 6,
+            }}
+          >
+            {reservas.map((r) => (
+              <View
+                key={r.id}
+                style={{
+                  paddingVertical: 13,
+                  borderBottomWidth: 1,
+                  borderBottomColor: inkAlpha(0.07),
+                }}
+              >
+                <T v="body" style={{ fontSize: 14 }}>
+                  {rangeLabel(r.desde, r.hasta, currentLang() === "es" ? "es-MX" : "en-US")}
+                </T>
+                <T v="caption" c={inkAlpha(0.45)} style={{ marginTop: 3 }}>
+                  {moneyUsd(r.totalCents)}
+                </T>
+              </View>
+            ))}
+            {bienestar.map((b) => (
+              <View
+                key={b.id}
+                style={{
+                  paddingVertical: 13,
+                  borderBottomWidth: 1,
+                  borderBottomColor: inkAlpha(0.07),
+                }}
+              >
+                <T v="body" style={{ fontSize: 14 }}>
+                  {b.tipo === "shuttle" ? t("dayShuttle") : lx(b.nombre)}
+                </T>
+                <T v="caption" c={inkAlpha(0.45)} style={{ marginTop: 3 }}>
+                  {b.asientos
+                    ? `${b.hora} \u00b7 ${t("daySeatsTpl", { n: b.asientos })}`
+                    : b.hora}
+                </T>
+              </View>
+            ))}
+          </View>
+        </DaySection>
+
+        {/* Cerrar sesión */}
+        <View style={{ paddingHorizontal: space.gutter, marginTop: 32 }}>
+          <Pressable
+            onPress={cerrarSesion}
+            accessibilityRole="button"
+            accessibilityLabel={t("signOut")}
+            style={{
+              minHeight: hit.minHeight,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <T v="body" c={color.accent} style={{ fontSize: 14 }}>
+              {t("signOut")}
+            </T>
+          </Pressable>
+          {status === "member" ? (
+            <Pressable
+              onPress={eliminarCuenta}
+              disabled={busy}
+              accessibilityRole="button"
+              accessibilityLabel={t("deleteAccount")}
+              accessibilityState={{ disabled: busy }}
+              style={{
+                minHeight: hit.minHeight,
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: busy ? 0.5 : 1,
+              }}
+            >
+              <T v="caption" c={inkAlpha(0.4)}>
+                {t("deleteAccount")}
               </T>
             </Pressable>
           ) : null}

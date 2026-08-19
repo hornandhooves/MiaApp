@@ -176,3 +176,256 @@ export const liberarHold = onCall(async (req) => {
 export const acreditarOlas = onCall(async () => {
   throw new HttpsError("unimplemented", "semana-7");
 });
+
+/**
+ * eliminarCuenta — borrado de cuenta a petición del usuario.
+ *
+ * Apple lo EXIGE para cualquier app que permita crear cuenta: sin esto,
+ * la app se rechaza en revisión. También es la vía práctica para atender
+ * el derecho de cancelación bajo la ley mexicana de datos personales.
+ *
+ * Qué borra: el perfil, las sesiones y el ledger de Olas del usuario, y
+ * al final la propia cuenta de Auth.
+ *
+ * Qué NO borra, a propósito: los cargos ya liquidados. Un folio cerrado
+ * es un registro contable del hotel y borrarlo destruiría su
+ * contabilidad; se conserva desligado del perfil. El diálogo de la app
+ * se lo dice al usuario antes de confirmar.
+ *
+ * Se niega si hay una cuenta abierta: nadie debe poder desaparecer con
+ * un consumo sin pagar.
+ */
+export const eliminarCuenta = onCall(async (req) => {
+  if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+  const uid = req.auth.uid;
+  const db = getFirestore();
+
+  const abiertos = await db
+    .collection("folios")
+    .where("uid", "==", uid)
+    .where("estado", "==", "open")
+    .get();
+  const conSaldo = abiertos.docs.some(
+    (d) => Number(d.get("saldoCents") ?? 0) > 0,
+  );
+  if (conSaldo) {
+    throw new HttpsError("failed-precondition", "folio-abierto");
+  }
+
+  // Borrado por lotes: cada colección con datos personales del usuario.
+  const colecciones = ["profiles", "sessions", "ledger"];
+  for (const col of colecciones) {
+    const snap =
+      col === "profiles"
+        ? await db.collection(col).where("__name__", "==", uid).get()
+        : await db.collection(col).where("uid", "==", uid).get();
+    let lote = db.batch();
+    let n = 0;
+    for (const doc of snap.docs) {
+      lote.delete(doc.ref);
+      n += 1;
+      // Firestore limita cada lote a 500 escrituras.
+      if (n % 400 === 0) {
+        await lote.commit();
+        lote = db.batch();
+      }
+    }
+    if (n % 400 !== 0) await lote.commit();
+  }
+
+  // El folio liquidado se conserva, pero deja de apuntar a una persona.
+  const liquidados = await db
+    .collection("folios")
+    .where("uid", "==", uid)
+    .get();
+  const anon = db.batch();
+  for (const doc of liquidados.docs) {
+    anon.update(doc.ref, { uid: "deleted", anonimizadoAt: new Date().toISOString() });
+  }
+  await anon.commit();
+
+  await getAuth().deleteUser(uid);
+  return { ok: true };
+});
+
+/**
+ * avanzarPedido — el ÚNICO camino para mover un pedido de estado.
+ *
+ * Vive en el servidor, no en el cliente, por dos razones que no son
+ * cosméticas: verifica el claim `staff` (las reglas no dejan al cliente
+ * escribir orders), y al entregar dispara el cargo al folio dentro de la
+ * misma transacción. Si eso viviera en la app, una app cerrada a medio
+ * camino dejaría un pedido entregado sin cobrar.
+ *
+ * Idempotente: el cargo usa la clave del pedido, así que reintentar no
+ * cobra dos veces.
+ */
+const SIGUIENTE: Record<string, string | null> = {
+  received: "preparing",
+  preparing: "on-way",
+  "on-way": "delivered",
+  delivered: null,
+};
+
+export const avanzarPedido = onCall(async (req) => {
+  if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+  if (req.auth.token.staff !== true) {
+    throw new HttpsError("permission-denied", "Solo personal de Mía");
+  }
+  const orderId = String(req.data?.orderId ?? "");
+  if (!orderId) throw new HttpsError("invalid-argument", "Falta orderId");
+
+  const db = getFirestore();
+  return db.runTransaction(async (tx) => {
+    // Todas las lecturas antes de cualquier escritura: Firestore lo exige.
+    const ref = db.collection("orders").doc(orderId);
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new HttpsError("not-found", "Pedido inexistente");
+
+    const estado = String(snap.get("estado") ?? "");
+    const siguiente = SIGUIENTE[estado] ?? null;
+    if (!siguiente) {
+      throw new HttpsError("failed-precondition", "pedido-terminado");
+    }
+
+    const uid = String(snap.get("uid") ?? "");
+    const totalCents = Number(snap.get("totalCents") ?? 0);
+
+    let folioRef = null;
+    let folioSnap = null;
+    if (siguiente === "delivered" && uid) {
+      const abiertos = await tx.get(
+        db
+          .collection("folios")
+          .where("uid", "==", uid)
+          .where("estado", "==", "open")
+          .limit(1),
+      );
+      const primero = abiertos.docs[0];
+      folioRef = primero ? primero.ref : db.collection("folios").doc();
+      folioSnap = primero ?? null;
+    }
+
+    tx.update(ref, { estado: siguiente });
+
+    if (siguiente === "delivered" && folioRef) {
+      // El cargo se congela AQUI, con el total que el pedido ya traia.
+      // Jamas se relee el catalogo de precios.
+      const linea = {
+        idempotencyKey: `order:${orderId}`,
+        concepto: { es: "Pedido", en: "Order" },
+        precioCents: totalCents,
+        cantidad: 1,
+        origen: "order",
+        refId: orderId,
+        createdAt: new Date().toISOString(),
+      };
+      if (!folioSnap) {
+        tx.set(folioRef, {
+          uid,
+          lineas: [linea],
+          saldoCents: totalCents,
+          estado: "open",
+        });
+      } else {
+        const lineas = (folioSnap.get("lineas") ?? []) as { idempotencyKey?: string }[];
+        const yaEsta = lineas.some((l) => l.idempotencyKey === linea.idempotencyKey);
+        if (!yaEsta) {
+          tx.update(folioRef, {
+            lineas: [...lineas, linea],
+            saldoCents: Number(folioSnap.get("saldoCents") ?? 0) + totalCents,
+          });
+        }
+      }
+    }
+
+    return { ok: true, estado: siguiente };
+  });
+});
+
+/**
+ * crearCheckout — sesión de Stripe Checkout para cobrar de verdad.
+ *
+ * Por qué Checkout y no el SDK nativo: el SDK de Stripe para React
+ * Native obliga a compilar un módulo nativo cuya descarga colgó
+ * `pod install` dos veces en la máquina de Carlos. Checkout es una
+ * página alojada por Stripe que se abre en el navegador del teléfono:
+ * mismo cobro real, cero código nativo, y la captura de la tarjeta
+ * nunca toca nuestra app (menos superficie de cumplimiento PCI).
+ *
+ * El regreso es por deep link a la propia app.
+ */
+export const crearCheckout = onCall(
+  { secrets: [STRIPE_TEST_KEY] },
+  async (req) => {
+    if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+    const idempotencyKey = String(req.data?.idempotencyKey ?? "");
+    const montoCents = Number(req.data?.montoCents ?? 0);
+    const currency = String(req.data?.currency ?? "");
+    const concepto = String(req.data?.concepto ?? "Mía Tulum");
+    if (!idempotencyKey) {
+      throw new HttpsError("invalid-argument", "Falta clave de idempotencia");
+    }
+    if (!Number.isInteger(montoCents) || montoCents <= 0) {
+      throw new HttpsError("invalid-argument", "Monto inválido");
+    }
+    if (currency !== "usd" && currency !== "mxn") {
+      throw new HttpsError("invalid-argument", "Moneda inválida");
+    }
+
+    const stripe = new Stripe(STRIPE_TEST_KEY.value());
+    const sesion = await stripe.checkout.sessions.create(
+      {
+        mode: "payment",
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency,
+              unit_amount: montoCents,
+              product_data: { name: concepto },
+            },
+          },
+        ],
+        // El scheme de la app; el navegador devuelve al usuario aquí.
+        success_url: "mia://pago?estado=ok",
+        cancel_url: "mia://pago?estado=cancelado",
+        metadata: { uid: req.auth.uid, idempotencyKey },
+      },
+      { idempotencyKey },
+    );
+
+    return { sessionId: sesion.id, url: sesion.url };
+  },
+);
+
+/**
+ * verificarPago — la app NUNCA decide si un cobro ocurrió.
+ *
+ * El navegador puede cerrarse, mentir o quedarse a medias. La única
+ * fuente de verdad es Stripe, y solo el servidor puede preguntarle.
+ * Devuelve `pagado: true` únicamente cuando Stripe lo confirma.
+ */
+export const verificarPago = onCall(
+  { secrets: [STRIPE_TEST_KEY] },
+  async (req) => {
+    if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+    const sessionId = String(req.data?.sessionId ?? "");
+    if (!sessionId) throw new HttpsError("invalid-argument", "Falta sessionId");
+
+    const stripe = new Stripe(STRIPE_TEST_KEY.value());
+    const sesion = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // Nadie puede consultar el cobro de otra persona.
+    if (sesion.metadata?.uid !== req.auth.uid) {
+      throw new HttpsError("permission-denied", "Sesión de otro usuario");
+    }
+
+    const pagado = sesion.payment_status === "paid";
+    const intent = sesion.payment_intent;
+    return {
+      pagado,
+      paymentIntentId: typeof intent === "string" ? intent : (intent?.id ?? ""),
+    };
+  },
+);

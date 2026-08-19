@@ -24,6 +24,16 @@ service cloud.firestore {
       return request.auth != null && resource.data.uid == request.auth.uid;
     }
 
+    // Personal de Mia. El claim 'staff' lo otorga SOLO un administrador
+    // con scripts/staff.mjs (firebase-admin); ninguna function expuesta
+    // al cliente puede concederlo, para que no exista una via de
+    // escalar privilegios desde la app.
+    function esStaff() {
+      return request.auth != null
+        && ('staff' in request.auth.token)
+        && request.auth.token.staff == true;
+    }
+
     // ---------- Catálogos de solo lectura (espejo del futuro PMS) ----------
     match /roomTypes/{id}    { allow read: if true; allow write: if false; }
     match /ratePlans/{id}    { allow read: if true; allow write: if false; }
@@ -41,8 +51,12 @@ service cloud.firestore {
       allow create: if tieneScope('order')
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.spotId == request.auth.token.spotId;
-      allow read: if esDueno();
-      allow update, delete: if false;   // solo functions
+      // La cocina necesita ver los pedidos vivos de TODOS; el huesped,
+      // solo los suyos.
+      allow read: if esDueno() || esStaff();
+      // Avanzar el estado pasa por avanzarPedido (function), nunca por
+      // el cliente: es lo que dispara el cargo al folio.
+      allow update, delete: if false;
     }
 
     match /spotHolds/{id} {

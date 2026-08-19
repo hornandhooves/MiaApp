@@ -56,6 +56,9 @@ const otro = env
 
 const anon = env.unauthenticatedContext().firestore();
 
+/** Personal de cocina: claim staff, sin scope de invitado. */
+const staff = env.authenticatedContext("uid-staff", { staff: true }).firestore();
+
 let fallas = 0;
 let corridos = 0;
 const caso = async (nombre, promesa) => {
@@ -222,6 +225,30 @@ await caso(
   assertFails(
     invitado.collection("sessions").doc("uid-invitado").set({ spotId: "x" }),
   ),
+);
+
+// ---------- Personal (claim staff) ----------
+await caso(
+  "la cocina lee pedidos de cualquiera",
+  assertSucceeds(staff.collection("orders").doc("o-1").get()),
+);
+await caso(
+  "el staff NO avanza pedidos escribiendo directo (es de avanzarPedido)",
+  assertFails(
+    staff.collection("orders").doc("o-1").update({ estado: "delivered" }),
+  ),
+);
+await caso(
+  "el staff NO lee folios ajenos",
+  assertFails(staff.collection("folios").doc("f-otro").get()),
+);
+await caso(
+  "el staff NO escribe el ledger",
+  assertFails(staff.collection("ledger").doc("l-1").set({ delta: 9999 })),
+);
+await caso(
+  "un invitado NO puede leer pedidos ajenos aunque se diga staff",
+  assertFails(sinScope.collection("orders").doc("o-1").get()),
 );
 
 // ---------- Lo no listado ----------

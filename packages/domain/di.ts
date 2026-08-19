@@ -2,6 +2,9 @@
  * Punto único de armado de ports. Las pantallas piden aquí sus
  * dependencias; cambiar mock→pms es cambiar este archivo, no pantallas.
  */
+import { FLAGS } from "./flags";
+import { FirestoreOrderAdapter } from "./adapters/firestore/FirestoreOrderAdapter";
+import { StripeCheckoutAdapter } from "./adapters/firestore/StripeCheckoutAdapter";
 import { MockChatAdapter } from "./adapters/mock/MockChatAdapter";
 import { MockContentAdapter } from "./adapters/mock/MockContentAdapter";
 import { MockFolioAdapter } from "./adapters/mock/MockFolioAdapter";
@@ -82,15 +85,24 @@ export function getPorts(): Ports {
         });
       }
     });
+    // Con pedidos reales, el cargo al folio lo hace avanzarPedido en el
+    // servidor —dentro de la misma transaccion que marca "entregado"—,
+    // no este callback. Ver functions/src/index.ts.
+    const orderPort = FLAGS.pedidosReales
+      ? new FirestoreOrderAdapter()
+      : order;
+
     ports = {
       inventory: new MockInventoryAdapter(catalogo),
       folio,
       guest: new MockGuestAdapter(),
       content: new MockContentAdapter(),
       spot: new MockSpotAdapter(spots),
-      payment: new MockPaymentAdapter(),
+      payment: FLAGS.pagosReales
+        ? new StripeCheckoutAdapter()
+        : new MockPaymentAdapter(),
       pass: new MockPassAdapter(),
-      order,
+      order: orderPort,
       reservation: new MockReservationAdapter(),
       wellness: new MockWellnessAdapter(wellnessSlots, cenoteShuttles),
       ledger: new MockLedgerAdapter(),

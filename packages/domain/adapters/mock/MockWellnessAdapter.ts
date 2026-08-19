@@ -4,13 +4,19 @@
  * sustituirá). Idempotente: reservar dos veces el mismo slot con el
  * mismo uid no consume dos lugares.
  */
-import type { ShuttleSlot, WellnessPort } from "../../ports/WellnessPort";
+import type {
+  ReservaBienestar,
+  ShuttleSlot,
+  WellnessPort,
+} from "../../ports/WellnessPort";
 import type { WellnessSlot } from "../../types";
 
 export class MockWellnessAdapter implements WellnessPort {
   private slots: Map<string, WellnessSlot>;
   private shuttleSlots: Map<string, ShuttleSlot>;
   private reservas = new Set<string>(); // `${uid}:${slotId}`
+  /** Asientos apartados por uid+shuttle, para poder listarlos despues */
+  private asientosPorReserva = new Map<string, number>();
 
   constructor(seedSlots: WellnessSlot[], seedShuttles: ShuttleSlot[]) {
     this.slots = new Map(seedSlots.map((s) => [s.id, { ...s }]));
@@ -52,6 +58,37 @@ export class MockWellnessAdapter implements WellnessPort {
     }
     slot.tomados += asientos;
     this.reservas.add(key);
+    this.asientosPorReserva.set(key, asientos);
     return { ...slot };
+  }
+
+  async misReservas(uid: string): Promise<ReservaBienestar[]> {
+    const mias: ReservaBienestar[] = [];
+    for (const key of this.reservas) {
+      const [dueno, id] = key.split(":");
+      if (dueno !== uid || !id) continue;
+      const ses = this.slots.get(id);
+      if (ses) {
+        mias.push({
+          id,
+          tipo: "session",
+          nombre: ses.nombre,
+          hora: ses.hora,
+        });
+        continue;
+      }
+      const sh = this.shuttleSlots.get(id);
+      if (sh) {
+        mias.push({
+          id,
+          tipo: "shuttle",
+          // El nombre del shuttle lo pone la UI: aqui solo va la hora.
+          nombre: { es: "", en: "" },
+          hora: sh.hora,
+          asientos: this.asientosPorReserva.get(key) ?? 1,
+        });
+      }
+    }
+    return mias.sort((a, b) => a.hora.localeCompare(b.hora));
   }
 }

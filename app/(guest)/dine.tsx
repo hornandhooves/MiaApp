@@ -56,13 +56,47 @@ export default function Dine() {
   }, [uid]);
 
   const cats = t("dineCats", { returnObjects: true }) as string[];
-  const destino = spotOrRoomLabel(
-    spotId,
-    roomId,
-    t("bedPick"),
-    t("tablePick"),
-    t("roomKey"),
-  );
+
+  // Destinos posibles. Un huesped SI puede pedir a un lugar donde no
+  // esta (decision de producto, 2026-08-19): pedir a la suite mientras
+  // vuelves del camastro es el caso natural.
+  const destinos = [
+    ...(spotId
+      ? [
+          {
+            id: spotId,
+            tipo: spotId.startsWith("table") ? "table" : "bed",
+            label: spotId.startsWith("table") ? t("destTable") : t("destBed"),
+            detalle: spotOrRoomLabel(
+              spotId,
+              null,
+              t("bedPick"),
+              t("tablePick"),
+              t("roomKey"),
+            ),
+          },
+        ]
+      : []),
+    ...(roomId
+      ? [
+          {
+            id: roomId,
+            tipo: "room",
+            label: t("destRoom"),
+            detalle: spotOrRoomLabel(
+              null,
+              roomId,
+              t("bedPick"),
+              t("tablePick"),
+              t("roomKey"),
+            ),
+          },
+        ]
+      : []),
+  ];
+  const [destIdx, setDestIdx] = useState(0);
+  const elegido = destinos[destIdx] ?? destinos[0];
+  const destino = elegido?.detalle ?? null;
 
   const items = (menu.data ?? []).filter((m) => m.categoria === cat);
   const inCart = (id: string) => cart.some((l) => l.menuItemId === id);
@@ -101,8 +135,11 @@ export default function Dine() {
       const idempotencyKey = Crypto.randomUUID();
       await getPorts().order.crear({
         uid,
-        ...(spotId ? { spotId } : {}),
-        ...(roomId ? { roomId } : {}),
+        ...(elegido?.tipo === "room"
+          ? { roomId: elegido.id }
+          : elegido
+            ? { spotId: elegido.id }
+            : {}),
         lineas: cart,
         idempotencyKey,
       });
@@ -160,40 +197,64 @@ export default function Dine() {
             borderRadius: 15,
             paddingVertical: 13,
             paddingHorizontal: space.l,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 11,
           }}
         >
-          <View
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: 4,
-              backgroundColor: destino
-                ? color.successBright
-                : color.accent,
-            }}
-          />
-          <T
-            v="body"
-            c={color.white}
-            style={{ flex: 1, fontSize: 13.5 }}
-          >
-            {destino
-              ? t("deliverToTpl", { spot: destino })
-              : t("orderNeedsSpot")}
+          <T v="caption" c={whiteAlpha(0.5)} style={{ marginBottom: 10 }}>
+            {t("deliverPick")}
           </T>
-          <Pressable
-            onPress={() => router.push(destino ? "/sunbeds" : "/guest")}
-            accessibilityRole="button"
-            accessibilityLabel={t("changeLbl")}
-            hitSlop={8}
-          >
-            <T v="caption" c={whiteAlpha(0.5)}>
-              {t("changeLbl")}
-            </T>
-          </Pressable>
+          {destinos.length === 0 ? (
+            <Pressable
+              onPress={() => router.push("/guest")}
+              accessibilityRole="button"
+              accessibilityLabel={t("destLink")}
+              style={{ minHeight: hit.minHeight, justifyContent: "center" }}
+            >
+              <T v="body" c={color.white} style={{ fontSize: 13.5 }}>
+                {t("destNone")}
+              </T>
+              <T v="caption" c={color.accent} style={{ marginTop: 4 }}>
+                {t("destLink")}
+              </T>
+            </Pressable>
+          ) : (
+            <View style={{ flexDirection: "row", gap: space.s }}>
+              {destinos.map((d, i) => {
+                const on = i === destIdx;
+                return (
+                  <Pressable
+                    key={d.id}
+                    onPress={() => setDestIdx(i)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: on }}
+                    accessibilityLabel={`${d.label} ${d.detalle ?? ""}`}
+                    style={{
+                      flex: 1,
+                      minHeight: hit.minHeight,
+                      justifyContent: "center",
+                      paddingHorizontal: space.m,
+                      borderRadius: radius.cardSmall,
+                      borderWidth: 1,
+                      borderColor: on ? color.white : whiteAlpha(0.18),
+                      backgroundColor: on ? whiteAlpha(0.1) : whiteAlpha(0),
+                    }}
+                  >
+                    <T
+                      v="body"
+                      c={on ? color.white : whiteAlpha(0.72)}
+                      style={{ fontSize: 13.5 }}
+                    >
+                      {d.label}
+                    </T>
+                    {d.detalle ? (
+                      <T v="caption" c={whiteAlpha(0.45)}>
+                        {d.detalle}
+                      </T>
+                    ) : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
         </View>
 
         {/* Categorías */}

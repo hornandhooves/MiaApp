@@ -1,0 +1,107 @@
+{
+  "_LEEME": {
+    "que_es": "Todos los precios de la app. Edita SOLO este archivo; el codigo lo lee y no tiene ninguna cifra escrita a mano.",
+    "unidades": "Dinero en CENTAVOS enteros. 6000 = $60.00. Los de admision estan en centavos de PESOS (MXN); el resto en centavos de DOLAR (USD).",
+    "null": "null significa 'incluido, sin costo'. No pongas 0: 0 es gratis, null es incluido en otra cosa.",
+    "despues_de_editar": "Corre 'pnpm seed:check' para validar y 'pnpm seed:demo' para publicar al proyecto real.",
+    "dueno": "PENDIENTE — falta la persona en Mia responsable de tarifas y precios.",
+    "estado": "TODAS las cifras de abajo son PLACEHOLDER: vienen del prototipo de diseno y NO han sido confirmadas por Mia Tulum."
+  },
+  "impuesto": {
+    "_nota": "Tasa aplicada al hospedaje en el checkout",
+    "tasa": 0.16
+  },
+  "habitaciones_por_noche_usd_centavos": {
+    "suite-premium-ocean-jacuzzi": 48000,
+    "suite-deluxe-ocean-jacuzzi": 42000,
+    "king-deluxe-ocean": 36000,
+    "deluxe-partial-ocean": 31000,
+    "double-partial-ocean": 34000,
+    "suite-garden": 28000,
+    "family-4": 26000,
+    "family-6": 32000,
+    "family-8": 38000,
+    "studio-terrace": 17500,
+    "studio": 16000,
+    "teepee-partial-ocean": 15000,
+    "teepee-garden": 13000
+  },
+  "plan_full_board_por_noche_usd_centavos": 9500,
+  "admision_beach_club_mxn_centavos": {
+    "_nota": "Por persona por dia. En centavos de PESOS.",
+    "vip": 150000,
+    "traditional": 100000,
+    "residentes": 60000
+  },
+  "camastro_primera_fila_usd_centavos": 6000,
+  "menu_usd_centavos": {
+    "_nota": "Mismo orden que las categorias del menu. null = incluido.",
+    "beach_menu": [
+      2400,
+      2800,
+      1900,
+      1400,
+      5200
+    ],
+    "desayuno": [
+      null,
+      null,
+      null,
+      600
+    ],
+    "bebidas": [
+      1600,
+      1400,
+      900,
+      null
+    ],
+    "cava": [
+      6800,
+      1300,
+      14000,
+      3800
+    ],
+    "chefs_table": [
+      9500,
+      4500,
+      null
+    ]
+  },
+  "bienestar_usd_centavos": {
+    "sunriseYoga": null,
+    "dailyYoga": null,
+    "massage": 11000,
+    "temazcal": 8500
+  },
+  "olas": {
+    "_nota": "Programa Mia Circulo. Concepto: las Olas no tienen valor contable.",
+    "por_dolar_gastado": {
+      "arena": 10,
+      "marea": 12,
+      "cenote": 15,
+      "circulo-interior": 20
+    },
+    "bono_por_referido": 2000,
+    "canjes": {
+      "freeNightOcean": 12000,
+      "dayPassTraditional": 3500,
+      "massage": 4500,
+      "temazcal": 3000,
+      "chefsTableSeat": 8000
+    },
+    "umbrales_nivel": {
+      "marea": 5,
+      "cenote": 15,
+      "circulo-interior": 30
+    },
+    "caducidad_meses": null,
+    "_caducidad_nota": "null = las Olas no caducan. Pon un numero de meses cuando Mia decida la politica; la app mostrara el aviso automaticamente."
+  },
+  "tiempos": {
+    "_nota": "Reglas de tiempo, en minutos.",
+    "hold_minutos_despues_de_llegada": 45,
+    "hold_aviso_minutos_antes": 10,
+    "pedido_eta_min": 12,
+    "pedido_eta_max": 18
+  }
+}

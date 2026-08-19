@@ -1,4 +1,4 @@
-import type { WellnessSlot } from "../types";
+import type { LText, WellnessSlot } from "../types";
 
 export interface ShuttleSlot {
   id: string;
@@ -22,4 +22,16 @@ export interface WellnessPort {
     uid: string,
     asientos: number,
   ): Promise<ShuttleSlot>;
+  /** Lo que ESTE huesped tiene apartado hoy (sesiones y shuttle) */
+  misReservas(uid: string): Promise<ReservaBienestar[]>;
+}
+
+/** Una reserva del huesped, ya resuelta para mostrarse en Tu dia. */
+export interface ReservaBienestar {
+  id: string;
+  tipo: "session" | "shuttle";
+  nombre: LText;
+  hora: string;
+  /** Solo para shuttle */
+  asientos?: number;
 }
