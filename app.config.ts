@@ -4,13 +4,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "Mía Tulum",
   slug: "mia-tulum-app",
+  owner: "hornandhooves",
   version: "0.1.0",
   scheme: "mia",
+  // EAS Update: eas update:configure no puede escribir en un config
+  // dinamico de TypeScript, asi que va a mano.
+  updates: {
+    url: "https://u.expo.dev/6f4af86c-3590-48f3-bf52-c57b7fbbb4eb",
+  },
+  runtimeVersion: {
+    policy: "appVersion",
+  },
   orientation: "portrait",
   icon: "./assets/icon.png",
   userInterfaceStyle: "light",
   ios: {
-    bundleIdentifier: "com.mia.app",
+    bundleIdentifier: "com.miatulum.app",
     supportsTablet: false,
     googleServicesFile: "./GoogleService-Info.plist",
     infoPlist: {
@@ -21,7 +30,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     associatedDomains: [],
   },
   android: {
-    package: "com.mia.app",
+    package: "com.miatulum.app",
     googleServicesFile: "./google-services.json",
     adaptiveIcon: {
       backgroundColor: "#DAD3C7",
@@ -59,11 +68,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     firebase: {
       apiKey: "AIzaSyB5leTBrY_1X-9wKzzZBohqgyuEQQRVlgw",
       projectId: "miaapp-30191",
-      appId: "1:318199614263:ios:cc79d5c564bab22cb1a8b2",
+      appId: "1:318199614263:ios:c023d0ac45f54187b1a8b2",
       messagingSenderId: "318199614263",
       storageBucket: "miaapp-30191.firebasestorage.app",
       authDomain: "miaapp-30191.firebaseapp.com",
     },
-    eas: { projectId: "" },
+    eas: { projectId: "6f4af86c-3590-48f3-bf52-c57b7fbbb4eb" },
   },
 });
