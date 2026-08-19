@@ -1,0 +1,14 @@
+# Configuracion de pnpm. Desde pnpm 11 el campo "pnpm" de package.json
+# se ignora: los ajustes viven aqui. EAS Build usa una version nueva de
+# pnpm, y por eso el parche no se aplicaba y el build fallaba con
+# ERR_PNPM_LOCKFILE_CONFIG_MISMATCH.
+patchedDependencies:
+  expo-modules-jsi@57.0.4: patches/expo-modules-jsi@57.0.4.patch
+
+# Scripts de instalacion autorizados (pnpm 10+ los bloquea por defecto
+# y aborta en CI).
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - esbuild
+  - protobufjs
+  - unrs-resolver

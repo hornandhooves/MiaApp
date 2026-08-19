@@ -85,10 +85,5 @@
     "tsx": "^4.23.12",
     "typescript": "~6.0.3"
   },
-  "private": true,
-  "pnpm": {
-    "patchedDependencies": {
-      "expo-modules-jsi@57.0.4": "patches/expo-modules-jsi@57.0.4.patch"
-    }
-  }
+  "private": true
 }
