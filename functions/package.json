@@ -2,7 +2,9 @@
   "name": "mia-tulum-functions",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": "22" },
+  "engines": {
+    "node": "22"
+  },
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
@@ -18,5 +20,11 @@
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.0",
     "typescript": "~6.0.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "protobufjs"
+    ]
   }
 }
