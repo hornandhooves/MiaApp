@@ -1,14 +1,14 @@
-# Scripts de instalacion autorizados. pnpm 10+ los bloquea por defecto
-# y aborta en CI si no estan listados aqui.
+# Configuracion de pnpm (desde pnpm 10 los ajustes viven aqui, no en el
+# campo "pnpm" de package.json).
 #
-# NOTA: el parche de expo-modules-jsi NO se maneja con patchedDependencies.
-# Esa via depende de que el gestor lea la configuracion del lugar correcto,
-# y eso cambio entre versiones de pnpm, rompiendo EAS Build con
-# ERR_PNPM_LOCKFILE_CONFIG_MISMATCH. Ahora lo aplica
-# scripts/patch-expo-jsi.mjs desde postinstall: funciona en cualquier
-# gestor y cualquier CI.
+# Scripts de instalacion: pnpm 10 los bloquea por defecto y ABORTA con
+# ERR_PNPM_IGNORED_BUILDS. Listamos los que necesitamos y ademas
+# desactivamos la falla dura, porque en EAS Build la lista sola no basto.
 onlyBuiltDependencies:
   - '@firebase/util'
   - esbuild
   - protobufjs
   - unrs-resolver
+
+# No abortar si queda algun script sin ejecutar.
+strictDepBuilds: false

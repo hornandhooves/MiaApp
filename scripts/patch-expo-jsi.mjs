@@ -12,17 +12,38 @@
  * dentro de este archivo por la interoperabilidad con C++. `Swift.abs`
  * desambigua sin cambiar el comportamiento.
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 
 /** Salida sin console: el contrato del repo prohibe console.log. */
 const say = (m) => process.stdout.write(`${m}\n`);
 
-const FILE =
-  "node_modules/expo-modules-jsi/apple/Sources/ExpoModulesJSI/Coding/JavaScriptCodable+Date.swift";
+const REL =
+  "apple/Sources/ExpoModulesJSI/Coding/JavaScriptCodable+Date.swift";
+
+/**
+ * Con node-linker=hoisted el paquete vive en node_modules/, pero con el
+ * enlazado por defecto vive bajo node_modules/.pnpm/<pkg>/node_modules/.
+ * En EAS el script reportaba "archivo ausente" por buscar solo la
+ * primera ruta. Probamos ambas.
+ */
+function resolverArchivo() {
+  const directo = `node_modules/expo-modules-jsi/${REL}`;
+  if (existsSync(directo)) return directo;
+  const store = "node_modules/.pnpm";
+  if (!existsSync(store)) return null;
+  for (const dir of readdirSync(store)) {
+    if (!dir.startsWith("expo-modules-jsi@")) continue;
+    const p = `${store}/${dir}/node_modules/expo-modules-jsi/${REL}`;
+    if (existsSync(p)) return p;
+  }
+  return null;
+}
+
+const FILE = resolverArchivo();
 const FROM = "guard milliseconds.isFinite, abs(milliseconds)";
 const TO = "guard milliseconds.isFinite, Swift.abs(milliseconds)";
 
-if (!existsSync(FILE)) {
+if (!FILE) {
   // En CI de Android o instalaciones parciales el archivo puede no estar.
   say("[patch-expo-jsi] archivo ausente, nada que hacer");
   process.exit(0);
