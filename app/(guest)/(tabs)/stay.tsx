@@ -585,7 +585,7 @@ export default function Stay() {
         {/* Tu lugar */}
         <DaySection
           title={t("dayPlace")}
-          empty={dia.lugarTipo ? null : t("dayPlaceNone")}
+          empty={dia.lugarTipo || dia.reservado ? null : t("dayPlaceNone")}
         >
           <Pressable
             onPress={() => router.push(spotId ? "/sunbeds" : "/guest")}
@@ -610,7 +610,17 @@ export default function Stay() {
                         : "sbBed",
                     { n: dia.lugarNum },
                   )
-                : t("dayPlaceLink")}
+                : dia.reservado
+                  ? // Apartado, que no es lo mismo que estar ahí: se
+                    // dice con su hora de llegada para que el huésped
+                    // sepa que todavía tiene que ir y escanear el QR.
+                    t(
+                      dia.reservado.tipo === "table"
+                        ? "sbHeldTable"
+                        : "sbHeldBed",
+                      { n: dia.reservado.num, when: dia.horaLlegada ?? "" },
+                    )
+                  : t("dayPlaceLink")}
             </T>
             {dia.minutosHold !== null ? (
               <T

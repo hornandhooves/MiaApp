@@ -19,6 +19,11 @@ const HIDDEN = [
   "blog",
 ] as const;
 
+const HELD_KEY = {
+  bed: "sbHeldBed",
+  table: "sbHeldTable",
+} as const;
+
 const LUGAR_KEY = {
   bed: "sbBed",
   table: "sbTable",
@@ -39,10 +44,20 @@ function BarraDeSesion() {
   // Dentro de Tu día la información ya está en pantalla: la barra sobra.
   if (!s.activa || pathname === SCREEN_ROUTES.stay) return null;
 
+  // Estar en un lugar y tener uno apartado son cosas distintas, y la
+  // barra lo dice con palabras distintas. Si el huésped ya escaneó el
+  // QR manda el lugar donde está; si sólo apartó, se muestra el
+  // apartado con su hora de llegada — que era justo lo que faltaba:
+  // apartar un camastro no cambiaba nada en pantalla.
   const lugar =
     s.lugarTipo && s.lugarNum
       ? t(LUGAR_KEY[s.lugarTipo], { n: s.lugarNum })
-      : null;
+      : s.reservado
+        ? t(HELD_KEY[s.reservado.tipo], {
+            n: s.reservado.num,
+            when: s.horaLlegada ?? "",
+          })
+        : null;
 
   return (
     <SessionBar

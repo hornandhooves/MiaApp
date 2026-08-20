@@ -717,6 +717,8 @@
   "sbTable": "mesa {{n}}",
   "sbRoom": "suite {{n}}",
   "sbOnWay": "{{n}} en camino",
+  "sbHeldBed": "camastro {{n}} guardado · {{when}}",
+  "sbHeldTable": "mesa {{n}} guardada · {{when}}",
   "sbHoldLeft": "quedan {{n}} min",
   "orderAgoTpl": "pedido hace {{n}} min",
   "orderJustNow": "recién pedido",

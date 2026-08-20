@@ -717,6 +717,8 @@
   "sbTable": "table {{n}}",
   "sbRoom": "suite {{n}}",
   "sbOnWay": "{{n}} on the way",
+  "sbHeldBed": "bed {{n}} held · {{when}}",
+  "sbHeldTable": "table {{n}} held · {{when}}",
   "sbHoldLeft": "{{n}} min left",
   "orderAgoTpl": "ordered {{n}} min ago",
   "orderJustNow": "just ordered",

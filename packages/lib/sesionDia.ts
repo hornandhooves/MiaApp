@@ -32,6 +32,18 @@ export interface SesionDia {
   enCurso: Order[];
   /** Hold vigente del camastro/mesa, si lo hay */
   hold: SpotHold | null;
+  /**
+   * Lugar APARTADO, que no es lo mismo que el lugar donde estás.
+   *
+   * `lugarTipo`/`lugarNum` salen de los claims, y los claims solo los
+   * escribe validarQR al escanear el sticker: significan "estoy aquí y
+   * puedo pedir a este lugar". Un hold significa "me lo guardan para las
+   * 12:00". Mezclarlos daría permiso de pedir a un camastro donde el
+   * huésped todavía no está, así que son campos distintos a propósito.
+   */
+  reservado: { tipo: "bed" | "table"; num: string } | null;
+  /** Hora de llegada del hold ("12:00"), tal cual la eligió el huésped */
+  horaLlegada: string | null;
   /** Minutos que faltan para que se libere el lugar; null si no aplica */
   minutosHold: number | null;
 }
@@ -69,21 +81,34 @@ export function useSesionDia(): SesionDia {
     return getPorts().order.suscribirMios(uid, setPedidos);
   }, [uid]);
 
+  // El hold se relee cada vez que cambia el mapa de lugares.
+  //
+  // Antes era una sola lectura al montar, con `spotId` como dependencia.
+  // Pero apartar un camastro NO cambia `spotId` —eso solo lo hace
+  // escanear el QR— así que el efecto no se volvía a ejecutar y la barra
+  // seguía sin enterarse del hold que el huésped acababa de hacer.
+  // Apartar sí cambia el estado del lugar a "held", y de eso ya hay un
+  // canal en tiempo real: se cuelga de ahí en vez de inventar otro.
   useEffect(() => {
     if (!uid) return;
     let vivo = true;
-    void getPorts()
-      .spot.holdActivo(uid)
-      .then((h) => {
-        if (vivo) setHold(h);
-      })
-      .catch(() => {
-        // Sin hold o sin red: la barra simplemente no muestra el contador.
-      });
+    const releer = () => {
+      void getPorts()
+        .spot.holdActivo(uid)
+        .then((h) => {
+          if (vivo) setHold(h);
+        })
+        .catch(() => {
+          // Sin hold o sin red: la barra no muestra el contador.
+        });
+    };
+    releer();
+    const cancelar = getPorts().spot.suscribir(releer);
     return () => {
       vivo = false;
+      cancelar();
     };
-  }, [uid, spotId]);
+  }, [uid]);
 
   // Un solo reloj para toda la app: los contadores de "hace N min" y
   // "quedan N min" avanzan juntos en vez de cada pantalla con el suyo.
@@ -114,8 +139,18 @@ export function useSesionDia(): SesionDia {
       ? (roomId.split("-")[1] ?? roomId)
       : null;
 
+  const activo = hold && hold.state === "active" ? hold : null;
+  const reservado: SesionDia["reservado"] = activo
+    ? {
+        tipo: activo.spotId.startsWith("table") ? "table" : "bed",
+        num: activo.spotId.split("-")[1] ?? activo.spotId,
+      }
+    : null;
+
   return {
-    activa: Boolean(spotId || roomId || saldoCents > 0 || enCurso.length > 0),
+    activa: Boolean(
+      spotId || roomId || reservado || saldoCents > 0 || enCurso.length > 0,
+    ),
     lugarTipo,
     lugarNum,
     saldoCents,
@@ -124,5 +159,7 @@ export function useSesionDia(): SesionDia {
     enCurso,
     hold,
     minutosHold,
+    reservado,
+    horaLlegada: activo?.arrivalAt ?? null,
   };
 }
