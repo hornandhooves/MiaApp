@@ -33,6 +33,20 @@ const invitado = env
   })
   .firestore();
 
+/**
+ * Huésped de hotel: encontró su estancia (claim roomId) Y escaneó el
+ * camastro (claim spotId). Es el caso que el producto permite: estar en
+ * el camastro 14 y pedir a la suite 204.
+ */
+const huesped = env
+  .authenticatedContext("uid-huesped", {
+    spotId: "bed-14",
+    roomId: "room-204",
+    scope: ["order", "hold", "book"],
+    sexp: EN_UNA_HORA,
+  })
+  .firestore();
+
 /** Usuario autenticado SIN scope (anónimo sin escanear) */
 const sinScope = env.authenticatedContext("uid-sin-scope", {}).firestore();
 
@@ -71,6 +85,25 @@ const caso = async (nombre, promesa) => {
     process.stderr.write(`FALLA ${nombre}\n      ${e.message}\n`);
   }
 };
+
+const orderAHabitacion = (uid, roomId) => ({
+  uid,
+  roomId,
+  lineas: [],
+  totalCents: 0,
+  estado: "received",
+  idempotencyKey: "k-room",
+  createdAt: new Date().toISOString(),
+});
+
+const orderSinDestino = (uid) => ({
+  uid,
+  lineas: [],
+  totalCents: 0,
+  estado: "received",
+  idempotencyKey: "k-sin",
+  createdAt: new Date().toISOString(),
+});
 
 const orderValida = (uid, spotId) => ({
   uid,
@@ -144,6 +177,42 @@ await caso(
       .collection("orders")
       .doc("o5")
       .set(orderValida("uid-otro", "bed-14")),
+  ),
+);
+await caso(
+  "el huésped pide a SU habitación estando en el camastro",
+  assertSucceeds(
+    huesped
+      .collection("orders")
+      .doc("o-room-ok")
+      .set(orderAHabitacion("uid-huesped", "room-204")),
+  ),
+);
+await caso(
+  "no se puede pedir a la habitación de OTRO",
+  assertFails(
+    huesped
+      .collection("orders")
+      .doc("o-room-ajena")
+      .set(orderAHabitacion("uid-huesped", "room-311")),
+  ),
+);
+await caso(
+  "sin habitación en el token no se pide a ninguna habitación",
+  assertFails(
+    invitado
+      .collection("orders")
+      .doc("o-room-sin-claim")
+      .set(orderAHabitacion("uid-invitado", "room-204")),
+  ),
+);
+await caso(
+  "una order sin destino se rechaza",
+  assertFails(
+    huesped
+      .collection("orders")
+      .doc("o-sin-destino")
+      .set(orderSinDestino("uid-huesped")),
   ),
 );
 await caso(
@@ -252,6 +321,16 @@ await caso(
 );
 
 // ---------- Lo no listado ----------
+await caso(
+  "la lista de huéspedes (stays) NO se lee desde el cliente",
+  assertFails(huesped.collection("stays").doc("stay-204-lopez").get()),
+);
+await caso(
+  "nadie escribe su propio contador de intentos",
+  assertFails(
+    huesped.collection("intentosEstancia").doc("uid-huesped").set({ intentos: 0 }),
+  ),
+);
 await caso(
   "colección desconocida: prohibida",
   assertFails(invitado.collection("loQueSea").doc("x").set({ a: 1 })),

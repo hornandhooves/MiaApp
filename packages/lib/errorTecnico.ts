@@ -38,3 +38,19 @@ export function mensajeConPista(amable: string, e: unknown): string {
   console.error(`[mia] ${amable} :: ${codigo}`, e);
   return FLAGS.diagnostico ? `${amable}\n\n(${codigo})` : amable;
 }
+
+/**
+ * Rastro de diagnóstico para la beta: escribe en la consola del
+ * aparato, que sale en la terminal de Metro. Se apaga con
+ * `FLAGS.diagnostico` junto con el resto del diagnóstico.
+ *
+ * Existe porque hay fallas que NO lanzan excepción —un camino que se
+ * toma por sorpresa, una respuesta que no era la esperada— y esas no
+ * dejan rastro de ninguna clase. Adivinar cuál de tres ramas se ejecutó
+ * cuesta más que imprimir cuál se ejecutó.
+ */
+export function rastro(etiqueta: string, dato?: unknown): void {
+  if (!FLAGS.diagnostico) return;
+  // eslint-disable-next-line no-console
+  console.log(`[mia] ${etiqueta}`, dato ?? "");
+}

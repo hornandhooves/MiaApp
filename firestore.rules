@@ -48,9 +48,30 @@ service cloud.firestore {
 
     // ---------- Escrituras del cliente, acotadas por claims ----------
     match /orders/{id} {
+      // El destino tiene que ser un lugar que el huesped realmente
+      // tiene: el camastro o mesa que escaneo, o su habitacion.
+      //
+      // Decision de producto del 19-ago-2026: SI se permite pedir a un
+      // lugar donde no estas — desde el camastro 14 a tu suite. Lo que
+      // no se permite es pedir a un lugar ajeno, y por eso se compara
+      // contra los claims del token y nunca contra lo que mande la app.
+      //
+      // La regla anterior exigia spotId == token.spotId, lo que ademas
+      // de contradecir esa decision hacia imposible cualquier pedido a
+      // la habitacion.
       allow create: if tieneScope('order')
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.spotId == request.auth.token.spotId;
+        && (
+          (
+            ('spotId' in request.resource.data)
+            && ('spotId' in request.auth.token)
+            && request.resource.data.spotId == request.auth.token.spotId
+          ) || (
+            ('roomId' in request.resource.data)
+            && ('roomId' in request.auth.token)
+            && request.resource.data.roomId == request.auth.token.roomId
+          )
+        );
       // La cocina necesita ver los pedidos vivos de TODOS; el huesped,
       // solo los suyos.
       allow read: if esDueno() || esStaff();

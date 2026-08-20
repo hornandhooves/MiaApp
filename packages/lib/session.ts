@@ -10,6 +10,7 @@
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Crypto from "expo-crypto";
 import { NONCE_INVALIDO, YA_TIENE_CUENTA } from "./authCodes";
+import { codigoDeError, rastro } from "./errorTecnico";
 import {
   linkWithCredential,
   OAuthProvider,
@@ -21,7 +22,6 @@ import {
 } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { create } from "zustand";
-import { getPorts } from "../domain/di";
 import type { Estancia } from "../domain/types";
 import { auth, functions } from "./firebase";
 
@@ -126,15 +126,25 @@ export const useSession = create<SessionState & SessionActions>()(
     },
 
     findStay: async (habitacion, apellido) => {
+      // La verificación vive en el SERVIDOR, no aquí.
+      //
+      // Antes esto consultaba un adaptador en memoria y solo escribía
+      // `scope` en el estado de la app. Las reglas de Firestore no leen
+      // el estado de la app: leen los claims del token. Resultado —
+      // encontrar tu estancia no daba permiso de nada, y todo pedido
+      // moría con "Missing or insufficient permissions".
+      //
+      // Ahora `buscarEstancia` verifica contra la lista de huéspedes,
+      // que el cliente nunca ve, y escribe los claims. El conteo de
+      // intentos de aquí abajo se conserva por la experiencia —avisar
+      // rápido sin ir al servidor— pero el freno que cuenta es el del
+      // servidor: éste se reinicia al reinstalar la app.
       const { bloqueadoHasta, intentosEstancia } = get();
       if (bloqueadoHasta && Date.now() < bloqueadoHasta) {
         throw new Error("bloqueado");
       }
-      const estancia = await getPorts().guest.buscarPorHabitacionYApellido(
-        habitacion,
-        apellido,
-      );
-      if (!estancia) {
+
+      const fallo = () => {
         const intentos = intentosEstancia + 1;
         set({
           intentosEstancia: intentos,
@@ -143,15 +153,41 @@ export const useSession = create<SessionState & SessionActions>()(
         });
         if (intentos >= MAX_INTENTOS) throw new Error("bloqueado");
         return false;
+      };
+
+      let estancia: Estancia;
+      try {
+        const call = httpsCallable<
+          { habitacion: string; apellido: string },
+          { estancia: Estancia }
+        >(functions(), "buscarEstancia");
+        const { data } = await call({ habitacion, apellido });
+        estancia = data.estancia;
+      } catch (e) {
+        const code = (e as { code?: string }).code ?? "";
+        // El servidor ya frenó: se respeta sin discutir.
+        if (code === "functions/resource-exhausted") {
+          set({ bloqueadoHasta: Date.now() + BLOQUEO_MS });
+          throw new Error("bloqueado");
+        }
+        if (code === "functions/not-found") return fallo();
+        throw e;
       }
+
+      // Los claims se escribieron en el servidor: sin refrescar el token
+      // la app los tendría, pero Firestore seguiría viendo el token
+      // viejo y rechazando cada escritura.
+      const user = auth().currentUser;
+      if (!user) throw new Error("sin-sesion");
+      const tk = await user.getIdTokenResult(true);
+      const claims = tk.claims as { scope?: string[]; sexp?: number };
+
       set({
-        status:
-          (auth().currentUser?.providerData.length ?? 0) > 0
-            ? "member"
-            : "guest",
+        status: user.providerData.length > 0 ? "member" : "guest",
         roomId: estancia.roomId,
         estancia,
-        scope: SCOPE_INVITADO,
+        scope: claims.scope ?? SCOPE_INVITADO,
+        exp: typeof claims.sexp === "number" ? claims.sexp : null,
         intentosEstancia: 0,
         bloqueadoHasta: null,
       });
@@ -196,6 +232,7 @@ export const useSession = create<SessionState & SessionActions>()(
       };
 
       let sesion = await pedirApple();
+      rastro("apple sub ->", sesion.apple.user.slice(0, 12) + "...");
       const user = auth().currentUser;
       const esAnonimo = user !== null && user.providerData.length === 0;
 
@@ -213,8 +250,13 @@ export const useSession = create<SessionState & SessionActions>()(
             "identidadAppleExiste",
           );
           const { data } = await fn({ appleUserId: sesion.apple.user });
+          rastro("identidadAppleExiste ->", data.existe);
           return data.existe;
-        } catch {
+        } catch (e) {
+          // Si esta consulta falla, la hoja de Apple saldra dos veces.
+          // Sin rastro, eso es indistinguible de "la consulta dijo que
+          // no existia": dos causas muy distintas, mismo sintoma.
+          rastro("identidadAppleExiste FALLO ->", codigoDeError(e));
           return null;
         }
       };
@@ -261,6 +303,7 @@ export const useSession = create<SessionState & SessionActions>()(
             // nuevo. La hoja de Apple sale otra vez, pero ya autorizada:
             // es un toque. Este es el camino del huésped QUE VUELVE —
             // el más común en producción después del primer mes.
+            rastro("segunda hoja de Apple: el token se gasto", code2);
             sesion = await pedirApple();
             await signInWithCredential(auth(), sesion.credencial());
           }

@@ -15,6 +15,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { roomTypes } from "./data/rooms";
 import { menuItems } from "./data/menu";
 import { spots } from "./data/spots";
+import { stays } from "./data/stays";
 import { wellnessSlots, cenoteShuttles } from "./data/wellness";
 import {
   admissions,
@@ -93,6 +94,10 @@ async function main() {
     },
   ]);
   counts.spots = await seedCollection("spots", spots);
+  // Estancias: la lista de huéspedes. Sin regla en firestore.rules —
+  // cae en el deny por defecto — porque sólo la function buscarEstancia
+  // debe poder consultarla.
+  counts.stays = await seedCollection("stays", stays);
   counts.menuItems = await seedCollection("menuItems", menuItems);
   counts.wellnessSlots = await seedCollection("wellnessSlots", wellnessSlots);
   counts.shuttles = await seedCollection("shuttles", cenoteShuttles);

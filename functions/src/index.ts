@@ -53,7 +53,14 @@ export const validarQR = onCall(
     // 'exp' es claim reservado del JWT: el vencimiento de la sesión
     // viaja como 'sexp' (ms epoch) — ver decisión en claude/estado.md
     const sexp = cierreDelDiaMs();
+    // Se CONSERVAN los claims previos. Sobrescribir todo borraba dos
+    // cosas silenciosamente: el `roomId` de quien ya había encontrado su
+    // estancia —y entonces, tras escanear el camastro, ya no podía pedir
+    // a su suite, que es justo el caso que el producto permite— y el
+    // `staff` de alguien del personal que escaneara un sticker.
+    const previosQr = (await getAuth().getUser(req.auth.uid)).customClaims ?? {};
     await getAuth().setCustomUserClaims(req.auth.uid, {
+      ...previosQr,
       spotId,
       scope: [...SCOPE_INVITADO],
       sexp,
@@ -80,16 +87,85 @@ export const validarQR = onCall(
  * TODO(semana 2): bloqueo tras tres intentos fallidos (10 min) y
  * emisión de claims con roomId.
  */
+/** Intentos permitidos antes de frenar, y cuánto dura el freno. */
+const MAX_INTENTOS_ESTANCIA = 3;
+const BLOQUEO_ESTANCIA_MS = 10 * 60 * 1000;
+
 export const buscarEstancia = onCall(async (req) => {
   if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+  const uid = req.auth.uid;
   const habitacion = String(req.data?.habitacion ?? "").trim();
   const apellido = String(req.data?.apellido ?? "").trim().toLowerCase();
   if (!habitacion || !apellido) {
     throw new HttpsError("invalid-argument", "Faltan habitación o apellido");
   }
-  throw new HttpsError("unimplemented", "semana-2");
-});
 
+  const db = getFirestore();
+
+  // El freno vive en el SERVIDOR. La app ya cuenta intentos, pero ese
+  // contador es cortesía: borrar y reinstalar lo reinicia, y cualquiera
+  // puede hablarle a la function sin pasar por la app. Sin este de aquí,
+  // probar números de habitación en serie no cuesta nada.
+  const frenoRef = db.collection("intentosEstancia").doc(uid);
+  const freno = await frenoRef.get();
+  const bloqueadoHasta = Number(freno.get("bloqueadoHasta") ?? 0);
+  if (bloqueadoHasta > Date.now()) {
+    throw new HttpsError("resource-exhausted", "bloqueado");
+  }
+
+  const snap = await db
+    .collection("stays")
+    .where("habitacion", "==", habitacion)
+    .where("apellido", "==", apellido)
+    .where("estado", "==", "in-house")
+    .limit(1)
+    .get();
+
+  const doc = snap.docs[0];
+  if (!doc) {
+    const intentos = Number(freno.get("intentos") ?? 0) + 1;
+    const seBloquea = intentos >= MAX_INTENTOS_ESTANCIA;
+    await frenoRef.set(
+      {
+        intentos,
+        ultimoIntentoAt: new Date().toISOString(),
+        bloqueadoHasta: seBloquea ? Date.now() + BLOQUEO_ESTANCIA_MS : 0,
+      },
+      { merge: true },
+    );
+    // El mensaje NO distingue "esa habitación no existe" de "el apellido
+    // no coincide": decirlo confirmaría qué habitaciones están ocupadas.
+    throw new HttpsError(
+      seBloquea ? "resource-exhausted" : "not-found",
+      seBloquea ? "bloqueado" : "estancia-no-encontrada",
+    );
+  }
+
+  await frenoRef.set({ intentos: 0, bloqueadoHasta: 0 }, { merge: true });
+
+  // Los claims son la llave real: las reglas de Firestore leen esto, no
+  // lo que diga la app. Se conservan los previos (p. ej. `staff`) y el
+  // permiso vence al cierre del día — nadie carga consumo mañana con el
+  // token de hoy.
+  const previos = (await getAuth().getUser(uid)).customClaims ?? {};
+  await getAuth().setCustomUserClaims(uid, {
+    ...previos,
+    roomId: String(doc.get("roomId")),
+    scope: SCOPE_INVITADO,
+    sexp: cierreDelDiaMs(),
+  });
+
+  return {
+    estancia: {
+      roomId: String(doc.get("roomId")),
+      desde: String(doc.get("desde")),
+      hasta: String(doc.get("hasta")),
+      huespedes: Number(doc.get("huespedes") ?? 1),
+      plan: String(doc.get("plan")),
+      folioId: String(doc.get("folioId")),
+    },
+  };
+});
 /**
  * crearPago — PaymentIntent de Stripe (modo test) con clave de
  * idempotencia. La idempotencia vive en Stripe: la misma clave nunca
