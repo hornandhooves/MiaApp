@@ -429,3 +429,46 @@ export const verificarPago = onCall(
     };
   },
 );
+
+/**
+ * identidadAppleExiste — ¿esta identidad de Apple ya tiene cuenta?
+ *
+ * Por qué existe: el `identityToken` de Apple **se gasta contra Firebase
+ * en el primer uso**. Verificado en dispositivo el 20-ago-2026. Si la
+ * app intenta enlazar y falla porque la cuenta ya existía, ese token ya
+ * no sirve para entrar y hay que pedirle a Apple una identidad nueva —
+ * la hoja de Apple sale DOS veces. Funciona, pero se lee como si la app
+ * estuviera rota, y a partir del segundo mes es el caso normal: todo
+ * huésped que regresa pasa por ahí.
+ *
+ * Con esta consulta la app sabe ANTES cuál de los dos caminos tomar, así
+ * que gasta el token una sola vez y la hoja de Apple sale una sola vez.
+ *
+ * Sobre la seguridad: recibe el identificador de Apple (`sub`) sin
+ * verificar firma, y eso es deliberado. Ese identificador es opaco, de
+ * 44 caracteres, distinto por app y no adivinable — no hay enumeración
+ * posible como la habría con correos. Además exige sesión iniciada. La
+ * respuesta no le dice a un atacante nada que no supiera ya: para
+ * preguntar, primero tiene que tener el identificador. No se devuelve
+ * uid, ni correo, ni nada más que un booleano.
+ */
+export const identidadAppleExiste = onCall(async (req) => {
+  if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+  const appleUserId = String(req.data?.appleUserId ?? "");
+  if (appleUserId.length < 8) {
+    throw new HttpsError("invalid-argument", "appleUserId inválido");
+  }
+  try {
+    await getAuth().getUserByProviderUid("apple.com", appleUserId);
+    return { existe: true };
+  } catch (e) {
+    const code = (e as { code?: string }).code ?? "";
+    // Sólo "no encontrado" significa que no existe. Cualquier otro
+    // error —permisos, red— NO puede tratarse como "no existe": la app
+    // intentaría enlazar y volveríamos a las dos hojas de Apple, o peor,
+    // se perdería el día del huésped. Se propaga para que el cliente
+    // caiga a su camino de respaldo.
+    if (code === "auth/user-not-found") return { existe: false };
+    throw new HttpsError("internal", `lookup-fallo:${code}`);
+  }
+});

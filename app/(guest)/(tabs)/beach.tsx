@@ -8,6 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
+import { mensajeConPista } from "../../../packages/lib/errorTecnico";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import * as Crypto from "expo-crypto";
@@ -135,8 +136,8 @@ export default function Beach() {
         note: pago.simulado ? t("payDemoNote") : undefined,
       });
       router.push(SCREEN_ROUTES.confirm);
-    } catch {
-      Alert.alert(t("errAuth"));
+    } catch (e) {
+      Alert.alert(mensajeConPista(t("errAuth"), e));
     } finally {
       setBuying(false);
     }

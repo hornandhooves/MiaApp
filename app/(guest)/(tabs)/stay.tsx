@@ -8,6 +8,7 @@
 import * as Crypto from "expo-crypto";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
+import { mensajeConPista } from "../../../packages/lib/errorTecnico";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -130,8 +131,8 @@ export default function Stay() {
               await signOutAll();
               Alert.alert(t("deleteDone"));
               router.replace("/login");
-            } catch {
-              Alert.alert(t("deleteFailed"));
+            } catch (e) {
+              Alert.alert(mensajeConPista(t("deleteFailed"), e));
             } finally {
               setBusy(false);
             }
@@ -267,8 +268,8 @@ export default function Stay() {
           }),
           t("payDemoNote"),
         );
-      } catch {
-        Alert.alert(t("errAuth"));
+      } catch (e) {
+        Alert.alert(mensajeConPista(t("errAuth"), e));
       } finally {
         setBusy(false);
       }

@@ -9,6 +9,7 @@ import * as Crypto from "expo-crypto";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
+import { mensajeConPista } from "../../packages/lib/errorTecnico";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { getPorts } from "../../packages/domain/di";
@@ -156,8 +157,8 @@ export default function Dine() {
       });
       setCart([]);
       router.push("/confirm");
-    } catch {
-      Alert.alert(t("errAuth"));
+    } catch (e) {
+      Alert.alert(mensajeConPista(t("errAuth"), e));
     } finally {
       setBusy(false);
     }

@@ -199,6 +199,42 @@ export const useSession = create<SessionState & SessionActions>()(
       const user = auth().currentUser;
       const esAnonimo = user !== null && user.providerData.length === 0;
 
+      // ¿Esa identidad de Apple ya tiene cuenta? Preguntarlo ANTES es lo
+      // que evita que la hoja de Apple salga dos veces: el token se gasta
+      // en el primer uso contra Firebase, así que hay que acertar el
+      // camino a la primera. Si la consulta falla —sin red, function
+      // caída— se responde null y abajo se toma el camino de siempre:
+      // intentar enlazar y, si hace falta, reintentar con identidad
+      // nueva. Feo, pero nunca deja al huésped sin poder entrar.
+      const yaTieneCuenta = async (): Promise<boolean | null> => {
+        try {
+          const fn = httpsCallable<{ appleUserId: string }, { existe: boolean }>(
+            functions(),
+            "identidadAppleExiste",
+          );
+          const { data } = await fn({ appleUserId: sesion.apple.user });
+          return data.existe;
+        } catch {
+          return null;
+        }
+      };
+
+      if (user && esAnonimo) {
+        // Camino corto: ya sabemos que existe, así que ni se intenta
+        // enlazar. Una sola hoja de Apple.
+        if ((await yaTieneCuenta()) === true) {
+          await signInWithCredential(auth(), sesion.credencial());
+          const yaDentro = auth().currentUser;
+          set({
+            status: "member",
+            uid: yaDentro?.uid ?? null,
+            displayName:
+              yaDentro?.displayName ?? sesion.apple.fullName?.givenName ?? null,
+          });
+          return;
+        }
+      }
+
       if (user && esAnonimo) {
         // LA pieza: enlazar sobre el anónimo conserva el UID y con él
         // el folio y el consumo del día. Nada que migrar.
