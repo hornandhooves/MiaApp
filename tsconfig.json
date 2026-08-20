@@ -28,7 +28,8 @@
     "seed",
     "app.config.ts",
     "expo-env.d.ts",
-    "config"
+    "config",
+    ".expo/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
