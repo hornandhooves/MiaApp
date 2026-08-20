@@ -9,7 +9,7 @@
  */
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as Crypto from "expo-crypto";
-import { YA_TIENE_CUENTA } from "./authCodes";
+import { NONCE_INVALIDO, YA_TIENE_CUENTA } from "./authCodes";
 import {
   linkWithCredential,
   OAuthProvider,
@@ -159,75 +159,86 @@ export const useSession = create<SessionState & SessionActions>()(
     },
 
     signInWithApple: async () => {
-      // Nonce: obligatorio para Apple con el SDK de JavaScript.
+      // Pide a Apple una identidad nueva y devuelve una FÁBRICA de
+      // credenciales de Firebase, no una credencial.
       //
-      // Sin él Firebase responde `auth/missing-or-invalid-nonce` y el
-      // login falla SIEMPRE, exista o no la cuenta. El protocolo es de
-      // dos piezas y hay que respetarlas las dos:
+      // El nonce es obligatorio con el SDK de JavaScript y son dos
+      // piezas: a Apple se le manda hasheado (SHA-256, hex minúsculas)
+      // y va dentro del identityToken; a Firebase se le manda en crudo
+      // y él lo hashea y compara. Sin eso, `auth/missing-or-invalid-
+      // nonce` siempre.
       //
-      //   1. A Apple se le manda el nonce YA HASHEADO (SHA-256 en hex
-      //      minúsculas). Apple lo mete dentro del identityToken.
-      //   2. A Firebase se le manda el nonce EN CRUDO. Firebase lo
-      //      hashea y compara contra el que venía en el token.
-      //
-      // Es lo que impide que alguien reutilice un identityToken robado:
-      // sin el crudo no puede probar que ese token es suyo. Invertir el
-      // orden —mandar el crudo a Apple— falla igual, y el mensaje de
-      // error es el mismo, así que no se distingue a simple vista.
-      const rawNonce = Crypto.randomUUID();
-      const hashedNonce = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        rawNonce,
-      );
-      const cred = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-        nonce: hashedNonce,
-      });
-      if (!cred.identityToken) throw new Error("apple-sin-token");
-      const provider = new OAuthProvider("apple.com");
-      const firebaseCred = provider.credential({
-        idToken: cred.identityToken,
-        rawNonce,
-      });
+      // Y la credencial NO se reutiliza: cada llamada al SDK recibe un
+      // objeto recién construido. Reutilizar el mismo `OAuthCredential`
+      // en dos llamadas —enlazar y luego entrar— devolvía
+      // `auth/missing-or-invalid-nonce` en la segunda, con la primera
+      // perfectamente válida.
+      const pedirApple = async () => {
+        const rawNonce = Crypto.randomUUID();
+        const hashedNonce = await Crypto.digestStringAsync(
+          Crypto.CryptoDigestAlgorithm.SHA256,
+          rawNonce,
+        );
+        const apple = await AppleAuthentication.signInAsync({
+          requestedScopes: [
+            AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+            AppleAuthentication.AppleAuthenticationScope.EMAIL,
+          ],
+          nonce: hashedNonce,
+        });
+        const idToken = apple.identityToken;
+        if (!idToken) throw new Error("apple-sin-token");
+        return {
+          apple,
+          credencial: () =>
+            new OAuthProvider("apple.com").credential({ idToken, rawNonce }),
+        };
+      };
+
+      let sesion = await pedirApple();
       const user = auth().currentUser;
-      if (user && user.providerData.length === 0) {
+      const esAnonimo = user !== null && user.providerData.length === 0;
+
+      if (user && esAnonimo) {
         // LA pieza: enlazar sobre el anónimo conserva el UID y con él
         // el folio y el consumo del día. Nada que migrar.
         try {
-          await linkWithCredential(user, firebaseCred);
+          await linkWithCredential(user, sesion.credencial());
         } catch (e) {
           const code = (e as { code?: string }).code ?? "";
-          // Todos estos códigos significan lo mismo: esa identidad YA
-          // tiene cuenta en Firebase y no hay nada que enlazar. Cuál de
-          // ellos manda depende de un ajuste de consola —
-          // Authentication → Settings → User account linking. Con
-          // "Link accounts that use the same email" (lo que tiene
-          // miaapp-30191) llega `auth/email-already-in-use`, NO
-          // `credential-already-in-use`, que era el único contemplado:
-          // el error se relanzaba y la pantalla lo mostraba como falla
-          // de red. Un catch que mira un solo código depende de una
-          // configuración que nadie vuelve a leer.
-          if (YA_TIENE_CUENTA.has(code)) {
-            // Se entra a la cuenta existente. Ojo: el UID cambia, así
-            // que el consumo anónimo de hoy NO se enlaza. Quien llame
-            // debe releer el uid después (ver circulo.tsx).
-            await signInWithCredential(auth(), firebaseCred);
-          } else {
-            throw e;
+          // Estos códigos significan lo mismo: esa identidad YA tiene
+          // cuenta y no hay nada que enlazar. Cuál llega depende de un
+          // ajuste de consola —Authentication → Settings → User account
+          // linking—, por eso se contemplan todos.
+          if (!YA_TIENE_CUENTA.has(code)) throw e;
+
+          // Se entra a la cuenta existente. Ojo: el UID cambia, así que
+          // el consumo anónimo de hoy NO se enlaza. Quien llame debe
+          // releer el uid después (ver circulo.tsx).
+          try {
+            await signInWithCredential(auth(), sesion.credencial());
+          } catch (e2) {
+            const code2 = (e2 as { code?: string }).code ?? "";
+            if (!NONCE_INVALIDO.has(code2)) throw e2;
+            // Segundo nivel: el identityToken de Apple ya se gastó
+            // contra Firebase en el intento de enlace. Se pide uno
+            // nuevo. La hoja de Apple sale otra vez, pero ya autorizada:
+            // es un toque. Este es el camino del huésped QUE VUELVE —
+            // el más común en producción después del primer mes.
+            sesion = await pedirApple();
+            await signInWithCredential(auth(), sesion.credencial());
           }
         }
       } else {
-        await signInWithCredential(auth(), firebaseCred);
+        await signInWithCredential(auth(), sesion.credencial());
       }
+
       const current = auth().currentUser;
       set({
         status: "member",
         uid: current?.uid ?? null,
         displayName:
-          current?.displayName ?? cred.fullName?.givenName ?? null,
+          current?.displayName ?? sesion.apple.fullName?.givenName ?? null,
       });
     },
 

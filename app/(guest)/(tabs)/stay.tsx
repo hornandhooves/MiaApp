@@ -92,7 +92,16 @@ export default function Stay() {
         {
           text: t("signOutConfirm"),
           style: "destructive",
-          onPress: () => void signOutAll(),
+          onPress: () => {
+            void (async () => {
+              await signOutAll();
+              // Sin esto la pantalla se queda igual y parece que el
+              // botón no hizo nada: por dentro sí cerró sesión y creó
+              // un anónimo nuevo, pero la vista no se mueve. Cerrar
+              // sesión tiene que llevarte a algún lado.
+              router.replace("/login");
+            })();
+          },
         },
       ],
     );
@@ -120,6 +129,7 @@ export default function Stay() {
               await httpsCallable(functions(), "eliminarCuenta")();
               await signOutAll();
               Alert.alert(t("deleteDone"));
+              router.replace("/login");
             } catch {
               Alert.alert(t("deleteFailed"));
             } finally {

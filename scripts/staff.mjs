@@ -50,15 +50,26 @@ async function usuarios() {
     say("No hay ningun usuario todavia. Abre la app al menos una vez.");
     return;
   }
-  say(`Usuarios (${res.users.length}):`);
-  for (const u of res.users) {
+  // Ordenados por fecha de creacion, del mas viejo al mas nuevo.
+  // Firebase los devuelve por uid, que no dice nada: con varios
+  // anonimos identicos en pantalla no hay forma de saber cual es el
+  // del telefono que acabas de reinstalar. La fecha si lo dice.
+  const orden = [...res.users].sort(
+    (a, b) =>
+      Date.parse(a.metadata.creationTime) - Date.parse(b.metadata.creationTime),
+  );
+  say(`Usuarios (${orden.length}), del mas viejo al mas nuevo:`);
+  for (const u of orden) {
     const como = u.email ?? (u.providerData.length === 0 ? "anonimo" : "sin correo");
     const rol = u.customClaims?.staff === true ? "  [PERSONAL]" : "";
-    say(`  ${u.uid}  ${como}${rol}`);
+    const creado = new Date(u.metadata.creationTime).toLocaleString("es-MX");
+    say(`  ${u.uid}  ${como.padEnd(24)} creado ${creado}${rol}`);
   }
+  const ultimo = orden[orden.length - 1];
   say("");
-  say("Para dar el rol usa el correo, o el uid si es anonimo:");
-  say("  node scripts/staff.mjs dar <uid>");
+  say("El de hasta abajo es el mas reciente. Si acabas de abrir la app,");
+  say("ese es el de tu telefono:");
+  say(`  zsh ~/Documents/MiaApp/staff-mia.command ${ultimo.uid}`);
 }
 
 async function marcar(valor) {

@@ -16,3 +16,15 @@ export const YA_TIENE_CUENTA = new Set([
   "auth/account-exists-with-different-credential",
   "auth/provider-already-linked",
 ]);
+
+/**
+ * Códigos con los que Firebase dice "el nonce no cuadra".
+ *
+ * Aparecen cuando se reutiliza un `OAuthCredential` ya usado, o cuando
+ * el identityToken de Apple ya se gastó contra Firebase. La respuesta
+ * correcta no es rendirse: es pedirle a Apple una identidad nueva.
+ */
+export const NONCE_INVALIDO = new Set([
+  "auth/missing-or-invalid-nonce",
+  "auth/invalid-credential",
+]);
