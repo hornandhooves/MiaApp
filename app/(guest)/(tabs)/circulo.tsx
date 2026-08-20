@@ -17,6 +17,7 @@ import type { Folio } from "../../../packages/domain/types";
 import { currentLang } from "../../../packages/i18n";
 import { useConfirmStore } from "../../../packages/lib/confirmStore";
 import { useSession } from "../../../packages/lib/session";
+import { mensajeConPista } from "../../../packages/lib/errorTecnico";
 import { spotOrRoomLabel } from "../../../packages/lib/spotLink";
 import { useUiStore } from "../../../packages/lib/uiStore";
 import { Button } from "../../../packages/ui/Button";
@@ -104,16 +105,24 @@ export default function Circulo() {
         // linkWithCredential conserva el UID: el folio del día ya
         // apunta al usuario correcto, solo se acredita el asiento.
         await signInWithApple();
-        const folio = await getPorts().folio.obtenerAbierto(uid);
+        // Se relee el uid DESPUÉS de autenticar. En el camino feliz es
+        // el mismo (ese es el invariante). Pero si esa cuenta de Apple
+        // ya existía, session.ts cae a signInWithCredential y el uid
+        // cambia: acreditar contra el uid viejo escribiría en el ledger
+        // de otro usuario, y las reglas lo rechazarían con un mensaje
+        // que no explica nada.
+        const uidReal = useSession.getState().uid;
+        if (!uidReal) throw new Error("sin-uid-tras-login");
+        const folio = await getPorts().folio.obtenerAbierto(uidReal);
         const consumo = folio?.saldoCents ?? 0;
         const olas = Math.round((consumo / 100) * OLAS.ratePerUsd.arena);
         if (olas > 0) {
           await getPorts().ledger.acreditar({
-            uid,
+            uid: uidReal,
             delta: olas,
             motivo: "consumo-del-dia",
             refId: folio?.id ?? "",
-            idempotencyKey: `join-${uid}`,
+            idempotencyKey: `join-${uidReal}`,
           });
         }
         setConfirm({
@@ -127,7 +136,7 @@ export default function Circulo() {
       } catch (e) {
         const code = (e as { code?: string }).code;
         if (code !== "ERR_REQUEST_CANCELED") {
-          Alert.alert(t("needAccountForOlas"));
+          Alert.alert(mensajeConPista(t("needAccountForOlas"), e));
         }
       } finally {
         setJoining(false);

@@ -8,6 +8,8 @@
  * y el consumo del día no se migra: ya apunta al usuario correcto.
  */
 import * as AppleAuthentication from "expo-apple-authentication";
+import * as Crypto from "expo-crypto";
+import { YA_TIENE_CUENTA } from "./authCodes";
 import {
   linkWithCredential,
   OAuthProvider,
@@ -52,6 +54,7 @@ interface SessionActions {
   signInWithApple: () => Promise<void>;
   signOutAll: () => Promise<void>;
 }
+
 
 const SCOPE_INVITADO = ["order", "hold", "book"];
 const BLOQUEO_MS = 10 * 60 * 1000;
@@ -156,16 +159,38 @@ export const useSession = create<SessionState & SessionActions>()(
     },
 
     signInWithApple: async () => {
+      // Nonce: obligatorio para Apple con el SDK de JavaScript.
+      //
+      // Sin él Firebase responde `auth/missing-or-invalid-nonce` y el
+      // login falla SIEMPRE, exista o no la cuenta. El protocolo es de
+      // dos piezas y hay que respetarlas las dos:
+      //
+      //   1. A Apple se le manda el nonce YA HASHEADO (SHA-256 en hex
+      //      minúsculas). Apple lo mete dentro del identityToken.
+      //   2. A Firebase se le manda el nonce EN CRUDO. Firebase lo
+      //      hashea y compara contra el que venía en el token.
+      //
+      // Es lo que impide que alguien reutilice un identityToken robado:
+      // sin el crudo no puede probar que ese token es suyo. Invertir el
+      // orden —mandar el crudo a Apple— falla igual, y el mensaje de
+      // error es el mismo, así que no se distingue a simple vista.
+      const rawNonce = Crypto.randomUUID();
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        rawNonce,
+      );
       const cred = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
+        nonce: hashedNonce,
       });
       if (!cred.identityToken) throw new Error("apple-sin-token");
       const provider = new OAuthProvider("apple.com");
       const firebaseCred = provider.credential({
         idToken: cred.identityToken,
+        rawNonce,
       });
       const user = auth().currentUser;
       if (user && user.providerData.length === 0) {
@@ -174,10 +199,21 @@ export const useSession = create<SessionState & SessionActions>()(
         try {
           await linkWithCredential(user, firebaseCred);
         } catch (e) {
-          const code = (e as { code?: string }).code;
-          if (code === "auth/credential-already-in-use") {
-            // La cuenta Apple ya existe: entrar con ella (UID previo
-            // de esa cuenta; el consumo anónimo de hoy no se enlaza).
+          const code = (e as { code?: string }).code ?? "";
+          // Todos estos códigos significan lo mismo: esa identidad YA
+          // tiene cuenta en Firebase y no hay nada que enlazar. Cuál de
+          // ellos manda depende de un ajuste de consola —
+          // Authentication → Settings → User account linking. Con
+          // "Link accounts that use the same email" (lo que tiene
+          // miaapp-30191) llega `auth/email-already-in-use`, NO
+          // `credential-already-in-use`, que era el único contemplado:
+          // el error se relanzaba y la pantalla lo mostraba como falla
+          // de red. Un catch que mira un solo código depende de una
+          // configuración que nadie vuelve a leer.
+          if (YA_TIENE_CUENTA.has(code)) {
+            // Se entra a la cuenta existente. Ojo: el UID cambia, así
+            // que el consumo anónimo de hoy NO se enlaza. Quien llame
+            // debe releer el uid después (ver circulo.tsx).
             await signInWithCredential(auth(), firebaseCred);
           } else {
             throw e;

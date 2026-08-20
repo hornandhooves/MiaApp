@@ -12,6 +12,7 @@ import { Alert, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../../packages/lib/session";
+import { mensajeConPista } from "../../packages/lib/errorTecnico";
 import { IMG } from "../../packages/ui/images";
 import { T } from "../../packages/ui/T";
 import { Button } from "../../packages/ui/Button";
@@ -38,8 +39,9 @@ export default function Login() {
       router.replace("/");
     } catch (e) {
       const code = (e as { code?: string }).code;
+      // Cancelar no es una falla: el usuario cerró la hoja de Apple.
       if (code !== "ERR_REQUEST_CANCELED") {
-        Alert.alert(t("errAuth"));
+        Alert.alert(mensajeConPista(t("errAuth"), e));
       }
     } finally {
       setBusy(false);

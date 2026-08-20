@@ -27,6 +27,15 @@ export const FLAGS = {
    * false → mock rotulado "modo de prueba", sin red.
    */
   pagosReales: true,
+  /**
+   * Diagnóstico de beta: los avisos de error muestran el código real
+   * entre paréntesis, además de dejarlo en la consola del aparato.
+   *
+   * true  → "No pudimos conectar…  (auth/invalid-credential)". Feo, pero
+   *         convierte una tarde de adivinar en una línea de log.
+   * false → producción: el huésped solo ve el texto amable.
+   */
+  diagnostico: true,
 } as const;
 
 export type FlagName = keyof typeof FLAGS;
