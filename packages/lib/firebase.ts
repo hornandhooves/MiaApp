@@ -16,6 +16,7 @@ import {
 import * as fbAuth from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getFunctions, type Functions } from "firebase/functions";
+import { rastro } from "./errorTecnico";
 
 /**
  * getReactNativePersistence existe en el entry react-native de
@@ -74,6 +75,31 @@ export function auth(): Auth {
   return authInstance;
 }
 
-export const db = (): Firestore => getFirestore(firebaseApp());
+let dbInstance: Firestore | undefined;
+
+/**
+ * Firestore con el transporte por defecto.
+ *
+ * Historia, para que nadie repita el experimento: el 20-ago-2026, ante
+ * una consulta que se colgaba, se forzó `experimentalForceLongPolling`.
+ * Fue peor. Antes del cambio la consulta al menos **respondía** —con
+ * `permission-denied`, que era correcto porque al token le faltaban los
+ * claims—; con long polling forzado dejó de responder del todo: doce
+ * segundos de silencio y el límite de tiempo saltando.
+ *
+ * Conclusión: el transporte por defecto sí funciona aquí, y forzarlo
+ * fue un arreglo para un problema que no existía. Si algún día vuelve a
+ * hacer falta, `experimentalAutoDetectLongPolling` es la vía
+ * recomendada, NO forzarlo — pero antes hay que comprobar que el
+ * síntoma sea silencio y no un rechazo con su código.
+ */
+export function db(): Firestore {
+  if (!dbInstance) {
+    dbInstance = getFirestore(firebaseApp());
+    rastro("firestore: transporte por defecto");
+  }
+  return dbInstance;
+}
+
 export const functions = (): Functions =>
   getFunctions(firebaseApp(), "us-central1");

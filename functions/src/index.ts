@@ -681,3 +681,116 @@ export const identidadAppleExiste = onCall(async (req) => {
     throw new HttpsError("internal", `lookup-fallo:${code}`);
   }
 });
+
+/**
+ * crearPedido — el ÚNICO camino para que un pedido exista.
+ *
+ * Por qué una function y no una escritura desde la app: era la última
+ * escritura directa a Firestore que quedaba en el teléfono, y la única
+ * que nunca funcionó — el canal de escritura de Firestore se queda
+ * colgado en React Native, sin responder y sin fallar. Pasarla por aquí
+ * usa el mismo HTTPS que ya funciona para todo lo demás.
+ *
+ * Pero el motivo de fondo es mejor que el técnico: con esto la app **no
+ * escribe nada** en la base de datos. Ni el precio, ni el destino, ni el
+ * total. El teléfono pide; el servidor decide.
+ *
+ * El precio se congela AQUÍ, leyéndolo del catálogo en este instante.
+ * Ese es el punto de congelación del que habla el contrato: al cobrar
+ * jamás se vuelve a leer. Si la app mandara los precios, bastaría con
+ * editarlos para cenar gratis.
+ */
+export const crearPedido = onCall(async (req) => {
+  if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+  const uid = req.auth.uid;
+  const token = req.auth.token as {
+    scope?: string[];
+    sexp?: number;
+    spotId?: string;
+    roomId?: string;
+  };
+
+  // El mismo permiso que exigen las reglas, comprobado aquí porque
+  // ahora las reglas prohíben del todo escribir en `orders`.
+  const vigente = typeof token.sexp === "number" && token.sexp > Date.now();
+  if (!vigente || !(token.scope ?? []).includes("order")) {
+    throw new HttpsError("permission-denied", "sin-permiso-de-pedir");
+  }
+
+  const spotId = req.data?.spotId ? String(req.data.spotId) : null;
+  const roomId = req.data?.roomId ? String(req.data.roomId) : null;
+  const idempotencyKey = String(req.data?.idempotencyKey ?? "");
+  const items = Array.isArray(req.data?.items) ? req.data.items : [];
+  if (!idempotencyKey) {
+    throw new HttpsError("invalid-argument", "Falta idempotencyKey");
+  }
+  if (items.length === 0) {
+    throw new HttpsError("invalid-argument", "Pedido vacío");
+  }
+
+  // El destino tiene que ser un lugar que el huésped realmente tiene.
+  // Se permite pedir a un lugar donde no está —del camastro a su
+  // suite— pero nunca a un lugar ajeno.
+  const destinoOk =
+    (spotId !== null && spotId === token.spotId) ||
+    (roomId !== null && roomId === token.roomId);
+  if (!destinoOk) {
+    throw new HttpsError("permission-denied", "destino-no-es-tuyo");
+  }
+
+  const db = getFirestore();
+
+  // Idempotencia: el mismo envío no crea dos pedidos. Es lo que hace
+  // inofensivo el doble toque y el reintento con mala señal.
+  const previos = await db
+    .collection("orders")
+    .where("uid", "==", uid)
+    .where("idempotencyKey", "==", idempotencyKey)
+    .limit(1)
+    .get();
+  const yaEsta = previos.docs[0];
+  if (yaEsta) {
+    return { id: yaEsta.id, ...yaEsta.data(), repetido: true };
+  }
+
+  // Precios del CATÁLOGO, no del teléfono.
+  const lineas = [];
+  let totalCents = 0;
+  for (const it of items) {
+    const menuItemId = String(it?.menuItemId ?? "");
+    const cantidad = Math.max(1, Math.min(20, Number(it?.cantidad ?? 1)));
+    if (!menuItemId) {
+      throw new HttpsError("invalid-argument", "Línea sin menuItemId");
+    }
+    const doc = await db.collection("menuItems").doc(menuItemId).get();
+    if (!doc.exists) {
+      throw new HttpsError("not-found", `platillo-inexistente:${menuItemId}`);
+    }
+    // `null` significa incluido en el plan: no genera cargo, y NO es
+    // lo mismo que cero.
+    const bruto = doc.get("precioCents");
+    const incluido = bruto === null || bruto === undefined;
+    const precioCents = incluido ? 0 : Number(bruto);
+    lineas.push({
+      menuItemId,
+      nombre: doc.get("nombre") ?? { es: menuItemId, en: menuItemId },
+      precioCents,
+      cantidad,
+      incluido,
+    });
+    totalCents += precioCents * cantidad;
+  }
+
+  const datos = {
+    uid,
+    ...(spotId ? { spotId } : {}),
+    ...(roomId ? { roomId } : {}),
+    lineas,
+    totalCents,
+    estado: "received" as const,
+    idempotencyKey,
+    createdAt: new Date().toISOString(),
+  };
+  const ref = await db.collection("orders").add(datos);
+  return { id: ref.id, ...datos, repetido: false };
+});

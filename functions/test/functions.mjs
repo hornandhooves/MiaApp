@@ -551,6 +551,151 @@ await caso("el bono por referido sale de la configuración", async () => {
   iguales(data.delta, 500, "bono");
 });
 
+say("\n--- crearPedido ---");
+
+await adminDb.collection("menuItems").doc("pulpo").set({
+  nombre: { es: "Pulpo", en: "Octopus" },
+  precioCents: 2800,
+});
+await adminDb.collection("menuItems").doc("desayuno").set({
+  nombre: { es: "Desayuno", en: "Breakfast" },
+  precioCents: null, // incluido en el plan
+});
+
+const CLAIMS_HUESPED = {
+  roomId: "room-204",
+  spotId: "bed-14",
+  scope: ["order", "hold", "book"],
+  sexp: Date.now() + 3600_000,
+};
+
+await caso("sin sesión, rechazado", async () => {
+  await signOut(auth);
+  await falla(
+    httpsCallable(fns, "crearPedido")({ idempotencyKey: "k", items: [] }),
+    "functions/unauthenticated",
+  );
+});
+
+await caso("sin scope de pedir, rechazado", async () => {
+  const llamar = await entrar("u-sin-scope-pedido");
+  await falla(
+    llamar("crearPedido", {
+      roomId: "room-204",
+      idempotencyKey: "k-sin",
+      items: [{ menuItemId: "pulpo", cantidad: 1 }],
+    }),
+    "functions/permission-denied",
+  );
+});
+
+await caso("con la sesión vencida, rechazado", async () => {
+  const llamar = await entrar("u-vencido-pedido", {
+    ...CLAIMS_HUESPED,
+    sexp: Date.now() - 1000,
+  });
+  await falla(
+    llamar("crearPedido", {
+      roomId: "room-204",
+      idempotencyKey: "k-vencido",
+      items: [{ menuItemId: "pulpo", cantidad: 1 }],
+    }),
+    "functions/permission-denied",
+  );
+});
+
+await caso("no se pide a la habitación de otro", async () => {
+  const llamar = await entrar("u-pide-ajeno", CLAIMS_HUESPED);
+  await falla(
+    llamar("crearPedido", {
+      roomId: "room-999",
+      idempotencyKey: "k-ajeno",
+      items: [{ menuItemId: "pulpo", cantidad: 1 }],
+    }),
+    "functions/permission-denied",
+  );
+});
+
+await caso("el huésped pide a SU suite estando en el camastro", async () => {
+  const llamar = await entrar("u-pide-ok", CLAIMS_HUESPED);
+  const { data } = await llamar("crearPedido", {
+    roomId: "room-204",
+    idempotencyKey: "k-ok-1",
+    items: [{ menuItemId: "pulpo", cantidad: 2 }],
+  });
+  iguales(data.totalCents, 5600, "total calculado por el servidor");
+  iguales(data.estado, "received", "estado inicial");
+  iguales(data.roomId, "room-204", "destino");
+});
+
+await caso("el precio lo pone el CATÁLOGO, no el teléfono", async () => {
+  const llamar = await entrar("u-precio-falso", CLAIMS_HUESPED);
+  const { data } = await llamar("crearPedido", {
+    roomId: "room-204",
+    idempotencyKey: "k-falso",
+    // Se manda un precio de un centavo: la function ni lo mira.
+    items: [{ menuItemId: "pulpo", cantidad: 1, precioCents: 1 }],
+  });
+  iguales(data.totalCents, 2800, "total con el precio real");
+  iguales(data.lineas[0].precioCents, 2800, "precio congelado de la línea");
+});
+
+await caso("lo incluido en el plan no genera cargo, y se marca", async () => {
+  const llamar = await entrar("u-incluido", CLAIMS_HUESPED);
+  const { data } = await llamar("crearPedido", {
+    roomId: "room-204",
+    idempotencyKey: "k-incluido",
+    items: [{ menuItemId: "desayuno", cantidad: 1 }],
+  });
+  iguales(data.totalCents, 0, "total");
+  iguales(data.lineas[0].incluido, true, "marcado como incluido");
+});
+
+await caso("un platillo inventado se rechaza", async () => {
+  const llamar = await entrar("u-inventado", CLAIMS_HUESPED);
+  await falla(
+    llamar("crearPedido", {
+      roomId: "room-204",
+      idempotencyKey: "k-inventado",
+      items: [{ menuItemId: "caviar-imaginario", cantidad: 1 }],
+    }),
+    "functions/not-found",
+  );
+});
+
+await caso("un pedido vacío se rechaza", async () => {
+  const llamar = await entrar("u-vacio", CLAIMS_HUESPED);
+  await falla(
+    llamar("crearPedido", {
+      roomId: "room-204",
+      idempotencyKey: "k-vacio",
+      items: [],
+    }),
+    "functions/invalid-argument",
+  );
+});
+
+await caso("el doble toque no crea dos pedidos", async () => {
+  const llamar = await entrar("u-doble", CLAIMS_HUESPED);
+  const uno = await llamar("crearPedido", {
+    roomId: "room-204",
+    idempotencyKey: "k-doble",
+    items: [{ menuItemId: "pulpo", cantidad: 1 }],
+  });
+  const dos = await llamar("crearPedido", {
+    roomId: "room-204",
+    idempotencyKey: "k-doble",
+    items: [{ menuItemId: "pulpo", cantidad: 1 }],
+  });
+  iguales(dos.data.repetido, true, "el segundo es el mismo");
+  iguales(dos.data.id, uno.data.id, "mismo id");
+  const todos = await adminDb
+    .collection("orders")
+    .where("uid", "==", "u-doble")
+    .get();
+  iguales(todos.size, 1, "pedidos en la base");
+});
+
 // ---------- cierre ----------
 say("");
 say(`${corridos} casos, ${fallas} fallas`);

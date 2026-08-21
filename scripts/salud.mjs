@@ -37,6 +37,7 @@ const FUNCTIONS = [
   "crearCheckout",
   "verificarPago",
   "identidadAppleExiste",
+  "crearPedido",
 ];
 
 /** Lo que el seed debe dejar. Si cambia el seed, se cambia aquí. */

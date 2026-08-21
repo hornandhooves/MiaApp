@@ -132,7 +132,7 @@ export default function Stay() {
               Alert.alert(t("deleteDone"));
               router.replace("/login");
             } catch (e) {
-              Alert.alert(mensajeConPista(t("deleteFailed"), e));
+              Alert.alert(mensajeConPista(t("deleteFailed"), e, "eliminar cuenta"));
             } finally {
               setBusy(false);
             }
@@ -273,7 +273,7 @@ export default function Stay() {
           t("payDemoNote"),
         );
       } catch (e) {
-        Alert.alert(mensajeConPista(t("errAuth"), e));
+        Alert.alert(mensajeConPista(t("errAuth"), e, "liquidar cuenta"));
       } finally {
         setBusy(false);
       }

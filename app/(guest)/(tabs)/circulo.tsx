@@ -141,7 +141,7 @@ export default function Circulo() {
       } catch (e) {
         const code = (e as { code?: string }).code;
         if (code !== "ERR_REQUEST_CANCELED") {
-          Alert.alert(mensajeConPista(t("needAccountForOlas"), e));
+          Alert.alert(mensajeConPista(t("needAccountForOlas"), e, "unirse a Circulo"));
         }
       } finally {
         setJoining(false);

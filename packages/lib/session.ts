@@ -180,7 +180,20 @@ export const useSession = create<SessionState & SessionActions>()(
       const user = auth().currentUser;
       if (!user) throw new Error("sin-sesion");
       const tk = await user.getIdTokenResult(true);
-      const claims = tk.claims as { scope?: string[]; sexp?: number };
+      const claims = tk.claims as {
+        scope?: string[];
+        sexp?: number;
+        roomId?: string;
+      };
+      // Sin este rastro, "la app cree que encontró tu estancia" y "el
+      // servidor te dio permiso" se ven idénticos en pantalla.
+      rastro("claims tras findStay ->", {
+        roomId: claims.roomId ?? null,
+        scope: claims.scope ?? null,
+        venceEn: claims.sexp
+          ? `${Math.round((claims.sexp - Date.now()) / 60000)} min`
+          : null,
+      });
 
       set({
         status: user.providerData.length > 0 ? "member" : "guest",

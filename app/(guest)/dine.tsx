@@ -158,7 +158,7 @@ export default function Dine() {
       setCart([]);
       router.push("/confirm");
     } catch (e) {
-      Alert.alert(mensajeConPista(t("errAuth"), e));
+      Alert.alert(mensajeConPista(t("errAuth"), e, "crear pedido"));
     } finally {
       setBusy(false);
     }

@@ -14,7 +14,6 @@
  *   clave de idempotencia, así que no duplica.
  */
 import {
-  addDoc,
   collection,
   doc,
   getDocs,
@@ -25,6 +24,8 @@ import {
 } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions } from "../../../lib/firebase";
+import { rastro } from "../../../lib/errorTecnico";
+import { conLimite } from "../../../lib/red";
 import type { OrderPort } from "../../ports/OrderPort";
 import type { Order, OrderLine } from "../../types";
 
@@ -53,35 +54,52 @@ export class FirestoreOrderAdapter implements OrderPort {
     lineas: OrderLine[];
     idempotencyKey: string;
   }): Promise<Order> {
-    // Idempotencia: si la clave ya existe, se devuelve el pedido que ya
-    // hay. Un reenvío por mala señal no cobra dos veces.
-    const previos = await getDocs(
-      query(
-        collection(db(), COL),
-        where("uid", "==", q.uid),
-        where("idempotencyKey", "==", q.idempotencyKey),
-        limit(1),
-      ),
-    );
-    const yaEsta = previos.docs[0];
-    if (yaEsta) return aOrder(yaEsta.id, yaEsta.data());
+    // La app NO escribe el pedido: se lo pide al servidor.
+    //
+    // Dos razones, y la segunda es la que importa. La técnica: el canal
+    // de escritura de Firestore se cuelga en React Native — la promesa
+    // no resuelve ni falla, y el botón se queda muerto. Esta llamada usa
+    // el mismo HTTPS que ya funciona para todo lo demás.
+    //
+    // La de fondo: el precio se congela en el SERVIDOR, leyéndolo del
+    // catálogo en ese instante. Si el teléfono mandara los precios,
+    // bastaría con editarlos para cenar gratis. Aquí solo se mandan qué
+    // platillo y cuántos.
+    const fn = httpsCallable<
+      {
+        spotId?: string;
+        roomId?: string;
+        idempotencyKey: string;
+        items: { menuItemId: string; cantidad: number }[];
+      },
+      Order & { repetido: boolean }
+    >(functions(), "crearPedido");
 
-    const totalCents = q.lineas.reduce(
-      (s, l) => s + l.precioCents * l.cantidad,
-      0,
+    const { data } = await conLimite(
+      fn({
+        ...(q.spotId ? { spotId: q.spotId } : {}),
+        ...(q.roomId ? { roomId: q.roomId } : {}),
+        idempotencyKey: q.idempotencyKey,
+        items: q.lineas.map((l) => ({
+          menuItemId: l.menuItemId,
+          cantidad: l.cantidad,
+        })),
+      }),
+      20_000,
+      "crear-pedido",
     );
-    const datos = {
-      uid: q.uid,
-      ...(q.spotId ? { spotId: q.spotId } : {}),
-      ...(q.roomId ? { roomId: q.roomId } : {}),
-      lineas: q.lineas,
-      totalCents,
-      estado: "received" as const,
-      idempotencyKey: q.idempotencyKey,
-      createdAt: new Date().toISOString(),
+    rastro("pedido: creado", { id: data.id, repetido: data.repetido });
+    return {
+      id: data.id,
+      uid: data.uid,
+      ...(data.spotId ? { spotId: data.spotId } : {}),
+      ...(data.roomId ? { roomId: data.roomId } : {}),
+      lineas: data.lineas,
+      totalCents: data.totalCents,
+      estado: data.estado,
+      idempotencyKey: data.idempotencyKey,
+      createdAt: data.createdAt,
     };
-    const ref = await addDoc(collection(db(), COL), datos);
-    return aOrder(ref.id, datos);
   }
 
   suscribirMios(uid: string, cb: (orders: Order[]) => void): () => void {

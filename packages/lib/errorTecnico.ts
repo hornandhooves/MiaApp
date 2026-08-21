@@ -29,14 +29,21 @@ export function codigoDeError(e: unknown): string {
  * Siempre deja rastro en la consola, que es lo que se lee con Xcode
  * conectado al aparato.
  */
-export function mensajeConPista(amable: string, e: unknown): string {
+export function mensajeConPista(
+  amable: string,
+  e: unknown,
+  donde = "",
+): string {
   const codigo = codigoDeError(e);
+  const etiqueta = donde ? `${donde}: ` : "";
   // Rastro para Console.app / Xcode aunque el flag esté apagado. Es la
   // única consola permitida del repo: sin ella, un fallo en un aparato
   // real no deja evidencia de ninguna clase.
   // eslint-disable-next-line no-console
-  console.error(`[mia] ${amable} :: ${codigo}`, e);
-  return FLAGS.diagnostico ? `${amable}\n\n(${codigo})` : amable;
+  console.error(`[mia] ${etiqueta}${codigo}`, e);
+  return FLAGS.diagnostico
+    ? `${amable}\n\n(${etiqueta}${codigo})`
+    : amable;
 }
 
 /**

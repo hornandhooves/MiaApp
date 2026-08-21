@@ -154,6 +154,15 @@ await env.withSecurityRulesDisabled(async (ctx) => {
     tier: "arena",
     olas: 10,
   });
+  await db.collection("orders").doc("o1").set({
+    uid: "uid-invitado",
+    spotId: "bed-14",
+    lineas: [],
+    totalCents: 0,
+    estado: "received",
+    idempotencyKey: "k-o1-propio",
+    createdAt: new Date().toISOString(),
+  });
   await db.collection("orders").doc("o-1").set({
     uid: "uid-otro",
     spotId: "bed-22",
@@ -187,8 +196,8 @@ await caso(
 
 // ---------- Orders ----------
 await caso(
-  "invitado con scope crea order en SU spot",
-  assertSucceeds(
+  "NADIE crea pedidos desde el cliente, ni en su propio spot",
+  assertFails(
     invitado
       .collection("orders")
       .doc("o1")
@@ -232,8 +241,8 @@ await caso(
   ),
 );
 await caso(
-  "el huésped pide a SU habitación estando en el camastro",
-  assertSucceeds(
+  "tampoco a su propia habitación: los pedidos los crea crearPedido",
+  assertFails(
     huesped
       .collection("orders")
       .doc("o-room-ok")
