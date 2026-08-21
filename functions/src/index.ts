@@ -220,6 +220,13 @@ export const cerrarFolio = onCall(async (req) => {
  * al crear el hold; también sirve para liberar a mano.
  */
 export const liberarHold = onCall(async (req) => {
+  // Sesión y dueño. Antes esta function no miraba `req.auth` en
+  // absoluto: como toda callable es invocable públicamente —la
+  // autenticación la hace la function, no Cloud Run—, cualquiera con un
+  // `holdId` podía soltar el camastro de otro huésped. Los ids de
+  // Firestore no se adivinan a lo bruto, así que no era explotable en
+  // horas, pero la comprobación faltaba y el arreglo son tres líneas.
+  if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
   const holdId = String(req.data?.holdId ?? "");
   if (!holdId) throw new HttpsError("invalid-argument", "Falta holdId");
   const db = getFirestore();
@@ -231,7 +238,18 @@ export const liberarHold = onCall(async (req) => {
     if (!holdSnap.exists) {
       throw new HttpsError("not-found", "Hold inexistente");
     }
-    const hold = holdSnap.data() as { spotId: string; state: string };
+    const hold = holdSnap.data() as {
+      spotId: string;
+      state: string;
+      uid?: string;
+    };
+    // El personal libera cualquiera —para eso está el mapa de playa—;
+    // un huésped, solo el suyo.
+    const esSuyo = hold.uid === req.auth?.uid;
+    const esPersonal = req.auth?.token.staff === true;
+    if (!esSuyo && !esPersonal) {
+      throw new HttpsError("permission-denied", "Ese lugar no es tuyo");
+    }
     if (hold.state !== "active") return; // idempotente
     const spotRef = db.collection("spots").doc(hold.spotId);
     const spotSnap = await tx.get(spotRef);

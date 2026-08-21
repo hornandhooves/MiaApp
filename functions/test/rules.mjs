@@ -115,6 +115,58 @@ const orderValida = (uid, spotId) => ({
   createdAt: new Date().toISOString(),
 });
 
+
+// ---------- Datos de partida ----------
+// `esDueno()` lee `resource.data.uid`: sobre un documento que no existe
+// no hay `resource`, la regla revienta y el `get` se deniega. Sin
+// sembrar esto, un "assertSucceeds" de lectura fallaria por la razon
+// equivocada y pareceria que la regla es mas estricta de lo que es.
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const db = ctx.firestore();
+  await db.collection("folios").doc("f-invitado").set({
+    uid: "uid-invitado",
+    lineas: [],
+    saldoCents: 1200,
+    estado: "open",
+  });
+  await db.collection("folios").doc("f-otro").set({
+    uid: "uid-otro",
+    lineas: [],
+    saldoCents: 0,
+    estado: "open",
+  });
+  await db.collection("ledger").doc("l-invitado").set({
+    uid: "uid-invitado",
+    delta: 50,
+    motivo: "prueba",
+  });
+  await db.collection("ledger").doc("l-1").set({ uid: "uid-otro", delta: 1 });
+  await db.collection("reservations").doc("r-invitado").set({
+    uid: "uid-invitado",
+    slotId: "yoga-1",
+  });
+  await db.collection("sessions").doc("uid-invitado").set({
+    uid: "uid-invitado",
+    spotId: "bed-14",
+  });
+  await db.collection("members").doc("uid-invitado").set({
+    uid: "uid-invitado",
+    tier: "arena",
+    olas: 10,
+  });
+  await db.collection("orders").doc("o-1").set({
+    uid: "uid-otro",
+    spotId: "bed-22",
+    lineas: [],
+    totalCents: 0,
+    estado: "received",
+    idempotencyKey: "k-o1",
+    createdAt: new Date().toISOString(),
+  });
+  await db.collection("menuItems").doc("m-1").set({ precioCents: 500 });
+  await db.collection("config").doc("pricing").set({ taxRate: 0.16 });
+});
+
 // ---------- Catálogos ----------
 await caso(
   "cualquiera lee roomTypes",
@@ -318,6 +370,111 @@ await caso(
 await caso(
   "un invitado NO puede leer pedidos ajenos aunque se diga staff",
   assertFails(sinScope.collection("orders").doc("o-1").get()),
+);
+
+// ---------- Lo que nunca se ha probado ----------
+await caso(
+  "el dueño lee SU folio",
+  assertSucceeds(invitado.collection("folios").doc("f-invitado").get()),
+);
+await caso(
+  "nadie escribe folios desde el cliente (solo las functions)",
+  assertFails(
+    invitado.collection("folios").doc("f-invitado").set({
+      uid: "uid-invitado",
+      saldoCents: 0,
+      estado: "settled",
+    }),
+  ),
+);
+await caso(
+  "no se liquida un folio ajeno",
+  assertFails(
+    invitado.collection("folios").doc("f-otro").update({ estado: "settled" }),
+  ),
+);
+await caso(
+  "el dueño lee SU ledger",
+  assertSucceeds(invitado.collection("ledger").doc("l-invitado").get()),
+);
+await caso(
+  "nadie lee el ledger ajeno",
+  assertFails(otro.collection("ledger").doc("l-invitado").get()),
+);
+await caso(
+  "el dueño lee su reserva; otro no",
+  assertSucceeds(invitado.collection("reservations").doc("r-invitado").get()),
+);
+await caso(
+  "nadie crea reservas desde el cliente",
+  assertFails(
+    invitado
+      .collection("reservations")
+      .doc("r-nueva")
+      .set({ uid: "uid-invitado", slotId: "yoga-1" }),
+  ),
+);
+await caso(
+  "nadie se regala un day pass",
+  assertFails(
+    invitado
+      .collection("dayPasses")
+      .doc("dp-1")
+      .set({ uid: "uid-invitado", tipo: "vip", pagado: true }),
+  ),
+);
+await caso(
+  "el dueño lee su sesión, no la ajena",
+  assertFails(otro.collection("sessions").doc("uid-invitado").get()),
+);
+await caso(
+  "nadie lee el perfil de miembro de otro",
+  assertFails(otro.collection("members").doc("uid-invitado").get()),
+);
+await caso(
+  "nadie se escribe su propio perfil de miembro (nivel y Olas los da el servidor)",
+  assertFails(
+    invitado
+      .collection("members")
+      .doc("uid-invitado")
+      .set({ tier: "circulo-interior", olas: 999999 }),
+  ),
+);
+await caso(
+  "una sesión vencida tampoco crea holds",
+  assertFails(
+    vencido.collection("spotHolds").doc("h-vencido").set({
+      uid: "uid-vencido",
+      spotId: "bed-3",
+      state: "active",
+    }),
+  ),
+);
+await caso(
+  "un hold a nombre de otro se rechaza",
+  assertFails(
+    invitado.collection("spotHolds").doc("h-ajeno").set({
+      uid: "uid-otro",
+      spotId: "bed-9",
+      arrivalAt: new Date().toISOString(),
+      expiresAt: new Date(EN_UNA_HORA).toISOString(),
+      state: "active",
+    }),
+  ),
+);
+await caso(
+  "el staff NO escribe el catálogo del menú",
+  assertFails(
+    staff.collection("menuItems").doc("m-1").set({ precioCents: 1 }),
+  ),
+);
+await caso(
+  "el staff NO borra pedidos",
+  assertFails(staff.collection("orders").doc("o-1").delete()),
+);
+await caso(
+  "nadie escribe la configuración de precios",
+  assertFails(invitado.collection("config").doc("pricing").set({ taxRate: 0 })),
 );
 
 // ---------- Lo no listado ----------

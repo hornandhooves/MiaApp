@@ -12,6 +12,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { Alert, Modal, Pressable, TextInput, View } from "react-native";
+import { mensajeConPista } from "../../packages/lib/errorTecnico";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { parseSpotLink } from "../../packages/lib/spotLink";
@@ -133,7 +134,7 @@ export default function GuestAccess() {
           ? t("errQrExpired")
           : msg.includes("qr-invalido")
             ? t("errQrInvalid")
-            : t("errAuth"),
+            : mensajeConPista(t("errAuth"), e),
       );
       scanned.current = false;
     } finally {
@@ -153,7 +154,9 @@ export default function GuestAccess() {
       }
     } catch (e) {
       setErr(
-        (e as Error).message === "bloqueado" ? t("errBlocked") : t("errAuth"),
+        (e as Error).message === "bloqueado"
+          ? t("errBlocked")
+          : mensajeConPista(t("errAuth"), e),
       );
     } finally {
       setBusy(false);

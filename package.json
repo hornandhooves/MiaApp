@@ -17,7 +17,10 @@
     "prepare": "git config core.hooksPath scripts/githooks || true",
     "seed:check": "tsx seed/validate.ts",
     "test:rules": "firebase emulators:exec --only firestore --project miaapp-30191 \"node functions/test/rules.mjs\"",
-    "postinstall": "node scripts/patch-expo-jsi.mjs"
+    "postinstall": "node scripts/patch-expo-jsi.mjs",
+    "test:fn": "QR_MASTER_SECRET=emulador-no-es-un-secreto STRIPE_TEST_KEY=sk_test_emulador firebase emulators:exec --only auth,firestore,functions --project miaapp-30191 \"node functions/test/functions.mjs\"",
+    "test:todo": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:rules && pnpm test:fn",
+    "salud": "node scripts/salud.mjs"
   },
   "jest": {
     "preset": "jest-expo",
