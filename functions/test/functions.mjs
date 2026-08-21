@@ -408,6 +408,149 @@ await caso("el personal SÍ libera el de cualquiera", async () => {
   );
 });
 
+say("\n--- cerrarFolio ---");
+
+const nuevoFolio = async (id, uid, saldoCents, estado = "open") =>
+  adminDb.collection("folios").doc(id).set({
+    uid,
+    lineas: [{ idempotencyKey: "x", precioCents: saldoCents, cantidad: 1 }],
+    saldoCents,
+    estado,
+  });
+
+await caso("sin sesión, rechazada", async () => {
+  await signOut(auth);
+  await falla(
+    httpsCallable(fns, "cerrarFolio")({ folioId: "f", idempotencyKey: "k" }),
+    "functions/unauthenticated",
+  );
+});
+
+await caso("no se liquida la cuenta de OTRO", async () => {
+  await nuevoFolio("f-ajeno", "u-dueno-folio", 5000);
+  const llamar = await entrar("u-intruso-folio");
+  await falla(
+    llamar("cerrarFolio", { folioId: "f-ajeno", idempotencyKey: "k1" }),
+    "functions/permission-denied",
+  );
+  iguales(
+    (await adminDb.collection("folios").doc("f-ajeno").get()).get("estado"),
+    "open",
+    "el folio ajeno sigue abierto",
+  );
+});
+
+await caso("el dueño liquida, y el saldo se CONSERVA para cuadrar con Stripe", async () => {
+  await nuevoFolio("f-mio", "u-paga", 7300);
+  const llamar = await entrar("u-paga");
+  const { data } = await llamar("cerrarFolio", {
+    folioId: "f-mio",
+    idempotencyKey: "k-pago-1",
+    metodo: "stripe_test",
+    paymentIntentId: "pi_123",
+  });
+  iguales(data.saldoCents, 7300, "saldo devuelto");
+  const f = await adminDb.collection("folios").doc("f-mio").get();
+  iguales(f.get("estado"), "settled", "estado");
+  iguales(f.get("saldoCents"), 7300, "el saldo NO se pone en cero");
+  iguales(f.get("pago").paymentIntentId, "pi_123", "referencia del pago");
+});
+
+await caso("pagar dos veces no vuelve a liquidar", async () => {
+  const llamar = await entrar("u-paga");
+  const { data } = await llamar("cerrarFolio", {
+    folioId: "f-mio",
+    idempotencyKey: "k-pago-1",
+  });
+  iguales(data.yaEstaba, true, "yaEstaba");
+});
+
+say("\n--- acreditarOlas ---");
+
+await adminDb.doc("config/olas").set({
+  porDolar: { arena: 1, marea: 2, cenote: 3, "circulo-interior": 5 },
+  bonoPorReferido: 500,
+});
+
+await caso("sin sesión, rechazada", async () => {
+  await signOut(auth);
+  await falla(
+    httpsCallable(fns, "acreditarOlas")({ motivo: "referido", idempotencyKey: "k" }),
+    "functions/unauthenticated",
+  );
+});
+
+await caso("el cliente NO decide cuántas Olas se lleva", async () => {
+  await nuevoFolio("f-olas", "u-olas", 10000, "settled");
+  const llamar = await entrar("u-olas");
+  // Se manda un delta absurdo: la function ni lo mira.
+  const { data } = await llamar("acreditarOlas", {
+    motivo: "folio-liquidado",
+    refId: "f-olas",
+    idempotencyKey: "k-olas-1",
+    delta: 999999,
+  });
+  // $100 de consumo × tasa 1 (nivel arena, sin perfil) = 100 Olas.
+  iguales(data.delta, 100, "delta calculado por el servidor");
+});
+
+await caso("el nivel del miembro cambia la tasa", async () => {
+  await adminDb.collection("members").doc("u-olas-vip").set({ tier: "cenote" });
+  await nuevoFolio("f-olas-vip", "u-olas-vip", 10000, "settled");
+  const llamar = await entrar("u-olas-vip");
+  const { data } = await llamar("acreditarOlas", {
+    motivo: "folio-liquidado",
+    refId: "f-olas-vip",
+    idempotencyKey: "k-olas-vip",
+  });
+  iguales(data.delta, 300, "delta con tasa de cenote");
+});
+
+await caso("la misma clave no acredita dos veces", async () => {
+  const llamar = await entrar("u-olas");
+  const { data } = await llamar("acreditarOlas", {
+    motivo: "folio-liquidado",
+    refId: "f-olas",
+    idempotencyKey: "k-olas-1",
+  });
+  iguales(data.repetido, true, "repetido");
+  const asientos = await adminDb
+    .collection("ledger")
+    .where("uid", "==", "u-olas")
+    .get();
+  iguales(asientos.size, 1, "asientos en el ledger");
+});
+
+await caso("no se acreditan Olas por el folio de otro", async () => {
+  const llamar = await entrar("u-olas-ladron");
+  await falla(
+    llamar("acreditarOlas", {
+      motivo: "folio-liquidado",
+      refId: "f-olas",
+      idempotencyKey: "k-robo",
+    }),
+    "functions/permission-denied",
+  );
+});
+
+await caso("un motivo inventado se rechaza", async () => {
+  const llamar = await entrar("u-olas");
+  await falla(
+    llamar("acreditarOlas", { motivo: "regalo", idempotencyKey: "k-regalo" }),
+    "functions/invalid-argument",
+  );
+});
+
+await caso("el bono por referido sale de la configuración", async () => {
+  const llamar = await entrar("u-referido");
+  const { data } = await llamar("acreditarOlas", {
+    motivo: "referido",
+    refId: "u-amigo",
+    idempotencyKey: "k-ref-1",
+  });
+  iguales(data.delta, 500, "bono");
+});
+
 // ---------- cierre ----------
 say("");
 say(`${corridos} casos, ${fallas} fallas`);

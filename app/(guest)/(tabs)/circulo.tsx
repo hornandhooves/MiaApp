@@ -115,15 +115,20 @@ export default function Circulo() {
         if (!uidReal) throw new Error("sin-uid-tras-login");
         const folio = await getPorts().folio.obtenerAbierto(uidReal);
         const consumo = folio?.saldoCents ?? 0;
-        const olas = Math.round((consumo / 100) * OLAS.ratePerUsd.arena);
-        if (olas > 0) {
-          await getPorts().ledger.acreditar({
+        // Estimación local para no pedir dos veces; la cifra que se
+        // enseña es la que devuelve el servidor, que es la que quedó
+        // asentada en el ledger.
+        const estimadas = Math.round((consumo / 100) * OLAS.ratePerUsd.arena);
+        let olas = 0;
+        if (estimadas > 0 && folio) {
+          const asiento = await getPorts().ledger.acreditar({
             uid: uidReal,
-            delta: olas,
+            delta: estimadas,
             motivo: "consumo-del-dia",
-            refId: folio?.id ?? "",
+            refId: folio.id,
             idempotencyKey: `join-${uidReal}`,
           });
+          olas = asiento.delta;
         }
         setConfirm({
           kind: "join",

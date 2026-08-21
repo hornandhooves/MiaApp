@@ -28,6 +28,20 @@ export const FLAGS = {
    */
   pagosReales: true,
   /**
+   * Cuenta del día y Olas contra Firestore en vez de los mocks.
+   *
+   * Va junto con `pedidosReales`: con pedidos reales, el cargo de un
+   * pedido entregado lo escribe el servidor en `folios`, y si la app
+   * siguiera leyendo el folio en memoria serían dos cuentas distintas —
+   * el huésped nunca vería el cargo, y sus Olas se perderían al cerrar
+   * la app.
+   *
+   * true  → la app LEE la cuenta y las Olas reales; escribir sigue
+   *         siendo solo del servidor (cerrarFolio, acreditarOlas).
+   * false → mocks en memoria, útiles para enseñar el flujo sin backend.
+   */
+  cuentaReal: true,
+  /**
    * Diagnóstico de beta: los avisos de error muestran el código real
    * entre paréntesis, además de dejarlo en la consola del aparato.
    *

@@ -489,6 +489,33 @@ await caso(
   ),
 );
 await caso(
+  "el dueño lee su cuenta liquidada, no la de otro",
+  assertFails(otro.collection("folios").doc("f-invitado").get()),
+);
+await caso(
+  "nadie se acredita Olas escribiendo el ledger (solo acreditarOlas)",
+  assertFails(
+    invitado.collection("ledger").doc("l-regalo").set({
+      uid: "uid-invitado",
+      delta: 999999,
+      motivo: "regalo",
+      refId: "x",
+      idempotencyKey: "k",
+      createdAt: new Date().toISOString(),
+    }),
+  ),
+);
+await caso(
+  "nadie edita un asiento del ledger ya escrito (es append-only)",
+  assertFails(
+    invitado.collection("ledger").doc("l-invitado").update({ delta: 99999 }),
+  ),
+);
+await caso(
+  "nadie borra asientos del ledger",
+  assertFails(invitado.collection("ledger").doc("l-invitado").delete()),
+);
+await caso(
   "colección desconocida: prohibida",
   assertFails(invitado.collection("loQueSea").doc("x").set({ a: 1 })),
 );

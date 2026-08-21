@@ -209,9 +209,54 @@ export const crearPago = onCall({ secrets: [STRIPE_TEST_KEY] }, async (req) => {
  * cerrarFolio — liquida el folio y dispara la acreditación de Olas.
  * TODO(semana 6).
  */
+/**
+ * cerrarFolio — liquida la cuenta del día DESPUÉS de que el pago quedó
+ * confirmado contra Stripe.
+ *
+ * Nunca cobra: el cobro ya ocurrió y `verificarPago` ya le preguntó a
+ * Stripe. Aquí solo se asienta que esa cuenta quedó saldada, y se
+ * guarda con qué pago, para poder cruzarlo con el dashboard de Stripe.
+ *
+ * Idempotente por dos vías: un folio ya liquidado se devuelve tal cual,
+ * y la misma `idempotencyKey` sobre un folio abierto no duplica nada.
+ * El huésped que toca "pagar" dos veces por mala señal paga una.
+ */
 export const cerrarFolio = onCall(async (req) => {
   if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
-  throw new HttpsError("unimplemented", "semana-6");
+  const uid = req.auth.uid;
+  const folioId = String(req.data?.folioId ?? "");
+  const idempotencyKey = String(req.data?.idempotencyKey ?? "");
+  const metodo = String(req.data?.metodo ?? "stripe_test");
+  const paymentIntentId = req.data?.paymentIntentId
+    ? String(req.data.paymentIntentId)
+    : null;
+  if (!folioId || !idempotencyKey) {
+    throw new HttpsError("invalid-argument", "Faltan folioId o idempotencyKey");
+  }
+
+  const db = getFirestore();
+  return db.runTransaction(async (tx) => {
+    const ref = db.collection("folios").doc(folioId);
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new HttpsError("not-found", "Folio inexistente");
+    // La cuenta de otro no se toca, ni para pagarla.
+    if (snap.get("uid") !== uid) {
+      throw new HttpsError("permission-denied", "Esa cuenta no es tuya");
+    }
+    if (snap.get("estado") === "settled") {
+      return { ok: true, yaEstaba: true, saldoCents: 0 };
+    }
+
+    const saldoCents = Number(snap.get("saldoCents") ?? 0);
+    tx.update(ref, {
+      estado: "settled",
+      pago: { metodo, paymentIntentId, idempotencyKey },
+      settledAt: new Date().toISOString(),
+      // El saldo NO se pone en cero: el folio conserva lo que se cobró.
+      // Poner cero borraría la cifra que hay que cuadrar con Stripe.
+    });
+    return { ok: true, yaEstaba: false, saldoCents };
+  });
 });
 
 /**
@@ -267,8 +312,78 @@ export const liberarHold = onCall(async (req) => {
  * deriva de la suma de asientos; nunca existe un contador editable.
  * TODO(semana 7).
  */
-export const acreditarOlas = onCall(async () => {
-  throw new HttpsError("unimplemented", "semana-7");
+/**
+ * acreditarOlas — el único escritor del ledger.
+ *
+ * El ledger es APPEND-ONLY: nunca existe un contador editable de Olas.
+ * El saldo siempre se deriva sumando los asientos, así que una promoción
+ * mal aplicada se corrige con un asiento en contra y queda auditada, en
+ * vez de con un número que alguien sobrescribe.
+ *
+ * El cliente NO decide cuántas Olas se lleva: manda el motivo y la
+ * referencia, y el servidor calcula el delta con la tabla de
+ * `config/precios.json` que se sembró en `config/olas`. Dejar que el
+ * teléfono mande el delta sería dejar que se regale el nivel máximo.
+ */
+export const acreditarOlas = onCall(async (req) => {
+  if (!req.auth) throw new HttpsError("unauthenticated", "Sesión requerida");
+  const uid = req.auth.uid;
+  const motivo = String(req.data?.motivo ?? "");
+  const refId = String(req.data?.refId ?? "");
+  const idempotencyKey = String(req.data?.idempotencyKey ?? "");
+  if (!motivo || !idempotencyKey) {
+    throw new HttpsError("invalid-argument", "Faltan motivo o idempotencyKey");
+  }
+
+  const db = getFirestore();
+
+  // Idempotencia: la misma clave nunca acredita dos veces. Es lo que
+  // hace inofensivo el doble toque y el reintento sin red.
+  const previos = await db
+    .collection("ledger")
+    .where("uid", "==", uid)
+    .where("idempotencyKey", "==", idempotencyKey)
+    .limit(1)
+    .get();
+  const yaEsta = previos.docs[0];
+  if (yaEsta) {
+    return { id: yaEsta.id, delta: Number(yaEsta.get("delta") ?? 0), repetido: true };
+  }
+
+  // El delta lo calcula el servidor a partir del consumo real.
+  const cfg = await db.doc("config/olas").get();
+  const porDolar = (cfg.get("porDolar") ?? {}) as Record<string, number>;
+  const bonoReferido = Number(cfg.get("bonoPorReferido") ?? 0);
+
+  let delta = 0;
+  if (motivo === "folio-liquidado" || motivo === "consumo-del-dia") {
+    if (!refId) throw new HttpsError("invalid-argument", "Falta refId del folio");
+    const folio = await db.collection("folios").doc(refId).get();
+    if (!folio.exists || folio.get("uid") !== uid) {
+      throw new HttpsError("permission-denied", "Ese folio no es tuyo");
+    }
+    // El nivel del miembro decide la tasa; sin perfil, la tasa base.
+    const miembro = await db.collection("members").doc(uid).get();
+    const nivel = String(miembro.get("tier") ?? "arena");
+    const tasa = Number(porDolar[nivel] ?? porDolar.arena ?? 0);
+    delta = Math.round((Number(folio.get("saldoCents") ?? 0) / 100) * tasa);
+  } else if (motivo === "referido") {
+    delta = bonoReferido;
+  } else {
+    throw new HttpsError("invalid-argument", `motivo desconocido: ${motivo}`);
+  }
+
+  if (delta <= 0) return { id: null, delta: 0, repetido: false };
+
+  const ref = await db.collection("ledger").add({
+    uid,
+    delta,
+    motivo,
+    refId,
+    idempotencyKey,
+    createdAt: new Date().toISOString(),
+  });
+  return { id: ref.id, delta, repetido: false };
 });
 
 /**

@@ -28,7 +28,11 @@ import {
   sunsetSet,
   week,
 } from "./data/content";
-import { MEAL_PLAN_FBE_PER_NIGHT_CENTS, TAX_RATE } from "../packages/domain/PLACEHOLDER_PRICES";
+import {
+  MEAL_PLAN_FBE_PER_NIGHT_CENTS,
+  OLAS,
+  TAX_RATE,
+} from "../packages/domain/PLACEHOLDER_PRICES";
 
 const argProject = process.argv.indexOf("--project");
 const projectId =
@@ -115,7 +119,16 @@ async function main() {
 
   // Configuración global del demo
   await db.doc("config/pricing").set({ taxRate: TAX_RATE });
-  counts.config = 1;
+  // Las tasas de Olas viven aquí para que el SERVIDOR calcule el delta.
+  // Si el teléfono mandara cuántas Olas se lleva, se regalaría el nivel
+  // máximo. Salen de config/precios.json, como todo lo demás.
+  await db.doc("config/olas").set({
+    porDolar: OLAS.ratePerUsd,
+    bonoPorReferido: OLAS.referralBonus,
+    umbrales: OLAS.tiers,
+    caducidadMeses: OLAS.caducidadMeses,
+  });
+  counts.config = 2;
 
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   for (const [k, v] of Object.entries(counts)) {

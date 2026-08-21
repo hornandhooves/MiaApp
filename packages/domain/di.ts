@@ -16,6 +16,8 @@ import {
   MockPaymentAdapter,
 } from "./adapters/mock/MockPaymentAdapter";
 import { MockLedgerAdapter } from "./adapters/mock/MockLedgerAdapter";
+import { FirestoreFolioAdapter } from "./adapters/firestore/FirestoreFolioAdapter";
+import { FirestoreLedgerAdapter } from "./adapters/firestore/FirestoreLedgerAdapter";
 import { MockReservationAdapter } from "./adapters/mock/MockReservationAdapter";
 import { MockSpotAdapter } from "./adapters/mock/MockSpotAdapter";
 import { MockWellnessAdapter } from "./adapters/mock/MockWellnessAdapter";
@@ -64,17 +66,23 @@ const catalogo = async (): Promise<RoomType[]> => roomTypes;
 
 export function getPorts(): Ports {
   if (!ports) {
-    const folio = new MockFolioAdapter();
+    const folioMock = new MockFolioAdapter();
+    // Con la cuenta real, el folio que ve la app es el MISMO que escribe
+    // el servidor. Sin esto eran dos cuentas paralelas.
+    const folio = FLAGS.cuentaReal ? new FirestoreFolioAdapter() : folioMock;
     // Al entregar un pedido, su cargo (con precio YA congelado) entra
     // al folio del día. Una sola vez: agregarCargo es idempotente.
     const order = new MockOrderAdapter(async (o) => {
-      const f = await folio.abrir({
+      // Este camino solo corre con pedidos mock; ahí el folio también
+      // es mock, porque el FirestoreFolioAdapter no abre nada: eso lo
+      // hace el servidor.
+      const f = await folioMock.abrir({
         uid: o.uid,
         ...(o.spotId !== undefined ? { spotId: o.spotId } : {}),
         ...(o.roomId !== undefined ? { roomId: o.roomId } : {}),
       });
       for (const linea of o.lineas) {
-        await folio.agregarCargo(f.id, {
+        await folioMock.agregarCargo(f.id, {
           idempotencyKey: `${o.idempotencyKey}:${linea.menuItemId}`,
           concepto: linea.nombre,
           precioCents: linea.precioCents,
@@ -105,7 +113,9 @@ export function getPorts(): Ports {
       order: orderPort,
       reservation: new MockReservationAdapter(),
       wellness: new MockWellnessAdapter(wellnessSlots, cenoteShuttles),
-      ledger: new MockLedgerAdapter(),
+      ledger: FLAGS.cuentaReal
+        ? new FirestoreLedgerAdapter()
+        : new MockLedgerAdapter(),
       chat: new MockChatAdapter(chatTexts.saludo, chatTexts.respuestas),
     };
   }

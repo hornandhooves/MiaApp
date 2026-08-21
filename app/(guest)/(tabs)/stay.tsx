@@ -250,17 +250,21 @@ export default function Stay() {
           paymentIntentId: pago.paymentIntentId,
           idempotencyKey: key,
         });
-        const olas = Math.round(
+        // Las Olas las calcula el SERVIDOR con las tasas de config/olas.
+        // Este número local es solo la estimación de la pantalla; el que
+        // se enseña es el que vuelve, para que nadie vea una cifra que
+        // no quedó asentada.
+        const estimadas = Math.round(
           (folio.saldoCents / 100) * OLAS.ratePerUsd.marea,
         );
-        // El consumo liquidado se acredita al ledger (append-only)
-        await getPorts().ledger.acreditar({
+        const asiento = await getPorts().ledger.acreditar({
           uid,
-          delta: olas,
+          delta: estimadas,
           motivo: "folio-liquidado",
           refId: folio.id,
           idempotencyKey: `settle-${folio.id}`,
         });
+        const olas = asiento.delta;
         Alert.alert(
           t("settleDoneTpl", {
             price: moneyUsd(folio.saldoCents),

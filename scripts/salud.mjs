@@ -48,7 +48,7 @@ const ESPERADO = {
   wellnessSlots: 4,
   shuttles: 3,
   content: 7,
-  config: 1,
+  config: 2,
   stays: 1,
 };
 
