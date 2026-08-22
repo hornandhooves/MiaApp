@@ -4,7 +4,7 @@
  * el botón de "Ordenar" se quedó gris para siempre. Un sistema roto que
  * se ve sano es peor que uno roto que se ve roto.
  */
-import { conLimite, SIN_RESPUESTA } from "../red";
+import { conLimite, sondear, SIN_RESPUESTA } from "../red";
 
 describe("conLimite", () => {
   beforeEach(() => jest.useFakeTimers());
@@ -48,5 +48,57 @@ describe("conLimite", () => {
   it("no deja temporizadores vivos cuando responde", async () => {
     await conLimite(Promise.resolve(1), 5000);
     expect(jest.getTimerCount()).toBe(0);
+  });
+});
+
+describe("sondear", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it("entrega el primer valor sin esperar al intervalo", async () => {
+    const vistos: number[] = [];
+    const parar = sondear(async () => 7, (v) => vistos.push(v), {
+      cadaMs: 5000,
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(vistos).toEqual([7]);
+    parar();
+  });
+
+  it("deja de sondear cuando se cancela", async () => {
+    let veces = 0;
+    const parar = sondear(
+      async () => {
+        veces += 1;
+        return veces;
+      },
+      () => {},
+      { cadaMs: 1000 },
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+    parar();
+    jest.advanceTimersByTime(10_000);
+    await Promise.resolve();
+    // Tras cancelar no se vuelve a leer: un sondeo huérfano seguiría
+    // pegándole al servidor con la pantalla cerrada.
+    expect(veces).toBe(1);
+  });
+
+  it("un fallo avisa y NO mata el sondeo", async () => {
+    const errores: unknown[] = [];
+    const parar = sondear(
+      async () => {
+        throw new Error("permission-denied");
+      },
+      () => {},
+      { cadaMs: 1000, onError: (e) => errores.push(e) },
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(errores.length).toBe(1);
+    parar();
   });
 });

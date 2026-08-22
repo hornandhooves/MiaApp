@@ -36,3 +36,59 @@ export function conLimite<T>(
     );
   });
 }
+
+/**
+ * Tiempo real por sondeo, porque el canal de escucha no funciona.
+ *
+ * Lo que la evidencia del 22-ago-2026 mostró, en el teléfono y contra
+ * el proyecto real:
+ *
+ *   · Peticiones sueltas (`getDocs`) → **funcionan**.
+ *   · Canal de escritura (`addDoc`) → se cuelga sin fallar. Por eso el
+ *     pedido lo crea ahora una function.
+ *   · Canal de escucha (`onSnapshot`) → entrega la primera respuesta
+ *     desde la caché local —vacía— y la del servidor no llega nunca.
+ *     De ahí "no hay pedidos" teniendo pedidos, la cuenta en blanco y
+ *     las Olas en cero: no era que faltaran datos, es que la respuesta
+ *     del servidor no llegaba.
+ *
+ * Este ayudante repite una lectura suelta cada pocos segundos y llama
+ * al mismo callback. Se pierde el empuje instantáneo del servidor; a
+ * cambio, la pantalla se actualiza de verdad. Un segundo de retraso es
+ * mejor que un dato que nunca llega.
+ *
+ * Devuelve la función para cancelar, igual que `onSnapshot`, así que
+ * los adaptadores no cambian de forma.
+ */
+export function sondear<T>(
+  leer: () => Promise<T>,
+  cb: (valor: T) => void,
+  opciones: {
+    cadaMs?: number;
+    onError?: (e: unknown) => void;
+    etiqueta?: string;
+  } = {},
+): () => void {
+  const { cadaMs = 6_000, onError, etiqueta = "sondeo" } = opciones;
+  let vivo = true;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const tick = async (): Promise<void> => {
+    if (!vivo) return;
+    try {
+      const valor = await conLimite(leer(), 12_000, etiqueta);
+      if (!vivo) return;
+      cb(valor);
+    } catch (e) {
+      if (!vivo) return;
+      onError?.(e);
+    }
+    if (vivo) timer = setTimeout(() => void tick(), cadaMs);
+  };
+  void tick();
+
+  return () => {
+    vivo = false;
+    if (timer) clearTimeout(timer);
+  };
+}

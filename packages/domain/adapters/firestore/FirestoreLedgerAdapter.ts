@@ -11,16 +11,11 @@
  * `config/olas`. Si el teléfono mandara el número, se regalaría el nivel
  * máximo. Escribir aquí está prohibido por las reglas.
  */
-import {
-  collection,
-  getDocs,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions } from "../../../lib/firebase";
+import { rastro } from "../../../lib/errorTecnico";
+import { sondear } from "../../../lib/red";
 import type { LedgerPort } from "../../ports/LedgerPort";
 import type { LedgerEntry } from "../../types";
 
@@ -72,23 +67,27 @@ export class FirestoreLedgerAdapter implements LedgerPort {
   }
 
   async asientos(uid: string): Promise<LedgerEntry[]> {
+    // Sin `orderBy` en la consulta: combinado con el filtro por uid
+    // exigiría un índice compuesto, y un asiento del ledger es
+    // pequeño. Se ordena aquí.
     const snap = await getDocs(
-      query(collection(db(), COL), where("uid", "==", uid), orderBy("createdAt")),
+      query(collection(db(), COL), where("uid", "==", uid)),
     );
-    return snap.docs.map((d) => aAsiento(d.id, d.data()));
+    return snap.docs
+      .map((d) => aAsiento(d.id, d.data()))
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   }
 
   suscribirSaldo(uid: string, cb: (saldo: number) => void): () => void {
-    return onSnapshot(
-      query(collection(db(), COL), where("uid", "==", uid)),
-      (snap) => {
-        let total = 0;
-        for (const d of snap.docs) total += Number(d.get("delta") ?? 0);
-        cb(total);
+    // Por sondeo, por lo mismo que el resto: la respuesta del canal de
+    // escucha no llega. Ver packages/lib/red.ts.
+    return sondear(
+      () => this.saldo(uid),
+      (saldo) => {
+        rastro("mis olas", saldo);
+        cb(saldo);
       },
-      // Sin red o sin permiso: cero, que es lo que ya mostraba la UI
-      // antes de cargar. Nunca un número inventado.
-      () => cb(0),
+      { cadaMs: 10_000, etiqueta: "mis-olas", onError: () => cb(0) },
     );
   }
 }

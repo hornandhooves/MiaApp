@@ -39,6 +39,8 @@ interface SessionState {
   /** Vencimiento de la sesión de invitado (ms epoch) */
   exp: number | null;
   displayName: string | null;
+  /** Personal de Mía. Viaja en el token, no lo decide la app. */
+  staff: boolean;
   intentosEstancia: number;
   bloqueadoHasta: number | null;
 }
@@ -53,6 +55,17 @@ interface SessionActions {
   /** Crea cuenta con Apple CONSERVANDO el UID (linkWithCredential) */
   signInWithApple: () => Promise<void>;
   signOutAll: () => Promise<void>;
+  /**
+   * Vuelve a pedir el token al servidor y relee los claims.
+   *
+   * Los claims viajan DENTRO del token, y el token vive hasta una hora.
+   * Si a alguien le dan el rol de personal mientras tiene la app
+   * abierta, su token sigue siendo el de antes y Firestore le niega la
+   * cocina — sin que nada en la app parezca roto. Esto es lo que cierra
+   * ese hueco, y en producción es el caso normal: un gerente da de alta
+   * a alguien a media jornada.
+   */
+  refrescarClaims: () => Promise<void>;
 }
 
 
@@ -72,6 +85,7 @@ export const useSession = create<SessionState & SessionActions>()(
     scope: [],
     exp: null,
     displayName: null,
+    staff: false,
     intentosEstancia: 0,
     bloqueadoHasta: null,
 
@@ -94,6 +108,7 @@ export const useSession = create<SessionState & SessionActions>()(
             spotId?: string;
             scope?: string[];
             sexp?: number;
+            staff?: boolean;
           };
           const vigente =
             typeof claims.sexp === "number" && claims.sexp > Date.now();
@@ -104,6 +119,7 @@ export const useSession = create<SessionState & SessionActions>()(
             spotId: vigente ? (claims.spotId ?? null) : null,
             scope: vigente ? (claims.scope ?? []) : [],
             exp: vigente ? (claims.sexp ?? null) : null,
+            staff: claims.staff === true,
           });
         });
       });
@@ -188,6 +204,10 @@ export const useSession = create<SessionState & SessionActions>()(
       // Sin este rastro, "la app cree que encontró tu estancia" y "el
       // servidor te dio permiso" se ven idénticos en pantalla.
       rastro("claims tras findStay ->", {
+        // El uid va aquí para no tener que adivinar cuál de los 27
+        // usuarios anónimos es este teléfono al dar el rol de personal.
+        uid: user.uid,
+        staff: (tk.claims as { staff?: boolean }).staff === true,
         roomId: claims.roomId ?? null,
         scope: claims.scope ?? null,
         venceEn: claims.sexp
@@ -334,6 +354,36 @@ export const useSession = create<SessionState & SessionActions>()(
       });
     },
 
+    refrescarClaims: async () => {
+      const user = auth().currentUser;
+      if (!user) return;
+      // `true` fuerza ir al servidor: sin eso el SDK devuelve el token
+      // que ya tenía en memoria, que es justo el que no trae el claim
+      // nuevo.
+      const tk = await user.getIdTokenResult(true);
+      const claims = tk.claims as {
+        spotId?: string;
+        roomId?: string;
+        scope?: string[];
+        sexp?: number;
+        staff?: boolean;
+      };
+      const vigente =
+        typeof claims.sexp === "number" && claims.sexp > Date.now();
+      rastro("claims refrescados ->", {
+        uid: user.uid,
+        staff: claims.staff === true,
+        vigente,
+      });
+      set({
+        spotId: vigente ? (claims.spotId ?? null) : null,
+        roomId: claims.roomId ?? get().roomId,
+        scope: vigente ? (claims.scope ?? []) : [],
+        exp: vigente ? (claims.sexp ?? null) : null,
+        staff: claims.staff === true,
+      });
+    },
+
     signOutAll: async () => {
       await fbSignOut(auth());
       set({
@@ -345,6 +395,7 @@ export const useSession = create<SessionState & SessionActions>()(
         scope: [],
         exp: null,
         displayName: null,
+        staff: false,
       });
       // onAuthStateChanged reintenta el anónimo y deja status "none"
     },

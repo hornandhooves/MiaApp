@@ -19,12 +19,13 @@ import {
   getDoc,
   getDocs,
   limit,
-  onSnapshot,
   query,
   where,
 } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions } from "../../../lib/firebase";
+import { rastro } from "../../../lib/errorTecnico";
+import { sondear } from "../../../lib/red";
 import type { FolioPort } from "../../ports/FolioPort";
 import type { Folio, LineaCargo, ReferenciaPago } from "../../types";
 
@@ -93,21 +94,17 @@ export class FirestoreFolioAdapter implements FolioPort {
   }
 
   suscribir(uid: string, cb: (folio: Folio | null) => void): () => void {
-    return onSnapshot(
-      query(
-        collection(db(), COL),
-        where("uid", "==", uid),
-        where("estado", "==", "open"),
-        limit(1),
-      ),
-      (snap) => {
-        const d = snap.docs[0];
-        cb(d ? aFolio(d.id, d.data()) : null);
+    // Por sondeo: el canal de escucha de Firestore entrega la primera
+    // respuesta desde la caché —vacía— y la del servidor no llega
+    // nunca. Era la razón de que la cuenta del día saliera en blanco
+    // aunque el servidor acabara de escribir el cargo del pedido.
+    return sondear(
+      () => this.obtenerAbierto(uid),
+      (folio) => {
+        rastro("mi cuenta", folio ? folio.saldoCents : null);
+        cb(folio);
       },
-      // Sin red o sin permiso: null en vez de romper la pantalla. La UI
-      // ya tiene su estado vacío, y una cuenta que no se pudo leer NO
-      // debe mostrarse como cuenta en cero.
-      () => cb(null),
+      { cadaMs: 6_000, etiqueta: "mi-cuenta", onError: () => cb(null) },
     );
   }
 }

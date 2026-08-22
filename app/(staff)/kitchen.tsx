@@ -10,6 +10,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { getPorts } from "../../packages/domain/di";
+import { useSession } from "../../packages/lib/session";
 import type { Order, OrderState } from "../../packages/domain/types";
 import { lx } from "../../packages/lib/content";
 import { moneyUsd } from "../../packages/lib/tulum";
@@ -38,9 +39,40 @@ export default function Kitchen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [orders, setOrders] = useState<Order[]>([]);
+  // Sin esto, quien abra la cocina sin el rol de personal ve "no hay
+  // pedidos" en vez de "no puedo verlos". Es el mismo fallo que nos
+  // costó media hora de búsqueda: la negación se veía como calma.
+  const [error, setError] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
-  useEffect(() => getPorts().order.suscribirCocina(setOrders), []);
+  const refrescarClaims = useSession((st) => st.refrescarClaims);
+
+  // Se refresca el token ANTES de suscribirse. El rol de personal viaja
+  // dentro del token y el token vive hasta una hora: si a alguien lo dan
+  // de alta a media jornada, su app seguiría con el token viejo y
+  // Firestore le negaría la cocina sin que nada pareciera roto.
+  useEffect(() => {
+    let cancelar: (() => void) | null = null;
+    let vivo = true;
+    void refrescarClaims()
+      .catch(() => {
+        // Sin red: se intenta suscribir igual con lo que haya.
+      })
+      .then(() => {
+        if (!vivo) return;
+        cancelar = getPorts().order.suscribirCocina(
+          (o) => {
+            setError(false);
+            setOrders(o);
+          },
+          () => setError(true),
+        );
+      });
+    return () => {
+      vivo = false;
+      cancelar?.();
+    };
+  }, [refrescarClaims]);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(id);
@@ -64,8 +96,8 @@ export default function Kitchen() {
 
         <ListState
           loading={false}
-          error={false}
-          empty={orders.length === 0}
+          error={error}
+          empty={!error && orders.length === 0}
           emptyText={t("listEmpty")}
           errorText={t("listError")}
           retryLabel={t("retry")}

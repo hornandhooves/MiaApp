@@ -19,8 +19,19 @@ export interface OrderPort {
   }): Promise<Order>;
   /** Pedidos del usuario (tiempo real) */
   suscribirMios(uid: string, cb: (orders: Order[]) => void): () => void;
-  /** Cocina: todos los pedidos vivos (tiempo real) */
-  suscribirCocina(cb: (orders: Order[]) => void): () => void;
+  /**
+   * Cocina: todos los pedidos vivos (tiempo real).
+   *
+   * `onError` no es opcional por comodidad: sin él, una lectura negada
+   * —por ejemplo, alguien sin el rol de personal— se convertía en una
+   * lista vacía y la pantalla decía "no hay pedidos". Un sistema roto
+   * que se ve sano. La cocina tiene que poder distinguir "no hay nada"
+   * de "no puedo ver nada".
+   */
+  suscribirCocina(
+    cb: (orders: Order[]) => void,
+    onError?: (e: unknown) => void,
+  ): () => void;
   /** Staff: avanzar estado */
   avanzar(orderId: string): Promise<Order>;
   /** Simulación de red del demo (y de tests) */

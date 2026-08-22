@@ -18,14 +18,13 @@ import {
   doc,
   getDocs,
   limit,
-  onSnapshot,
   query,
   where,
 } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions } from "../../../lib/firebase";
-import { rastro } from "../../../lib/errorTecnico";
-import { conLimite } from "../../../lib/red";
+import { codigoDeError, rastro } from "../../../lib/errorTecnico";
+import { conLimite, sondear } from "../../../lib/red";
 import type { OrderPort } from "../../ports/OrderPort";
 import type { Order, OrderLine } from "../../types";
 
@@ -103,21 +102,52 @@ export class FirestoreOrderAdapter implements OrderPort {
   }
 
   suscribirMios(uid: string, cb: (orders: Order[]) => void): () => void {
-    return onSnapshot(
-      query(collection(db(), COL), where("uid", "==", uid)),
-      (snap) => cb(snap.docs.map((d) => aOrder(d.id, d.data()))),
-      // Sin red o sin permiso: se entrega lista vacía en vez de romper
-      // la pantalla. La UI ya tiene su estado vacío.
-      () => cb([]),
+    // Por sondeo, no por `onSnapshot`: el canal de escucha entrega la
+    // primera respuesta desde la caché —vacía— y la del servidor no
+    // llega nunca. Por eso "Tus pedidos" salía en blanco teniendo
+    // pedidos. Ver el comentario largo en packages/lib/red.ts.
+    return sondear(
+      async () => {
+        const snap = await getDocs(
+          query(collection(db(), COL), where("uid", "==", uid)),
+        );
+        return snap.docs.map((d) => aOrder(d.id, d.data()));
+      },
+      (orders) => {
+        rastro("mis pedidos", orders.length);
+        cb(orders);
+      },
+      { cadaMs: 8_000, etiqueta: "mis-pedidos" },
     );
   }
 
-  suscribirCocina(cb: (orders: Order[]) => void): () => void {
-    // Requiere el claim `staff`; las reglas lo verifican.
-    return onSnapshot(
-      collection(db(), COL),
-      (snap) => cb(snap.docs.map((d) => aOrder(d.id, d.data()))),
-      () => cb([]),
+  suscribirCocina(
+    cb: (orders: Order[]) => void,
+    onError?: (e: unknown) => void,
+  ): () => void {
+    // La cocina sondea más seguido: ahí un pedido que tarda en
+    // aparecer es comida que tarda en salir.
+    return sondear(
+      async () => {
+        const snap = await getDocs(collection(db(), COL));
+        return snap.docs.map((d) => aOrder(d.id, d.data()));
+      },
+      (orders) => {
+        rastro("cocina: pedidos leidos", orders.length);
+        cb(orders);
+      },
+      {
+        cadaMs: 5_000,
+        etiqueta: "cocina",
+        onError: (e) => {
+          // Requiere el claim `staff`. Si falta, llega
+          // `permission-denied` — y hay que DECIRLO: antes se devolvía
+          // lista vacía y la cocina mostraba "no hay pedidos" teniendo
+          // pedidos.
+          rastro("cocina: lectura negada", codigoDeError(e));
+          onError?.(e);
+        },
+      },
     );
   }
 
